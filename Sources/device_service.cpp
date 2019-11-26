@@ -58,4 +58,24 @@ namespace _onvif
 
 		return std::string();
 	}
+
+	DeviceService::DeviceInformation DeviceService::get_device_info()
+	{
+		DeviceInformation info;
+
+		_tds__GetDeviceInformation request;
+		_tds__GetDeviceInformationResponse response;
+		if (!deviceProxy.GetDeviceInformation(&request, response))
+		{
+			info.filled = true;
+			
+			info.firmwareVersion = response.FirmwareVersion;
+			info.hardwareId = response.HardwareId;
+			info.manufacturer = response.Manufacturer;
+			info.model = response.Model;
+			info.serialNumber = response.SerialNumber;
+		}
+
+		return std::move(info);
+	}
 }
