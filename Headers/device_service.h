@@ -16,6 +16,7 @@ namespace _onvif
 		~DeviceService();
 
 		std::list<std::string> get_scopes();
+		std::string get_date_time();
 
 	private:
 		soap* soap_context;

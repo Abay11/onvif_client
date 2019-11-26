@@ -3,6 +3,7 @@
 #include "DeviceBinding.nsmap"
 
 #include <algorithm>
+#include <sstream>
 
 namespace _onvif
 {
@@ -33,5 +34,28 @@ namespace _onvif
 		}
 
 		return std::move(scopes);
+	}
+	std::string DeviceService::get_date_time()
+	{
+		_tds__GetSystemDateAndTime request;
+		_tds__GetSystemDateAndTimeResponse response;
+		if (!deviceProxy.GetSystemDateAndTime(&request, response)
+			&& response.SystemDateAndTime
+			&& response.SystemDateAndTime->UTCDateTime
+			&& response.SystemDateAndTime->UTCDateTime->Date
+			&& response.SystemDateAndTime->UTCDateTime->Time)
+		{
+			std::stringstream ss;
+			ss << response.SystemDateAndTime->UTCDateTime->Date->Year << "/"
+				<< response.SystemDateAndTime->UTCDateTime->Date->Month << "/"
+				<< response.SystemDateAndTime->UTCDateTime->Date->Day << " "
+				<< response.SystemDateAndTime->UTCDateTime->Time->Hour << ":"
+				<< response.SystemDateAndTime->UTCDateTime->Time->Minute << ":"
+				<< response.SystemDateAndTime->UTCDateTime->Time->Second;
+
+			return ss.str();
+		}
+
+		return std::string();
 	}
 }
