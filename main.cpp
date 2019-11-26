@@ -1,30 +1,16 @@
 #include <iostream>
 
-#include "soapStub.h"
-#include "soapDeviceBindingProxy.h"
-#include "DeviceBinding.nsmap"
+#include "device_service.h"
 
 int main()
 {
 	soap* soap = soap_new();
 
-	DeviceBindingProxy device(soap);
-	device.soap_endpoint = ("http://192.168.43.196:8000/onvif/device_service"); //testing on ONVIF HAPPY TIME SERVER
+	const char* HAPPY_TIME_SERVER = "http://192.168.43.196:8000/onvif/device_service";
 
-	_tds__GetScopes request;
-	_tds__GetScopesResponse response;
-	if (!device.GetScopes(&request, response))
-	{
-		std::cout << "Received scopes:\n";
-		for (auto it = response.Scopes.begin(); it != response.Scopes.end(); ++it)
-			std::cout << (*it)->ScopeItem << "\n";
-		
-		std::cout << "\n";
-	}
-	else
-		std::cout << "Received an error" << std::endl;
+	_onvif::DeviceService device_s(soap, HAPPY_TIME_SERVER);
 
-	device.destroy();
+	auto scopes = device_s.get_scopes();
 
 	//cleanup
 	soap_destroy(soap);

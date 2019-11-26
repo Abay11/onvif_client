@@ -20,7 +20,8 @@ add_executable(
 	"${SRCS}"
 	"${HDRS}"	
 	"${SOAP_SRCS}"
-	"${SOAP_HDRS}")
+	"${SOAP_HDRS}"	
+	)
 
 target_link_libraries(main Boost::date_time Boost::regex)
 
