@@ -21,6 +21,20 @@ namespace _onvif
 		deviceProxy.destroy();
 	}
 
+	DeviceService::Capabilities* DeviceService::get_capabilities()
+	{
+		_tds__GetCapabilities request;
+		request.Category.push_back(tt__CapabilityCategory__All);
+		_tds__GetCapabilitiesResponse response;
+
+		if (deviceProxy.GetCapabilities(&request, response))
+		{
+			
+		}
+
+		return nullptr;
+	}
+
 	std::list<std::string> DeviceService::get_scopes()
 	{
 		std::list<std::string> scopes;
