@@ -1,4 +1,4 @@
-# Please pay attention that this project just for STUDUING purposes.
+# Please pay attention that this project just for STUDYING purposes.
 !!! EXPECTECTED !!!
 
   very many BUGS
