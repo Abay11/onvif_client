@@ -11,5 +11,5 @@
   
   and many more scary words...
 
-# My attempt to do ONVIF client
+# This is my >>>ATTEMPT<<< to do ONVIF client
 ## USING CMAKE + CPP + GSOAP
