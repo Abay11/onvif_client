@@ -15,11 +15,15 @@ namespace _onvif
 		DeviceService(soap* soap, const char* endpoint);
 		~DeviceService();
 
-		std::list<std::string> get_scopes();
 		std::string get_date_time();
-
 		struct DeviceInformation;
 		DeviceInformation get_device_info();
+
+		struct Service;
+		using Services = std::vector<Service>;
+		Services get_service_addresses();
+
+		std::list<std::string> get_scopes();
 
 	public:
 		struct DeviceInformation
@@ -29,6 +33,17 @@ namespace _onvif
 			std::string firmwareVersion;
 			std::string serialNumber;
 			std::string hardwareId;
+
+			bool filled = false;
+		};
+
+		struct Service
+		{
+			std::string ns;
+			std::string xaddr;
+
+			//TODO: Filling version not implemented yet
+			std::string version;
 
 			bool filled = false;
 		};

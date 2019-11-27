@@ -1,4 +1,5 @@
 #include "..\Headers\device_service.h"
+#include "util.h"
 
 #include "DeviceBinding.nsmap"
 
@@ -77,5 +78,31 @@ namespace _onvif
 		}
 
 		return std::move(info);
+	}
+
+	DeviceService::Services DeviceService::get_service_addresses()
+	{
+		Services services;
+		
+		_tds__GetServices request;
+		request.IncludeCapability = false;
+		_tds__GetServicesResponse response;
+		if (!deviceProxy.GetServices(&request, response))
+		{
+			for (auto s : response.Service)
+			{
+				if (s)
+				{
+					Service service;
+					service.filled = true;
+					service.ns = s->Namespace;
+					service.xaddr = s->XAddr;
+					service.version = _util::onvifVersionToStr(s->Version->Major, s->Version->Minor);
+					services.push_back(service);
+				}
+			}
+		}
+
+		return std::move(services);
 	}
 }
