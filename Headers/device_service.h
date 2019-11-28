@@ -34,71 +34,57 @@ namespace _onvif
 	public:
 		struct Capabilities
 		{
-			struct Analytics
-			{
-				std::string XAddr;
-				bool rule = false;
-				bool analyticsModule = false;
-			};
 
-			struct Device
-			{
-				//System
-				std::string XAddr;
-				bool discoveryResolve = false;
-				bool systemLogging = false;
-				std::string supportedONVIFversion;
-			};
+			bool analytics_support = false;
+			std::string analytics_xaddr;
+			bool analytics_rule = false;
+			bool analytics_module = false;
 
-			struct Events
-			{
-				std::string XAddr;
-				bool WSSubscription = false;
-				bool WSPullpoint = false;
-			};
+			//System
+			bool device_info_filled = false;
+			std::string device_xaddr;
+			bool device_discovery_resolve = false;
+			bool device_system_logging = false;
+			std::vector<std::string> device_supported_versions;
 
-			struct Imaging
-			{
-				std::string XAddr;
-			};
+			//EVENTS
+			bool events_filled = false;
+			bool events_wssubstription = false;
+			bool events_wspullpoint = false;
 
-			struct Media
-			{
-				std::string XAddr;
+			//IMAGING
+			bool imaging_filled = false;
+			std::string imaging_xaddr;
 
-				//streaming caps
-				bool RTPMulticast = false;
-				bool RTP_TCP = false;
-				bool RTP_RTSP_TCP = false;
-			};
+			//MEDIA
+			bool media_filled = false;
+			std::string media_xaddr;
+			bool media_RTPMulticast = false;
+			bool media_RTP_TCP = false;
+			bool media_RTP_RTSP_TCP = false;
 
-			struct PTZ
-			{
-				std::string XAddr;
-			};
+			//PTZ
+			bool ptz_filled;
+			std::string ptz_xaddr;
 
-			struct DeviceIO
-			{
-				std::string XAddr;
-				int videoSources = 0;
-				int videoOutputs = 0;
-				int audioSources = 0;
-				int audioOutputs = 0;
-				int digitalInputs = 0;
-				int relayOutputs = 0;
-			};
+			//IO
+			bool io_filled = false;
+			std::string io_xaddr;
+			int io_videoSources = 0;
+			int io_videoOutputs = 0;
+			int io_audioSources = 0;
+			int io_audioOutputs = 0;
+			int io_digitalInputs = 0;
+			int io_relayOutputs = 0;
 
-			struct Storage
-			{
-				std::string recordingXAddr;
-				bool profileRecording = false;
-				bool receiverRecording;
-
-				std::string searchXAddr;
-				bool metadataSearch;
-
-				std::string replayXAddr;
-			};
+			//Storage
+			bool storage_filled = true;
+			std::string storage_recording_xaddr;
+			bool storage_profile_recording = false;
+			bool storage_receiverRecording = false;
+			std::string storage_search_xaddr;
+			bool storage_metadata_search = false;
+			std::string storage_replay_xaddr;
 		};
 
 		struct DeviceInformation
