@@ -77,14 +77,19 @@ namespace _onvif
 			int io_digitalInputs = 0;
 			int io_relayOutputs = 0;
 
-			//Storage
-			bool storage_filled = true;
-			std::string storage_recording_xaddr;
-			bool storage_profile_recording = false;
-			bool storage_receiverRecording = false;
-			std::string storage_search_xaddr;
-			bool storage_metadata_search = false;
-			std::string storage_replay_xaddr;
+			//***Storage***
+			//Recording
+			bool recording_filled = false;
+			std::string recording_xaddr;
+			bool recording_from_profile = false;
+			bool recording_from_receiver = false;
+			//Search
+			bool search_filled = false;
+			std::string search_xaddr;
+			bool search_metadata = false;
+			//Replay
+			bool replay_filled = false;
+			std::string replay_xaddr;
 		};
 
 		struct DeviceInformation

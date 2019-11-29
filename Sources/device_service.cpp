@@ -122,6 +122,7 @@ namespace _onvif
 				if (io)
 				{
 					caps->io_filled = true;
+					caps->io_xaddr = io->XAddr;
 					caps->io_videoSources = io->VideoSources;
 					caps->io_videoOutputs = io->VideoOutputs;
 					caps->io_audioSources = io->AudioSources;
@@ -145,9 +146,27 @@ namespace _onvif
 				auto rec = exts->Recording;
 				if (rec)
 				{
-
+					caps->recording_filled = true;
+					caps->recording_xaddr = rec->XAddr;
+					caps->recording_from_profile = rec->MediaProfileSource;
+					caps->recording_from_receiver = rec->ReceiverSource;
 				}
-			}
+
+				auto search = exts->Search;
+				if (search)
+				{
+					caps->search_filled = true;
+					caps->search_xaddr = search->XAddr;
+					caps->search_metadata = search->MetadataSearch;
+				}
+
+				auto replay = exts->Replay;
+				if (replay)
+				{
+					caps->replay_filled = true;
+					caps->replay_xaddr = replay->XAddr;
+				}
+			} //response.Capabilities->Extension
 
 			return caps;
 		}
