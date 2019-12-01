@@ -12,4 +12,4 @@
   and many more scary words...
 
 # *This is my >>>ATTEMPT<<< to do ONVIF client* and improve my skills
-## USING CMAKE + CPP + GSOAP
+## USING CMAKE + CPP + GSOAP + OPENSSL
