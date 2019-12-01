@@ -4,6 +4,7 @@
 
 #include "soapStub.h"
 #include "soapDeviceBindingProxy.h"
+#include "wsseapi.h"
 
 extern SOAP_NMAC struct Namespace namespaces[];
 
@@ -13,7 +14,7 @@ namespace _onvif
 	{
 	public:
 		/**
-		A soap context should be valid until a class object will destroy
+		A soap context should be valid until a class object will be destroyed
 		**/
 		DeviceService(soap* soap, const char* endpoint);
 		~DeviceService();
