@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 14)
 FILE(GLOB HDRS_DIR "Headers")
 FILE(GLOB SOAP_HDRS_DIR "Headers/SOAP")
 
-FILE(GLOB SOAP_SRCS "Sources/SOAP/*.cpp")
-FILE(GLOB SOAP_HDRS "Headers/SOAP/*.h")
+FILE(GLOB SOAP_SRCS "Sources/SOAP/*")
+FILE(GLOB SOAP_HDRS "Headers/SOAP/*")
 FILE(GLOB HDRS "Headers/*.h")
 FILE(GLOB SRCS "Sources/*.cpp")
 
@@ -23,8 +23,25 @@ add_executable(
 	"${SOAP_HDRS}"	
 	)
 
-target_link_libraries(main Boost::date_time Boost::regex)
+target_compile_options(main PUBLIC "-DWITH_OPENSSL" "-DWITH_DOM")
 
-include_directories(${Boost_INCLUDE_DIRS} "${HDRS_DIR}" "${SOAP_HDRS_DIR}")
+target_link_libraries(main Boost::date_time Boost::regex libeay32 ssleay32)
+
+file(COPY
+	${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSSL/bin/libeay32.dll
+	${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSSL/bin/ssleay32.dll
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+
+file(COPY
+	${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSSL/bin/libeay32.dll
+	${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSSL/bin/ssleay32.dll
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+	
+include_directories(
+	${Boost_INCLUDE_DIRS}
+	"${HDRS_DIR}"
+	"${SOAP_HDRS_DIR}"	
+	"Libs/OpenSSL/include"	
+)
 
 
