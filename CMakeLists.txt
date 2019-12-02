@@ -12,6 +12,8 @@ FILE(GLOB SOAP_HDRS "Headers/SOAP/*")
 FILE(GLOB HDRS "Headers/*.h")
 FILE(GLOB SRCS "Sources/*.cpp")
 
+set(Boost_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs/Boost/include")
+
 find_package(Boost REQUIRED date_time regex)
 
 add_executable(
