@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "device_service.h"
+#include "media_service.h"
 
 int main()
 {
@@ -12,13 +13,10 @@ int main()
 
 	const char* HAPPY_TIME_SERVER = "http://192.168.43.196:8000/onvif/device_service";
 
-	_onvif::DeviceService device_s(soap, HAPPY_TIME_SERVER);
+	_onvif::MediaService media(soap, HAPPY_TIME_SERVER);
 
-	auto info = device_s.get_device_info();
+	auto info = media.get_profiles();
 
-	//
-
-	//cleanup
 	soap_destroy(soap);
 	soap_end(soap);
 	soap_free(soap);

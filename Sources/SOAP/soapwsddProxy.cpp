@@ -91,10 +91,12 @@ void wsddProxy::wsddProxy_init(soap_mode imode, soap_mode omode)
         { "xenc", "http://www.w3.org/2001/04/xmlenc#", NULL, NULL },
         { "wsc", "http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512", "http://schemas.xmlsoap.org/ws/2005/02/sc", NULL },
         { "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd", NULL },
-        { "tt", "http://www.onvif.org/ver10/schema", NULL, NULL },
+        { "wsnt", "http://docs.oasis-open.org/wsn/b-2", NULL, NULL },
         { "xmime", "http://www.w3.org/2005/05/xmlmime", NULL, NULL },
         { "ns1", "http://www.w3.org/2004/08/xop/include", NULL, NULL },
+        { "tt", "http://www.onvif.org/ver10/schema", NULL, NULL },
         { "tds", "http://www.onvif.org/ver10/device/wsdl", NULL, NULL },
+        { "trt", "http://www.onvif.org/ver10/media/wsdl", NULL, NULL },
         { NULL, NULL, NULL, NULL}
     };
 	soap_set_namespaces(this->soap, namespaces);

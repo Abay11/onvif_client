@@ -217,6 +217,11 @@ namespace _onvif
 	{
 		DeviceInformation info;
 
+		const char* user = "admin";
+		const char* pass = "admin";
+
+		soap_context;
+
 		_tds__GetDeviceInformation request;
 		_tds__GetDeviceInformationResponse response;
 		if (!deviceProxy.GetDeviceInformation(&request, response))
