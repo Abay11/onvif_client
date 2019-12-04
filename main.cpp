@@ -11,7 +11,7 @@ int main()
 
 	soap_wsse_add_UsernameTokenDigest(soap, "Auth", "admin", "admin");
 
-	const char* HAPPY_TIME_SERVER = "http://192.168.43.196:8000/onvif/device_service";
+	const char* HAPPY_TIME_SERVER = "http://192.168.43.196:8000/onvif/media_service";
 
 	_onvif::MediaService media(soap, HAPPY_TIME_SERVER);
 

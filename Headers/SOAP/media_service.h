@@ -1,11 +1,13 @@
 #pragma once
 
+#include <list>
+#include <string>
+
 #include "soapStub.h"
 #include "soapMediaBindingProxy.h"
 #include "wsseapi.h"
 
-#include <list>
-#include <string>
+#include "types.h"
 
 extern SOAP_NMAC struct Namespace namespaces[];
 
@@ -18,7 +20,7 @@ namespace _onvif
 		~MediaService();
 
 	public:
-		std::list<std::string> get_profiles();
+		Profiles get_profiles();
 
 	private:
 		soap* soap_context;
