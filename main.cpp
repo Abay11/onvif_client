@@ -13,9 +13,11 @@ int main()
 
 	const char* HAPPY_TIME_SERVER = "http://192.168.43.196:8000/onvif/media_service";
 
-	_onvif::MediaService media(soap, HAPPY_TIME_SERVER);
+	_onvif::MediaService* media = new _onvif::MediaService(soap, HAPPY_TIME_SERVER);
 
-	auto info = media.get_profiles();
+	auto info = media->get_profile("PROFILE_000");
+
+	delete media;
 
 	soap_destroy(soap);
 	soap_end(soap);

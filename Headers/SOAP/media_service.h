@@ -21,6 +21,7 @@ namespace _onvif
 
 	public:
 		Profiles get_profiles();
+		ProfileSP get_profile(const std::string& token);
 
 	private:
 		soap* soap_context;

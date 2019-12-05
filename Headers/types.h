@@ -97,5 +97,6 @@ namespace _onvif
 		}
 	};
 
-	using Profiles = std::list<std::shared_ptr<Profile>>;
+	using ProfileSP = std::shared_ptr<Profile>;
+	using Profiles = std::list<ProfileSP>;
 }
