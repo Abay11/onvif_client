@@ -46,26 +46,29 @@ namespace _onvif
 	public:
 	};
 
-	struct AudioEncoderConfiguration
+	class AudioEncoderConfiguration : public BaseConfiguration
 	{
+	public:
 		AudioEncoding encoding;
 		int bitrate;
 		int sampleRate;
 	};
 
-	struct VideoAnalyticsConfiguration
+	class VideoAnalyticsConfiguration : public BaseConfiguration
 	{
+	public:
 		//TODO
 	};
 	
-	struct PTZConfiguration
+	class PTZConfiguration : public BaseConfiguration
 	{
+	public:
 		std::string nodeToken;
 	};
 
-	struct MetadataConfiguration
+	class MetadataConfiguration : public BaseConfiguration
 	{
-		//TODO	
+	public:
 	};
 
 	struct Profile
@@ -95,5 +98,4 @@ namespace _onvif
 	};
 
 	using Profiles = std::list<std::shared_ptr<Profile>>;
-
 }

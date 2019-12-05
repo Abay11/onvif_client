@@ -38,6 +38,39 @@ void soapProfileToProfile(const tt__Profile& gp, _onvif::Profile& p)
 		p.audioSource->token = gp.AudioEncoderConfiguration->token;
 		p.audioSource->useCount = gp.AudioEncoderConfiguration->UseCount;
 	}
+
+	if (gp.AudioEncoderConfiguration)
+	{
+		p.audioEncoder = new _onvif::AudioEncoderConfiguration;
+
+		p.audioEncoder->name = gp.AudioEncoderConfiguration->Name;
+		p.audioEncoder->token = gp.AudioEncoderConfiguration->token;
+		p.audioEncoder->useCount = gp.AudioEncoderConfiguration->UseCount;
+
+		//the order of encoding should be the same as in the gSoap struct
+		p.audioEncoder->encoding = static_cast<_onvif::AudioEncoding>(gp.AudioEncoderConfiguration->Encoding);
+		p.audioEncoder->bitrate = gp.AudioEncoderConfiguration->Bitrate;
+		p.audioEncoder->sampleRate = gp.AudioEncoderConfiguration->SampleRate;
+	}
+
+	if (gp.PTZConfiguration)
+	{
+		p.ptz = new _onvif::PTZConfiguration;
+
+		p.ptz->name = gp.PTZConfiguration->Name;
+		p.ptz->token = gp.PTZConfiguration->token;
+		p.ptz->nodeToken = gp.PTZConfiguration->NodeToken;
+		p.ptz->useCount = gp.PTZConfiguration->UseCount;
+	}
+
+	if (gp.MetadataConfiguration)
+	{
+		p.metadata = new _onvif::MetadataConfiguration;
+
+		p.metadata->name = gp.MetadataConfiguration->Name;
+		p.metadata->token = gp.MetadataConfiguration->token;
+		p.metadata->useCount = gp.MetadataConfiguration->UseCount;
+	}
 }
 
 namespace _onvif
