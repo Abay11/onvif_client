@@ -22,6 +22,7 @@ namespace _onvif
 	public:
 		Profiles get_profiles();
 		ProfileSP get_profile(const std::string& token);
+		std::string get_stream_uri(const std::string& profileToken, StreamType type = Unicast, TransportProtocol transport = UDP);
 
 	private:
 		soap* soap_context;

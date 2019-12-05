@@ -126,4 +126,23 @@ namespace _onvif
 
 		return profile;
 	}
+	
+	std::string MediaService::get_stream_uri(const std::string& profileToken, StreamType type, TransportProtocol transport)
+	{
+		std::string result_uri;
+
+		_trt__GetStreamUri request;
+		request.ProfileToken = profileToken;
+		request.StreamSetup = soap_new_tt__StreamSetup(soap_context);
+		request.StreamSetup->Stream = static_cast<tt__StreamType>(type);
+		request.StreamSetup->Transport = soap_new_tt__Transport(soap_context);
+		request.StreamSetup->Transport->Protocol = static_cast<tt__TransportProtocol>(transport);
+		_trt__GetStreamUriResponse response;
+		if (!mediaProxy.GetStreamUri(&request, response) && response.MediaUri)
+		{
+			result_uri = response.MediaUri->Uri;
+		}
+
+		return result_uri;
+	}
 }

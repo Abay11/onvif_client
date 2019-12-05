@@ -21,6 +21,20 @@ namespace _onvif
 		AAC
 	};
 
+	enum StreamType
+	{
+		Unicast = 0,
+		Multicase = 1
+	};
+
+	enum TransportProtocol
+	{
+		UDP = 0,
+		TCP = 1,
+		RTSP = 2,
+		HTTP = 3
+	};
+
 	class BaseConfiguration
 	{
 	public:

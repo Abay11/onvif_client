@@ -15,9 +15,7 @@ int main()
 
 	_onvif::MediaService* media = new _onvif::MediaService(soap, HAPPY_TIME_SERVER);
 
-	auto info = media->get_profile("PROFILE_000");
-
-	delete media;
+	auto info = media->get_stream_uri("PROFILE_000");
 
 	soap_destroy(soap);
 	soap_end(soap);
