@@ -1,5 +1,8 @@
 #include "..\Headers\device.h"
 
+#include "device_service.h"
+#include "media_service.h"
+
 #include <iostream>
 
 namespace _onvif
@@ -11,9 +14,23 @@ namespace _onvif
 
 	}
 
+	Device::~Device()
+	{
+		soap_destroy(soap_context);
+		soap_end(soap_context);
+		soap_free(soap_context);
+	}
+
 	void Device::Init()
 	{
-		std::cout << "Init" << std::endl;
+		soap_context = soap_new();
+		soap_register_plugin(soap_context, soap_wsse);
+	}
+
+	void Device::SetCreds(const char* login, const char* pass)
+	{
+		login_ = login;
+		pass_ = pass;
 	}
 
 	void Device::StartLive()
