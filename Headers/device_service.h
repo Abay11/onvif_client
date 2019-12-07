@@ -6,6 +6,9 @@
 #include "soapDeviceBindingProxy.h"
 #include "wsseapi.h"
 
+#include <string>
+#include <list>
+
 extern SOAP_NMAC struct Namespace namespaces[];
 
 namespace _onvif
@@ -16,7 +19,7 @@ namespace _onvif
 		/**
 		A soap context should be valid until a class object will be destroyed
 		**/
-		DeviceService(soap* soap, const char* endpoint);
+		DeviceService(soap* soap, const std::string& endpoint);
 		~DeviceService();
 
 		struct Capabilities;
@@ -119,6 +122,6 @@ namespace _onvif
 		soap* soap_context;
 		DeviceBindingProxy deviceProxy;
 
-		char endpoint_reference[128];
+		std::string endpoint_reference_;
 	};
 }

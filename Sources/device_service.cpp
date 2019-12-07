@@ -8,12 +8,12 @@
 
 namespace _onvif
 {
-	DeviceService::DeviceService(soap* soap, const char* endpoint)
+	DeviceService::DeviceService(soap* soap, const std::string& endpoint)
 		:soap_context(soap),
-		deviceProxy(soap_context)
+		deviceProxy(soap_context),
+		endpoint_reference_(endpoint)
 	{
-		strcpy(endpoint_reference, endpoint);
-		deviceProxy.soap_endpoint = endpoint_reference;
+		deviceProxy.soap_endpoint = endpoint_reference_.c_str();
 	}
 
 	DeviceService::~DeviceService()
