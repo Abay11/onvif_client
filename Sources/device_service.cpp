@@ -21,7 +21,7 @@ namespace _onvif
 		deviceProxy.destroy();
 	}
 
-	DeviceService::Capabilities* DeviceService::get_capabilities()
+	Capabilities* DeviceService::get_capabilities()
 	{
 		_tds__GetCapabilities request;
 		request.Category.push_back(tt__CapabilityCategory__All);
@@ -30,7 +30,7 @@ namespace _onvif
 		if (!deviceProxy.GetCapabilities(&request, response)
 			&& response.Capabilities)
 		{
-			DeviceService::Capabilities* caps = new Capabilities;
+			Capabilities* caps = new Capabilities;
 
 			if (response.Capabilities->Analytics)
 			{
