@@ -76,6 +76,8 @@ namespace _onvif
 		std::string replay_xaddr;
 	};
 
+	using CapabilitiesSP = std::shared_ptr<Capabilities>;
+
 	enum VideoEncoding
 	{
 		//value and sequence should be the same

@@ -17,6 +17,6 @@ namespace _onvif
 	
 	protected:		
 		Services services_;
-		Capabilities* capabilities_;
+		CapabilitiesSP capabilities_;
 	};
 }

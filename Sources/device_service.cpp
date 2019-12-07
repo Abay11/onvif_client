@@ -21,8 +21,10 @@ namespace _onvif
 		deviceProxy.destroy();
 	}
 
-	Capabilities* DeviceService::get_capabilities()
+	CapabilitiesSP DeviceService::get_capabilities()
 	{
+		CapabilitiesSP caps;
+
 		_tds__GetCapabilities request;
 		request.Category.push_back(tt__CapabilityCategory__All);
 		_tds__GetCapabilitiesResponse response;
@@ -30,7 +32,7 @@ namespace _onvif
 		if (!deviceProxy.GetCapabilities(&request, response)
 			&& response.Capabilities)
 		{
-			Capabilities* caps = new Capabilities;
+			caps = std::make_shared<Capabilities>();
 
 			if (response.Capabilities->Analytics)
 			{
@@ -167,11 +169,9 @@ namespace _onvif
 					caps->replay_xaddr = replay->XAddr;
 				}
 			} //response.Capabilities->Extension
-
-			return caps;
 		}
 
-		return nullptr;
+		return caps;
 	}
 
 	std::list<std::string> DeviceService::get_scopes()

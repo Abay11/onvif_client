@@ -22,7 +22,7 @@ namespace _onvif
 		DeviceService(soap* soap, const std::string& endpoint);
 		~DeviceService();
 
-		Capabilities* get_capabilities();
+		CapabilitiesSP get_capabilities();
 
 		std::string get_date_time();
 		struct DeviceInformation;
