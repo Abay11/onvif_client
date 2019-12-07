@@ -2,9 +2,21 @@
 
 #include <string>
 #include <memory>
+#include <vector>
+#include <list>
 
 namespace _onvif
 {
+	struct Service
+	{
+		std::string ns;
+		std::string xaddr;
+		std::string version;
+	};
+
+	using ServiceSP = std::shared_ptr<Service>;
+	using Services = std::vector<ServiceSP>;
+
 	enum VideoEncoding
 	{
 		//value and sequence should be the same

@@ -238,7 +238,7 @@ namespace _onvif
 		return std::move(info);
 	}
 
-	DeviceService::Services DeviceService::get_service_addresses()
+	Services DeviceService::get_service_addresses()
 	{
 		Services services;
 		
@@ -251,11 +251,10 @@ namespace _onvif
 			{
 				if (s)
 				{
-					Service service;
-					service.filled = true;
-					service.ns = s->Namespace;
-					service.xaddr = s->XAddr;
-					service.version = _util::onvifVersionToStr(s->Version->Major, s->Version->Minor);
+					ServiceSP service = std::make_shared<Service>();
+					service->ns = s->Namespace;
+					service->xaddr = s->XAddr;
+					service->version = _util::onvifVersionToStr(s->Version->Major, s->Version->Minor);
 					services.push_back(service);
 				}
 			}

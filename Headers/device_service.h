@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include "types.h"
 
 #include "soapStub.h"
 #include "soapDeviceBindingProxy.h"
@@ -29,8 +29,6 @@ namespace _onvif
 		struct DeviceInformation;
 		DeviceInformation get_device_info();
 
-		struct Service;
-		using Services = std::vector<Service>;
 		Services get_service_addresses();
 
 		std::list<std::string> get_scopes();
@@ -103,17 +101,6 @@ namespace _onvif
 			std::string firmwareVersion;
 			std::string serialNumber;
 			std::string hardwareId;
-
-			bool filled = false;
-		};
-
-		struct Service
-		{
-			std::string ns;
-			std::string xaddr;
-
-			//TODO: Filling version not implemented yet
-			std::string version;
 
 			bool filled = false;
 		};
