@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDevice.h"
+#include "types.h"
 
 #include <string>
 
@@ -8,6 +9,8 @@
 
 namespace _onvif
 {
+	class DeviceService;
+
 	class Device : public IDevice
 	{
 	public:
@@ -22,11 +25,11 @@ namespace _onvif
 
 	private:
 		std::string endpoint_;
-		short port_;
 		std::string login_;
 		std::string pass_;
 
-		soap* soap_context;
+		soap* soap_context_;
+		DeviceService* device_service_;
 	};
 
 }

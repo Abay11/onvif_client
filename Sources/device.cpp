@@ -4,27 +4,37 @@
 #include "media_service.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace _onvif
 {
 	Device::Device(const std::string& endpoint, short port)
-		: endpoint_(endpoint),
-		port_(port)
 	{
-
+		std::stringstream ss;
+		ss << endpoint << ":" << port;
+		endpoint_ = ss.str();
 	}
 
 	Device::~Device()
 	{
-		soap_destroy(soap_context);
-		soap_end(soap_context);
-		soap_free(soap_context);
+		soap_destroy(soap_context_);
+		soap_end(soap_context_);
+		soap_free(soap_context_);
 	}
 
 	void Device::Init()
 	{
-		soap_context = soap_new();
-		soap_register_plugin(soap_context, soap_wsse);
+		soap_context_ = soap_new();
+		soap_register_plugin(soap_context_, soap_wsse);
+		
+		std::stringstream device_address;
+		device_address << "http://" << endpoint_ << "/onvif/device_service";
+
+		device_service_ = new DeviceService(soap_context_, device_address.str());
+
+		services_ = device_service_->get_service_addresses();
+
+		capabilities_ = device_service_->get_capabilities();
 	}
 
 	void Device::SetCreds(const char* login, const char* pass)
