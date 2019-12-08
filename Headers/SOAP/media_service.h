@@ -16,7 +16,7 @@ namespace _onvif
 	class MediaService
 	{
 	public:
-		MediaService(soap* soap, const char* endpoint);
+		MediaService(soap* soap, const std::string& service_addr);
 		~MediaService();
 
 	public:
@@ -28,6 +28,6 @@ namespace _onvif
 		soap* soap_context;
 		MediaBindingProxy mediaProxy;
 
-		char endpoint_reference[128];
+		std::string service_addr_;
 	};
 }

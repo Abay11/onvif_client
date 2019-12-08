@@ -75,12 +75,12 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 
 namespace _onvif
 {
-	MediaService::MediaService(soap* soap, const char* endpoint)
+	MediaService::MediaService(soap* soap, const std::string& service_addr)
 		:soap_context(soap),
-		mediaProxy(soap_context)
+		mediaProxy(soap_context),
+		service_addr_(service_addr)
 	{
-		strcpy(endpoint_reference, endpoint);
-		mediaProxy.soap_endpoint = endpoint_reference;
+		mediaProxy.soap_endpoint = service_addr_.c_str();
 	}
 
 	MediaService::~MediaService()
@@ -94,7 +94,8 @@ namespace _onvif
 
 		_trt__GetProfiles request;
 		_trt__GetProfilesResponse response;
-		if (!mediaProxy.GetProfiles(&request, response))
+
+		if (mediaProxy.GetProfiles(&request, response) == SOAP_OK)
 		{
 			for (auto gprofile : response.Profiles)
 			{
@@ -106,7 +107,7 @@ namespace _onvif
 				}
 			}
 		}
-
+		
 		return profiles;
 	}
 
