@@ -10,6 +10,7 @@
 namespace _onvif
 {
 	class DeviceService;
+	class MediaService;
 
 	class Device : public IDevice
 	{
@@ -30,6 +31,6 @@ namespace _onvif
 
 		soap* soap_context_;
 		DeviceService* device_service_;
+		MediaService* media_service_;
 	};
-
 }

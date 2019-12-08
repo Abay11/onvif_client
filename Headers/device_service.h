@@ -29,6 +29,7 @@ namespace _onvif
 		DeviceInformation get_device_info();
 
 		Services get_service_addresses();
+		static std::string get_service_address(const Services* services, const char* service_namespace);
 
 		std::list<std::string> get_scopes();
 

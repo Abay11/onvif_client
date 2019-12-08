@@ -17,6 +17,9 @@ namespace _onvif
 
 	Device::~Device()
 	{
+		delete device_service_;
+		delete media_service_;
+
 		soap_destroy(soap_context_);
 		soap_end(soap_context_);
 		soap_free(soap_context_);
@@ -26,15 +29,19 @@ namespace _onvif
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
+		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
 		
 		std::stringstream device_address;
 		device_address << "http://" << endpoint_ << "/onvif/device_service";
 
 		device_service_ = new DeviceService(soap_context_, device_address.str());
 
+		capabilities_ = device_service_->get_capabilities();
+		
 		services_ = device_service_->get_service_addresses();
 
-		capabilities_ = device_service_->get_capabilities();
+		std::string addr = DeviceService::get_service_address(&services_, MEDIA_SERVICE_NS);
+		media_service_ = new MediaService(soap_context_, addr);
 	}
 
 	void Device::SetCreds(const char* login, const char* pass)

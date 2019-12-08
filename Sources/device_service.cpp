@@ -262,4 +262,17 @@ namespace _onvif
 
 		return std::move(services);
 	}
+	
+	std::string DeviceService::get_service_address(const Services* services, const char* service_namespace)
+	{
+		std::string media_service_address;
+
+		for (const auto s : *services)
+		{
+			if (s && s->ns == service_namespace)
+				media_service_address = s->xaddr;
+		}
+
+		return media_service_address;
+	}
 }
