@@ -7,6 +7,19 @@
 
 namespace _onvif
 {
+	//namespaces
+	extern const char* DEVICE_SERVICE_NS;
+	extern const char* MEDIA_SERVICE_NS;
+	extern const char* MEDIA2_SERVICE_NS;
+	extern const char* EVENTS_SERVICE_NS;
+	extern const char* PTZ_SERVICE_NS;
+	extern const char* IMAGING_SERVICE_NS;
+	extern const char* ANALYTICS_SERVICE_NS;
+	extern const char* RECORDING_SERVICE_NS;
+	extern const char* SEARCH_SERVICE_NS;
+	extern const char* REPLAY_SERVICE_NS;
+	extern const char* DEVICEIO_SERVICE_NS;
+
 	struct Service
 	{
 		std::string ns;
