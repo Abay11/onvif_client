@@ -16,18 +16,19 @@ set(Boost_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs/Boost/include")
 
 find_package(Boost REQUIRED date_time regex)
 
-add_executable(
-	main
-	main.cpp
+#FILE(globOpenSLL_LIBS "${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSLL/lib/*")
+
+add_library(
+	libonvif SHARED	
 	"${SRCS}"
 	"${HDRS}"	
 	"${SOAP_SRCS}"
 	"${SOAP_HDRS}"	
 	)
 
-target_compile_options(main PUBLIC "-DWITH_OPENSSL" "-DWITH_DOM")
+target_compile_options(libonvif PUBLIC "-DWITH_OPENSSL" "-DWITH_DOM")
 
-target_link_libraries(main Boost::date_time Boost::regex libeay32 ssleay32)
+target_link_libraries(libonvif Boost::date_time Boost::regex libeay32 ssleay32)
 
 file(COPY
 	${CMAKE_CURRENT_SOURCE_DIR}/Libs/OpenSSL/bin/libeay32.dll
