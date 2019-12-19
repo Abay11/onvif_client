@@ -3,13 +3,10 @@
 #include <list>
 #include <string>
 
-#include "soapStub.h"
-#include "soapMediaBindingProxy.h"
-#include "wsseapi.h"
-
 #include "types.h"
 
-extern SOAP_NMAC struct Namespace namespaces[];
+struct soap;
+class MediaBindingProxy;
 
 namespace _onvif
 {
@@ -26,7 +23,7 @@ namespace _onvif
 
 	private:
 		soap* soap_context;
-		MediaBindingProxy mediaProxy;
+		MediaBindingProxy* mediaProxy;
 
 		std::string service_addr_;
 	};

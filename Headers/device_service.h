@@ -2,14 +2,11 @@
 
 #include "types.h"
 
-#include "soapStub.h"
-#include "soapDeviceBindingProxy.h"
-#include "wsseapi.h"
-
 #include <string>
 #include <list>
 
-extern SOAP_NMAC struct Namespace namespaces[];
+struct soap;
+class DeviceBindingProxy;
 
 namespace _onvif
 {
@@ -47,7 +44,7 @@ namespace _onvif
 
 	private:
 		soap* soap_context;
-		DeviceBindingProxy deviceProxy;
+		DeviceBindingProxy* deviceProxy;
 
 		std::string endpoint_reference_;
 	};

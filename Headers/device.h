@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "soapStub.h"
+struct soap;
 
 namespace _onvif
 {

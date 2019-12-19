@@ -2,23 +2,28 @@
 #include "util.h"
 
 #include "DeviceBinding.nsmap"
+#include "soapStub.h"
+#include "soapDeviceBindingProxy.h"
+#include "wsseapi.h"
 
 #include <algorithm>
 #include <sstream>
+
+extern SOAP_NMAC struct Namespace namespaces[];
 
 namespace _onvif
 {
 	DeviceService::DeviceService(soap* soap, const std::string& endpoint)
 		:soap_context(soap),
-		deviceProxy(soap_context),
+		deviceProxy(new DeviceBindingProxy(soap_context)),
 		endpoint_reference_(endpoint)
 	{
-		deviceProxy.soap_endpoint = endpoint_reference_.c_str();
+		deviceProxy->soap_endpoint = endpoint_reference_.c_str();
 	}
 
 	DeviceService::~DeviceService()
 	{
-		deviceProxy.destroy();
+		deviceProxy->destroy();
 	}
 
 	CapabilitiesSP DeviceService::get_capabilities()
@@ -29,7 +34,7 @@ namespace _onvif
 		request.Category.push_back(tt__CapabilityCategory__All);
 		_tds__GetCapabilitiesResponse response;
 
-		if (!deviceProxy.GetCapabilities(&request, response)
+		if (!deviceProxy->GetCapabilities(&request, response)
 			&& response.Capabilities)
 		{
 			caps = std::make_shared<Capabilities>();
@@ -181,7 +186,7 @@ namespace _onvif
 		_tds__GetScopes request;
 		_tds__GetScopesResponse response;
 
-		if (!deviceProxy.GetScopes(&request, response))
+		if (!deviceProxy->GetScopes(&request, response))
 		{
 			for (auto it : response.Scopes)
 				scopes.push_back(it->ScopeItem);
@@ -193,7 +198,7 @@ namespace _onvif
 	{
 		_tds__GetSystemDateAndTime request;
 		_tds__GetSystemDateAndTimeResponse response;
-		if (!deviceProxy.GetSystemDateAndTime(&request, response)
+		if (!deviceProxy->GetSystemDateAndTime(&request, response)
 			&& response.SystemDateAndTime
 			&& response.SystemDateAndTime->UTCDateTime
 			&& response.SystemDateAndTime->UTCDateTime->Date
@@ -224,7 +229,7 @@ namespace _onvif
 
 		_tds__GetDeviceInformation request;
 		_tds__GetDeviceInformationResponse response;
-		if (!deviceProxy.GetDeviceInformation(&request, response))
+		if (!deviceProxy->GetDeviceInformation(&request, response))
 		{
 			info.filled = true;
 			
@@ -245,7 +250,7 @@ namespace _onvif
 		_tds__GetServices request;
 		request.IncludeCapability = false;
 		_tds__GetServicesResponse response;
-		if (!deviceProxy.GetServices(&request, response))
+		if (!deviceProxy->GetServices(&request, response))
 		{
 			for (auto s : response.Service)
 			{

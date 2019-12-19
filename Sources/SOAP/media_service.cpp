@@ -1,6 +1,12 @@
 #include "media_service.h"
 
+#include "soapStub.h"
+#include "soapMediaBindingProxy.h"
+#include "wsseapi.h"
+
 #include <list>
+
+extern SOAP_NMAC struct Namespace namespaces[];
 
 //help to copy data from gSoap type Profile
 //to our type Profile
@@ -77,15 +83,15 @@ namespace _onvif
 {
 	MediaService::MediaService(soap* soap, const std::string& service_addr)
 		:soap_context(soap),
-		mediaProxy(soap_context),
+		mediaProxy(new MediaBindingProxy(soap_context)),
 		service_addr_(service_addr)
 	{
-		mediaProxy.soap_endpoint = service_addr_.c_str();
+		mediaProxy->soap_endpoint = service_addr_.c_str();
 	}
 
 	MediaService::~MediaService()
 	{
-		mediaProxy.destroy();
+		mediaProxy->destroy();
 	}
 
 	Profiles MediaService::get_profiles()
@@ -95,7 +101,7 @@ namespace _onvif
 		_trt__GetProfiles request;
 		_trt__GetProfilesResponse response;
 
-		if (mediaProxy.GetProfiles(&request, response) == SOAP_OK)
+		if (mediaProxy->GetProfiles(&request, response) == SOAP_OK)
 		{
 			for (auto gprofile : response.Profiles)
 			{
@@ -117,7 +123,7 @@ namespace _onvif
 		_trt__GetProfile request;
 		request.ProfileToken = token;
 		_trt__GetProfileResponse response;
-		if (!mediaProxy.GetProfile(&request, response))
+		if (!mediaProxy->GetProfile(&request, response))
 		{
 			if (response.Profile)
 			{
@@ -139,7 +145,7 @@ namespace _onvif
 		request.StreamSetup->Transport = soap_new_tt__Transport(soap_context);
 		request.StreamSetup->Transport->Protocol = static_cast<tt__TransportProtocol>(transport);
 		_trt__GetStreamUriResponse response;
-		if (!mediaProxy.GetStreamUri(&request, response) && response.MediaUri)
+		if (!mediaProxy->GetStreamUri(&request, response) && response.MediaUri)
 		{
 			result_uri = response.MediaUri->Uri;
 		}

@@ -3,6 +3,9 @@
 #include "device_service.h"
 #include "media_service.h"
 
+#include "soapStub.h"
+#include "wsseapi.h"
+
 #include <iostream>
 #include <sstream>
 
