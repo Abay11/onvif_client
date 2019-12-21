@@ -4,6 +4,8 @@ project(ONVIF_CLIENT)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS YES)
+
 FILE(GLOB HDRS_DIR "Headers")
 FILE(GLOB SOAP_HDRS_DIR "Headers/SOAP")
 
@@ -17,7 +19,7 @@ set(Boost_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs/Boost/include")
 find_package(Boost REQUIRED date_time regex)
 
 add_library(
-	libonvif SHARED	
+	libonvif SHARED
 	"${SRCS}"
 	"${HDRS}"	
 	"${SOAP_SRCS}"
