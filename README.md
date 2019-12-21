@@ -16,6 +16,7 @@
 
 Currect Project's directories
 
+```
 +onvif_c		
 	|
 	|_ +Driver
@@ -39,3 +40,4 @@ Currect Project's directories
 			|_ +bin
 			|_ +include
 			|_ +lib
+```
