@@ -17,7 +17,7 @@
 Currect Project's directories
 
 ```
-+onvif_c		
++onvif_client		
 	|
 	|_ +Driver
 		|_ +Builds
