@@ -30,3 +30,11 @@ short AddDeviceDialog::getPort()
 
     return 0;
 }
+
+std::string AddDeviceDialog::getURI()
+{
+    if(ui)
+        return ui->leURI->text().toStdString();
+
+    return std::string("");
+}
