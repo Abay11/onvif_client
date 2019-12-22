@@ -15,7 +15,7 @@ namespace _onvif
 	{
 		std::stringstream ss;
 		ss << endpoint << ":" << port;
-		endpoint_ = ss.str();
+		ip_ = ss.str();
 	}
 
 	Device::~Device()
@@ -35,7 +35,7 @@ namespace _onvif
 		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
 		
 		std::stringstream device_address;
-		device_address << "http://" << endpoint_ << "/onvif/device_service";
+		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
 
 		device_service_ = new DeviceService(soap_context_, device_address.str());
 
@@ -45,6 +45,13 @@ namespace _onvif
 
 		std::string addr = DeviceService::get_service_address(&services_, MEDIA_SERVICE_NS);
 		media_service_ = new MediaService(soap_context_, addr);
+	}
+
+	void Device::SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI)
+	{
+		ip_ = ip;
+		port_ = port;
+		device_service_uri_ = deviceServiceURI;
 	}
 
 	void Device::SetCreds(const char* login, const char* pass)

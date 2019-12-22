@@ -20,15 +20,12 @@ namespace _onvif
 
 		//IDevice
 		virtual void Init();
+		virtual void SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI);
 		virtual void SetCreds(const char* login, const char* pass);
 		virtual void StartLive();
 		virtual void StopLive();
 
 	private:
-		std::string endpoint_;
-		std::string login_;
-		std::string pass_;
-
 		soap* soap_context_;
 		DeviceService* device_service_;
 		MediaService* media_service_;
