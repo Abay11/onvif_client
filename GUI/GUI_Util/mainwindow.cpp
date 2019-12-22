@@ -5,6 +5,8 @@
 #include "DevicesManager.h"
 #include "device.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -14,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
    connect(ui->btnAddDevice, &QPushButton::clicked, this, &MainWindow::slotAddDeviceClicked);
    connect(this, &MainWindow::sigAddDevice, devicesMgr, &DevicesManager::slotAddDevice);
+   connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
 }
 
 MainWindow::~MainWindow()
@@ -38,9 +41,10 @@ void MainWindow::slotAddDeviceDialogFinished()
     {
         auto ip = addDeviceDialog->getIP();
         auto port = addDeviceDialog->getPort();
-        if(!ip.empty() && port)
+        auto uri = addDeviceDialog->getURI();
+        if(!ip.empty() && port && !uri.empty())
         {
-            emit sigAddDevice(ip, port);
+            emit sigAddDevice(ip, port, uri);
         }
         else
         {
@@ -48,5 +52,12 @@ void MainWindow::slotAddDeviceDialogFinished()
         }
 
     }
+}
+
+void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
+{
+    QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);
+    newDevice->setText(deviceAddresses);
+    ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
 }
 

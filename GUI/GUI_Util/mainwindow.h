@@ -24,10 +24,16 @@ private:
     AddDeviceDialog* addDeviceDialog = nullptr;
 
 signals:
-    void sigAddDevice(std::string, short);
+    void sigAddDevice(std::string ip, short port, std::string uri);
 
 private slots:
+    //emitted by the button AddDevice
     void slotAddDeviceClicked();
+
+    //emitted by AddDeviceDialog after finished
     void slotAddDeviceDialogFinished();
+
+    //emitted by DevicesManager when a new device configured
+    void slotNewDeviceAdded(QString deviceAddresses);
 };
 #endif // MAINWINDOW_H

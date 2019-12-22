@@ -2,13 +2,22 @@
 
 #include <QDebug>
 #include <QString>
+#include <QTextStream>
 
-void DevicesManager::slotAddDevice(std::string ip, short port)
+#include "device.h"
+
+void DevicesManager::slotAddDevice(std::string ip, short port, std::string deviceServiceURI)
 {
-    qDebug() << QString("Adding a new device ip: %1 port: %2").arg(ip.c_str()).arg(port);
-    //do adding a new device
+    qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip.c_str()).arg(port).arg(deviceServiceURI.c_str());
 
-    //using namespace _onvif;
-    //IDevice* device = new Device("192.168.43.196", 8000);
-    //device->Init();
+    using namespace _onvif;
+    IDevice* device = new Device(ip, port);
+    device->Init();
+
+    devices.push_back(device);
+
+    QString deviceInfo;
+    QTextStream stream(&deviceInfo);
+    stream << ip.c_str() << ":" << port;
+    sigNewDeviceAdded(deviceInfo);
 }
