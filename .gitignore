@@ -1,3 +1,6 @@
 build/
-GUI/
+GUI/.vs/
+GUI/build*
+GUI/GUIEmulator*
+GUI/*/*.user
 Driver/Builds/
