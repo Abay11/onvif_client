@@ -7,6 +7,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class DevicesManager;
+class AddDeviceDialog;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,5 +20,14 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    DevicesManager* devicesMgr;
+    AddDeviceDialog* addDeviceDialog = nullptr;
+
+signals:
+    void sigAddDevice(std::string, short);
+
+private slots:
+    void slotAddDeviceClicked();
+    void slotAddDeviceDialogFinished();
 };
 #endif // MAINWINDOW_H

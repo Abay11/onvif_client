@@ -20,6 +20,11 @@ add_executable(GUI_Util
   mainwindow.cpp
   mainwindow.h
   mainwindow.ui
+  adddevicedialog.cpp
+  adddevicedialog.h
+  adddevicedialog.ui
+  DevicesManager.cpp
+  DevicesManager.h
 )
 
 include_directories("${ROOT_DIR}/Driver/Headers")
