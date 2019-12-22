@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+get_filename_component(ROOT_DIR "../../" ABSOLUTE)
+
 add_executable(GUI_Util
   main.cpp
   mainwindow.cpp
@@ -20,4 +22,11 @@ add_executable(GUI_Util
   mainwindow.ui
 )
 
-target_link_libraries(GUI_Util PRIVATE Qt5::Widgets)
+include_directories("${ROOT_DIR}/Driver/Headers")
+target_link_libraries(GUI_Util PRIVATE Qt5::Widgets "${ROOT_DIR}/Driver/Builds/Debug/libonvif.lib")
+
+file(COPY
+        "${ROOT_DIR}/Driver/Builds/Debug/libonvif.dll"
+        "${ROOT_DIR}/Libs/OpenSSL/bin/libeay32.dll"
+        "${ROOT_DIR}/Libs/OpenSSL/bin/ssleay32.dll"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
