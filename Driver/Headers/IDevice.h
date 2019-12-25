@@ -18,6 +18,11 @@ namespace _onvif
 		virtual void StartLive() = 0;
 
 		virtual void StopLive() = 0;
+
+		std::string getIP() { return ip_; }
+		short getPort() { return port_; };
+
+		const CapabilitiesSP getCapabilities() const { return capabilities_; };
 	
 	protected:		
 		Services services_;
