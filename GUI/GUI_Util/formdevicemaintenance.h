@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "types.h"
+
 namespace Ui {
 class FormDeviceMaintenance;
 }
@@ -14,6 +16,8 @@ class FormDeviceMaintenance : public QWidget
 public:
     explicit FormDeviceMaintenance(QWidget *parent = nullptr);
     ~FormDeviceMaintenance();
+
+    void fillInfo(const _onvif::CapabilitiesSP);
 
 private:
     Ui::FormDeviceMaintenance *ui;
