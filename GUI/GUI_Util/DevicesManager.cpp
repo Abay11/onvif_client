@@ -21,3 +21,17 @@ void DevicesManager::slotAddDevice(std::string ip, short port, std::string devic
     stream << ip.c_str() << ":" << port;
     sigNewDeviceAdded(deviceInfo);
 }
+
+const _onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
+{
+    auto parsedInfo = addressInfo.split(":");
+    if(parsedInfo.size() != 2) return nullptr;
+
+    std::string ip = parsedInfo.first().toStdString();
+    short port = parsedInfo.back().toShort();
+
+    foreach (auto* device, devices)
+      if(device->getIP() == ip && device->getPort() == port) return device;
+
+    return nullptr;
+}
