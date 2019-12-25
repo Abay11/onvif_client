@@ -13,9 +13,8 @@ namespace _onvif
 {
 	Device::Device(const std::string& endpoint, short port)
 	{
-		std::stringstream ss;
-		ss << endpoint << ":" << port;
-		ip_ = ss.str();
+		ip_ = endpoint;
+		port_ = port;
 	}
 
 	Device::~Device()
