@@ -25,6 +25,9 @@ add_executable(GUI_Util
   adddevicedialog.ui
   DevicesManager.cpp
   DevicesManager.h
+  FormDeviceMaintenance.cpp
+  FormDeviceMaintenance.h
+  FormDeviceMaintenance.ui
 )
 
 include_directories("${ROOT_DIR}/Driver/Headers")
