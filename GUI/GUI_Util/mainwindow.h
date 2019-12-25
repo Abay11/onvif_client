@@ -35,5 +35,8 @@ private slots:
 
     //emitted by DevicesManager when a new device configured
     void slotNewDeviceAdded(QString deviceAddresses);
+
+    //slots to handle a device functionality
+    void slotMaintenanceClicked();
 };
 #endif // MAINWINDOW_H
