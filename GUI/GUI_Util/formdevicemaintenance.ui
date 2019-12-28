@@ -17,7 +17,7 @@
    <item>
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageDeviceInfo">
       <property name="geometry">
@@ -37,35 +37,70 @@
          <item row="0" column="0">
           <widget class="QLabel" name="lblManufacturer">
            <property name="text">
-            <string>Manufacturer </string>
+            <string>Manufacturer:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lblManufacturerValue">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblModel">
            <property name="text">
-            <string>Model </string>
+            <string>Model:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lblModelValue">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="lblFirmware">
            <property name="text">
-            <string>Firmware version </string>
+            <string>Firmware version:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="lblFirmwareValue">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="lblSerial">
            <property name="text">
-            <string>Serial number </string>
+            <string>Serial number:</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="lblHardware">
            <property name="text">
-            <string>Hardware ID</string>
+            <string>Hardware ID:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="lblSerialValue">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="lblHardwareValue">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
@@ -91,21 +126,21 @@
          <item row="0" column="0">
           <widget class="QLabel" name="lblonvifVersion">
            <property name="text">
-            <string>ONVIF version</string>
+            <string>ONVIF version:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblMedia2Support">
            <property name="text">
-            <string>Media2 support</string>
+            <string>Media2 support:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="lblDeviceURI">
            <property name="text">
-            <string>Device service URI</string>
+            <string>Device service URI:</string>
            </property>
           </widget>
          </item>
@@ -113,7 +148,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pageDeviceCompatibilities">
+     <widget class="QWidget" name="pageDeviceCapabilities">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -123,7 +158,7 @@
        </rect>
       </property>
       <attribute name="label">
-       <string>Device compatibilities</string>
+       <string>Device capabilities</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -131,42 +166,42 @@
          <item row="0" column="0">
           <widget class="QLabel" name="lblVideoSources">
            <property name="text">
-            <string>Video sources</string>
+            <string>Video sources:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="lblAudioSources">
            <property name="text">
-            <string>Audio sources</string>
+            <string>Audio sources:</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="lblDigitalInputs">
            <property name="text">
-            <string>Digital inputs</string>
+            <string>Digital inputs:</string>
            </property>
           </widget>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="lblRelayOutputs">
            <property name="text">
-            <string>Relay outputs</string>
+            <string>Relay outputs:</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="lblAudioOutputs">
            <property name="text">
-            <string>Audio outputs</string>
+            <string>Audio outputs:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblVideoOutputs">
            <property name="text">
-            <string>Video outputs</string>
+            <string>Video outputs:</string>
            </property>
           </widget>
          </item>

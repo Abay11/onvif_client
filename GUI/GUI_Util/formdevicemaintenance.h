@@ -17,7 +17,7 @@ public:
     explicit FormDeviceMaintenance(QWidget *parent = nullptr);
     ~FormDeviceMaintenance();
 
-    void fillInfo(const _onvif::CapabilitiesSP);
+    void fillInfo(const _onvif::DeviceInformationSP, const _onvif::CapabilitiesSP);
 
 private:
     Ui::FormDeviceMaintenance *ui;

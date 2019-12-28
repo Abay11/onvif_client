@@ -94,8 +94,8 @@ void MainWindow::slotMaintenanceClicked()
         ui->frameWidgetsHolder->layout()->addWidget(formMaintenance);
 
         auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-        if(requestedDevice && requestedDevice->getCapabilities())
-            formMaintenance->fillInfo(requestedDevice->getCapabilities());
+        if(requestedDevice)
+            formMaintenance->fillInfo(requestedDevice->getDeviceInfo(), requestedDevice->getCapabilities());
         else
             qDebug() << "ERROR:" << "Can't find selected item from stored devices";
     }
