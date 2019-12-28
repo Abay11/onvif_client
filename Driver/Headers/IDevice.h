@@ -23,9 +23,11 @@ namespace _onvif
 		short getPort() { return port_; };
 
 		const CapabilitiesSP getCapabilities() const { return capabilities_; };
+		const DeviceInformationSP getDeviceInfo() const { return device_info_; };
 	
 	protected:		
 		Services services_;
+		DeviceInformationSP device_info_;
 		CapabilitiesSP capabilities_;
 
 		std::string ip_;

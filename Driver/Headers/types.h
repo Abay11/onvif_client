@@ -20,6 +20,18 @@ namespace _onvif
 	extern const char* REPLAY_SERVICE_NS;
 	extern const char* DEVICEIO_SERVICE_NS;
 
+	struct DeviceInformation
+	{
+		std::string manufacturer;
+		std::string model;
+		std::string firmwareVersion;
+		std::string serialNumber;
+		std::string hardwareId;
+
+		bool filled = false;
+	};
+	using DeviceInformationSP = std::shared_ptr<DeviceInformation>;
+
 	struct Service
 	{
 		std::string ns;

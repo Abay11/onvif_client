@@ -14,8 +14,8 @@ extern SOAP_NMAC struct Namespace namespaces[];
 namespace _onvif
 {
 	DeviceService::DeviceService(soap* soap, const std::string& endpoint)
-		:soap_context(soap),
-		deviceProxy(new DeviceBindingProxy(soap_context)),
+		:soap_context_(soap),
+		deviceProxy(new DeviceBindingProxy(soap_context_)),
 		endpoint_reference_(endpoint)
 	{
 		deviceProxy->soap_endpoint = endpoint_reference_.c_str();
@@ -218,29 +218,25 @@ namespace _onvif
 		return std::string();
 	}
 
-	DeviceService::DeviceInformation DeviceService::get_device_info()
+	DeviceInformationSP DeviceService::get_device_info()
 	{
-		DeviceInformation info;
-
-		const char* user = "admin";
-		const char* pass = "admin";
-
-		soap_context;
+		DeviceInformationSP info = std::make_shared<DeviceInformation>();
 
 		_tds__GetDeviceInformation request;
 		_tds__GetDeviceInformationResponse response;
+		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
 		if (!deviceProxy->GetDeviceInformation(&request, response))
 		{
-			info.filled = true;
+			info->filled = true;
 			
-			info.firmwareVersion = response.FirmwareVersion;
-			info.hardwareId = response.HardwareId;
-			info.manufacturer = response.Manufacturer;
-			info.model = response.Model;
-			info.serialNumber = response.SerialNumber;
+			info->firmwareVersion = response.FirmwareVersion;
+			info->hardwareId = response.HardwareId;
+			info->manufacturer = response.Manufacturer;
+			info->model = response.Model;
+			info->serialNumber = response.SerialNumber;
 		}
 
-		return std::move(info);
+		return info;
 	}
 
 	Services DeviceService::get_service_addresses()

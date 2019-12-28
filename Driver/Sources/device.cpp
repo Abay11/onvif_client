@@ -31,7 +31,6 @@ namespace _onvif
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
-		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
 		
 		std::stringstream device_address;
 		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
@@ -41,6 +40,8 @@ namespace _onvif
 		capabilities_ = device_service_->get_capabilities();
 		
 		services_ = device_service_->get_service_addresses();
+
+		device_info_ = device_service_->get_device_info();
 
 		std::string addr = DeviceService::get_service_address(&services_, MEDIA_SERVICE_NS);
 		media_service_ = new MediaService(soap_context_, addr);
