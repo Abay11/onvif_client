@@ -27,11 +27,14 @@ namespace _onvif
 		soap_free(soap_context_);
 	}
 
-	void Device::Init()
+	void Device::Init(const std::string& login, const std::string& pass)
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
-		
+
+		login_ = login;
+		pass_ = pass;
+
 		std::stringstream device_address;
 		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
 
@@ -54,7 +57,7 @@ namespace _onvif
 		device_service_uri_ = deviceServiceURI;
 	}
 
-	void Device::SetCreds(const char* login, const char* pass)
+	void Device::SetCreds(const std::string& login, const std::string& pass)
 	{
 		login_ = login;
 		pass_ = pass;

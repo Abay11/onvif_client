@@ -9,11 +9,11 @@ namespace _onvif
 	class IDevice
 	{
 	public:
-		virtual void Init() = 0;
+		virtual void Init(const std::string& login, const std::string& pass) = 0;
 
 		virtual void SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI) = 0;
 
-		virtual void SetCreds(const char* login, const char* pass) = 0;
+		virtual void SetCreds(const std::string& login, const std::string& pass) = 0;
 
 		virtual void StartLive() = 0;
 

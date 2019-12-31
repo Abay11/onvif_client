@@ -19,9 +19,9 @@ namespace _onvif
 		~Device();
 
 		//IDevice
-		virtual void Init();
+		virtual void Init(const std::string& login, const std::string& pass);
 		virtual void SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI);
-		virtual void SetCreds(const char* login, const char* pass);
+		virtual void SetCreds(const std::string& login, const std::string& pass);
 		virtual void StartLive();
 		virtual void StopLive();
 

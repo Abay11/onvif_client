@@ -12,7 +12,7 @@ void DevicesManager::slotAddDevice(std::string ip, short port, std::string devic
 
     using namespace _onvif;
     IDevice* device = new Device(ip, port);
-    device->Init();
+    device->Init("admin", "admin");
 
     devices.push_back(device);
 
