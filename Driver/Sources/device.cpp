@@ -1,10 +1,10 @@
 #include "..\Headers\device.h"
 
+#include "SoapHelpers.h"
 #include "device_service.h"
 #include "media_service.h"
 
 #include "soapStub.h"
-#include "wsseapi.h"
 
 #include <iostream>
 #include <sstream>
@@ -35,10 +35,12 @@ namespace _onvif
 		login_ = login;
 		pass_ = pass;
 
+		conn_info_ = new ConnectionInfo(soap_context_, ip_, port_, login_, pass_);
+
 		std::stringstream device_address;
 		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
 
-		device_service_ = new DeviceService(soap_context_, device_address.str());
+		device_service_ = new DeviceService(conn_info_, device_address.str());
 
 		capabilities_ = device_service_->get_capabilities();
 		
@@ -61,6 +63,11 @@ namespace _onvif
 	{
 		login_ = login;
 		pass_ = pass;
+
+		if (conn_info_)
+		{
+			conn_info_->setCreds(login_, pass_);
+		}
 	}
 
 	void Device::StartLive()

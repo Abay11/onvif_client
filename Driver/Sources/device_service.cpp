@@ -1,5 +1,6 @@
 #include "..\Headers\device_service.h"
 #include "util.h"
+#include "SoapHelpers.h"
 
 #include "DeviceBinding.nsmap"
 #include "soapStub.h"
@@ -13,9 +14,9 @@ extern SOAP_NMAC struct Namespace namespaces[];
 
 namespace _onvif
 {
-	DeviceService::DeviceService(soap* soap, const std::string& endpoint)
-		:soap_context_(soap),
-		deviceProxy(new DeviceBindingProxy(soap_context_)),
+	DeviceService::DeviceService(ConnectionInfo* connInfo, const std::string& endpoint)
+		:conn_info_(connInfo),
+		deviceProxy(new DeviceBindingProxy(conn_info_->getSoap())),
 		endpoint_reference_(endpoint)
 	{
 		deviceProxy->soap_endpoint = endpoint_reference_.c_str();
@@ -224,8 +225,11 @@ namespace _onvif
 
 		_tds__GetDeviceInformation request;
 		_tds__GetDeviceInformationResponse response;
-		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
-		if (!deviceProxy->GetDeviceInformation(&request, response))
+
+		auto wrapper = [this](_tds__GetDeviceInformation* r1, _tds__GetDeviceInformationResponse& r2) {return deviceProxy->GetDeviceInformation(r1, r2); };
+		int res = GSoapRequestWrapper<_tds__GetDeviceInformation, _tds__GetDeviceInformationResponse>(wrapper, &request, response, conn_info_);
+
+		if (!res)
 		{
 			info->filled = true;
 			

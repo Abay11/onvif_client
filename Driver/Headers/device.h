@@ -9,6 +9,7 @@ struct soap;
 
 namespace _onvif
 {
+	class ConnectionInfo;
 	class DeviceService;
 	class MediaService;
 
@@ -27,6 +28,7 @@ namespace _onvif
 
 	private:
 		soap* soap_context_;
+		ConnectionInfo* conn_info_;
 		DeviceService* device_service_;
 		MediaService* media_service_;
 	};

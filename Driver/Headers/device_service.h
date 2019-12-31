@@ -5,18 +5,19 @@
 #include <string>
 #include <list>
 
-struct soap;
 class DeviceBindingProxy;
 
 namespace _onvif
 {
+	class ConnectionInfo;
+
 	class DeviceService
 	{
 	public:
 		/**
 		A soap context should be valid until a class object will be destroyed
 		**/
-		DeviceService(soap* soap, const std::string& endpoint);
+		DeviceService(ConnectionInfo* connInfo, const std::string& endpoint);
 		~DeviceService();
 
 		CapabilitiesSP get_capabilities();
@@ -30,7 +31,7 @@ namespace _onvif
 		std::list<std::string> get_scopes();
 
 	private:
-		soap* soap_context_;
+		ConnectionInfo* conn_info_;
 		DeviceBindingProxy* deviceProxy;
 
 		std::string endpoint_reference_;
