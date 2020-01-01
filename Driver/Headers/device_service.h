@@ -5,47 +5,42 @@
 #include <string>
 #include <list>
 
-struct soap;
 class DeviceBindingProxy;
 
 namespace _onvif
 {
+	class ConnectionInfo;
+		
+	//NOTE: all methods marked with PRE_AUTH means
+	//that by the stardard not need to be used with auth data
 	class DeviceService
 	{
 	public:
 		/**
 		A soap context should be valid until a class object will be destroyed
+		Param device_serivce_uri should to point to the full device service address
+		including protocol, ip and port
 		**/
-		DeviceService(soap* soap, const std::string& endpoint);
+		DeviceService(ConnectionInfo* connInfo, const std::string& device_service_uri);
 		~DeviceService();
 
+		//PRE_AUTH methods
 		CapabilitiesSP get_capabilities();
-
 		std::string get_date_time();
-		struct DeviceInformation;
-		DeviceInformation get_device_info();
+		//PRE_AUTH END
 
+		DeviceInformationSP get_device_info();
 		Services get_service_addresses();
-		static std::string get_service_address(const Services* services, const char* service_namespace);
-
 		std::list<std::string> get_scopes();
-
-	public:
-		struct DeviceInformation
-		{
-			std::string manufacturer;
-			std::string model;
-			std::string firmwareVersion;
-			std::string serialNumber;
-			std::string hardwareId;
-
-			bool filled = false;
-		};
-
+	
 	private:
-		soap* soap_context;
+		ConnectionInfo* conn_info_;
 		DeviceBindingProxy* deviceProxy;
 
-		std::string endpoint_reference_;
+		std::string device_service_uri_;
 	};
+	
+	//returns the address of the specific service
+	std::string get_service_address(const Services* services, SERVICES service);
+	
 }

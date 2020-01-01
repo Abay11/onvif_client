@@ -1,10 +1,10 @@
 #include "..\Headers\device.h"
 
+#include "SoapHelpers.h"
 #include "device_service.h"
 #include "media_service.h"
 
 #include "soapStub.h"
-#include "wsseapi.h"
 
 #include <iostream>
 #include <sstream>
@@ -13,9 +13,8 @@ namespace _onvif
 {
 	Device::Device(const std::string& endpoint, short port)
 	{
-		std::stringstream ss;
-		ss << endpoint << ":" << port;
-		endpoint_ = ss.str();
+		ip_ = endpoint;
+		port_ = port;
 	}
 
 	Device::~Device()
@@ -28,29 +27,42 @@ namespace _onvif
 		soap_free(soap_context_);
 	}
 
-	void Device::Init()
+	void Device::Init(const std::string& login, const std::string& pass)
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
-		soap_wsse_add_UsernameTokenDigest(soap_context_, "Auth", "admin", "admin");
-		
-		std::stringstream device_address;
-		device_address << "http://" << endpoint_ << "/onvif/device_service";
 
-		device_service_ = new DeviceService(soap_context_, device_address.str());
+		login_ = login;
+		pass_ = pass;
+
+		conn_info_ = new ConnectionInfo(soap_context_, ip_, port_, login_, pass_);
+
+		std::stringstream device_address;
+		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
+
+		device_service_ = new DeviceService(conn_info_, device_address.str());
 
 		capabilities_ = device_service_->get_capabilities();
 		
 		services_ = device_service_->get_service_addresses();
 
-		std::string addr = DeviceService::get_service_address(&services_, MEDIA_SERVICE_NS);
+		device_info_ = device_service_->get_device_info();
+
+		std::string addr = get_service_address(&services_, SERVICES::MEDIA_SERVICE);
 		media_service_ = new MediaService(soap_context_, addr);
+
+		fillONVIFGeneralInfo();
 	}
 
-	void Device::SetCreds(const char* login, const char* pass)
+	void Device::SetCreds(const std::string& login, const std::string& pass)
 	{
 		login_ = login;
 		pass_ = pass;
+
+		if (conn_info_)
+		{
+			conn_info_->setCreds(login_, pass_);
+		}
 	}
 
 	void Device::StartLive()
@@ -61,5 +73,34 @@ namespace _onvif
 	void Device::StopLive()
 	{
 		std::cout << "Stop" << std::endl;
+	}
+	
+	std::string Device::GetServiceAddress(SERVICES service)
+	{
+		std::stringstream address_stream;
+		address_stream << "http://" << ip_ << ":" << port_ << get_service_address(&services_, service);
+
+		return address_stream.str();
+	}
+
+	void Device::fillONVIFGeneralInfo()
+	{
+		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();
+
+		if(capabilities_->device_info_filled)
+			onvif_general_info_->onvif_version = capabilities_->device_supported_versions.back(); // take the last one
+		
+		onvif_general_info_->isMedia2Supported = isMedia2Supported(&services_);
+		onvif_general_info_->deviceServiceURI = device_service_uri_;
+	}
+
+	bool isMedia2Supported(const Services* services)
+	{
+		for (const auto s : *services)
+		{
+			if (s && s->ns.find("/ver20/media/") != std::string::npos) return true;
+		}
+
+		return false;
 	}
 }
