@@ -13,7 +13,7 @@ FormDeviceMaintenance::~FormDeviceMaintenance()
     delete ui;
 }
 
-void FormDeviceMaintenance::fillInfo(const _onvif::DeviceInformationSP devInfo, const _onvif::CapabilitiesSP caps)
+void FormDeviceMaintenance::fillInfo(const _onvif::DeviceInformationSP devInfo, const _onvif::CapabilitiesSP caps, const _onvif::ONVIFGeneralInfoSP onvifInfo)
 {
     if(devInfo && devInfo->filled)
     {
@@ -22,6 +22,14 @@ void FormDeviceMaintenance::fillInfo(const _onvif::DeviceInformationSP devInfo, 
         ui->lblFirmwareValue->setText(devInfo->firmwareVersion.c_str());
         ui->lblSerialValue->setText(devInfo->serialNumber.c_str());
         ui->lblHardwareValue->setText(devInfo->hardwareId.c_str());
+    }
+
+    //filling section ONVIF information
+    if(onvifInfo)
+    {
+        ui->lblonvifVersionValue->setText(onvifInfo->onvif_version.c_str());
+        ui->lblMedia2SupportValue->setText(onvifInfo->isMedia2Supported ? "Yes" : "No");
+        ui->lblDeviceURIValue->setText(onvifInfo->deviceServiceURI.c_str());
     }
 
     if(caps && caps->io_filled)

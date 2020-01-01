@@ -33,11 +33,13 @@ namespace _onvif
 
 		const CapabilitiesSP getCapabilities() const { return capabilities_; };
 		const DeviceInformationSP getDeviceInfo() const { return device_info_; };
+		const ONVIFGeneralInfoSP getONVIFGeneralInfo() const { return onvif_general_info_; };
 	
 	protected:		
 		Services services_;
 		DeviceInformationSP device_info_;
 		CapabilitiesSP capabilities_;
+		ONVIFGeneralInfoSP onvif_general_info_;
 
 		std::string ip_;
 		short port_;

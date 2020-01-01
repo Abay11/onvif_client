@@ -50,6 +50,8 @@ namespace _onvif
 
 		std::string addr = get_service_address(&services_, SERVICES::MEDIA_SERVICE);
 		media_service_ = new MediaService(soap_context_, addr);
+
+		fillONVIFGeneralInfo();
 	}
 
 	void Device::SetCreds(const std::string& login, const std::string& pass)
@@ -79,5 +81,26 @@ namespace _onvif
 		address_stream << "http://" << ip_ << ":" << port_ << get_service_address(&services_, service);
 
 		return address_stream.str();
+	}
+
+	void Device::fillONVIFGeneralInfo()
+	{
+		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();
+
+		if(capabilities_->device_info_filled)
+			onvif_general_info_->onvif_version = capabilities_->device_supported_versions.back(); // take the last one
+		
+		onvif_general_info_->isMedia2Supported = isMedia2Supported(&services_);
+		onvif_general_info_->deviceServiceURI = device_service_uri_;
+	}
+
+	bool isMedia2Supported(const Services* services)
+	{
+		for (const auto s : *services)
+		{
+			if (s && s->ns.find("/ver20/media/") != std::string::npos) return true;
+		}
+
+		return false;
 	}
 }

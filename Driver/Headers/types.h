@@ -35,6 +35,14 @@ namespace _onvif
 	};
 	using DeviceInformationSP = std::shared_ptr<DeviceInformation>;
 
+	struct ONVIFGeneralInfo
+	{
+		std::string onvif_version;
+		bool isMedia2Supported = false;
+		std::string deviceServiceURI;
+	};
+	using ONVIFGeneralInfoSP = std::shared_ptr<ONVIFGeneralInfo>;
+
 	struct Service
 	{
 		std::string ns;

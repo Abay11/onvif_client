@@ -195,6 +195,7 @@ namespace _onvif
 
 		return std::move(scopes);
 	}
+
 	std::string DeviceService::get_date_time()
 	{
 		_tds__GetSystemDateAndTime request;

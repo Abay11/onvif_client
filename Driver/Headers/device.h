@@ -26,10 +26,18 @@ namespace _onvif
 		virtual void StopLive();
 		virtual std::string GetServiceAddress(SERVICES service);
 
+	public:
+		//some helpers
+		void fillONVIFGeneralInfo(); //should be used in the Init(), to fill IDevice member params
+
+
 	private:
 		soap* soap_context_;
 		ConnectionInfo* conn_info_;
 		DeviceService* device_service_;
 		MediaService* media_service_;
 	};
+
+	//helpers
+	bool isMedia2Supported(const Services* services);
 }

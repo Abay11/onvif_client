@@ -95,7 +95,7 @@ void MainWindow::slotMaintenanceClicked()
 
         auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
         if(requestedDevice)
-            formMaintenance->fillInfo(requestedDevice->getDeviceInfo(), requestedDevice->getCapabilities());
+            formMaintenance->fillInfo(requestedDevice->getDeviceInfo(), requestedDevice->getCapabilities(), requestedDevice->getONVIFGeneralInfo());
         else
             qDebug() << "ERROR:" << "Can't find selected item from stored devices";
     }
