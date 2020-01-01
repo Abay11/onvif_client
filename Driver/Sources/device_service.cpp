@@ -1,5 +1,6 @@
 #include "..\Headers\device_service.h"
 #include "util.h"
+#include "SoapHelpers.h"
 
 #include "DeviceBinding.nsmap"
 #include "soapStub.h"
@@ -13,12 +14,12 @@ extern SOAP_NMAC struct Namespace namespaces[];
 
 namespace _onvif
 {
-	DeviceService::DeviceService(soap* soap, const std::string& endpoint)
-		:soap_context(soap),
-		deviceProxy(new DeviceBindingProxy(soap_context)),
-		endpoint_reference_(endpoint)
+	DeviceService::DeviceService(ConnectionInfo* connInfo, const std::string& device_service_uri)
+		:conn_info_(connInfo),
+		deviceProxy(new DeviceBindingProxy(conn_info_->getSoap())),
+		device_service_uri_(device_service_uri)
 	{
-		deviceProxy->soap_endpoint = endpoint_reference_.c_str();
+		deviceProxy->soap_endpoint = device_service_uri_.c_str();
 	}
 
 	DeviceService::~DeviceService()
@@ -194,6 +195,7 @@ namespace _onvif
 
 		return std::move(scopes);
 	}
+
 	std::string DeviceService::get_date_time()
 	{
 		_tds__GetSystemDateAndTime request;
@@ -218,29 +220,28 @@ namespace _onvif
 		return std::string();
 	}
 
-	DeviceService::DeviceInformation DeviceService::get_device_info()
+	DeviceInformationSP DeviceService::get_device_info()
 	{
-		DeviceInformation info;
-
-		const char* user = "admin";
-		const char* pass = "admin";
-
-		soap_context;
+		DeviceInformationSP info = std::make_shared<DeviceInformation>();
 
 		_tds__GetDeviceInformation request;
 		_tds__GetDeviceInformationResponse response;
-		if (!deviceProxy->GetDeviceInformation(&request, response))
+
+		auto wrapper = [this](_tds__GetDeviceInformation* r1, _tds__GetDeviceInformationResponse& r2) {return deviceProxy->GetDeviceInformation(r1, r2); };
+		int res = GSoapRequestWrapper<_tds__GetDeviceInformation, _tds__GetDeviceInformationResponse>(wrapper, &request, response, conn_info_);
+
+		if (!res)
 		{
-			info.filled = true;
+			info->filled = true;
 			
-			info.firmwareVersion = response.FirmwareVersion;
-			info.hardwareId = response.HardwareId;
-			info.manufacturer = response.Manufacturer;
-			info.model = response.Model;
-			info.serialNumber = response.SerialNumber;
+			info->firmwareVersion = response.FirmwareVersion;
+			info->hardwareId = response.HardwareId;
+			info->manufacturer = response.Manufacturer;
+			info->model = response.Model;
+			info->serialNumber = response.SerialNumber;
 		}
 
-		return std::move(info);
+		return info;
 	}
 
 	Services DeviceService::get_service_addresses()
@@ -266,18 +267,30 @@ namespace _onvif
 		}
 
 		return std::move(services);
-	}
-	
-	std::string DeviceService::get_service_address(const Services* services, const char* service_namespace)
-	{
-		std::string media_service_address;
+	}	
 
-		for (const auto s : *services)
+	std::string get_service_address(const Services* services, SERVICES service)
+	{
+		const char* DEVICE_SERVICE_NS = "http://www.onvif.org/ver10/device/wsdl";
+		const char* MEDIA_SERVICE_NS = "http://www.onvif.org/ver10/media/wsdl";
+		const char* MEDIA2_SERVICE_NS = "http://www.onvif.org/ver20/media/wsdl";
+		const char* EVENTS_SERVICE_NS = "http://www.onvif.org/ver10/events/wsdl";
+		const char* PTZ_SERVICE_NS = "http://www.onvif.org/ver20/ptz/wsdl";
+		const char* IMAGING_SERVICE_NS = "http://www.onvif.org/ver20/imaging/wsdl";
+		const char* ANALYTICS_SERVICE_NS = "http://www.onvif.org/ver20/analytics/wsdl";
+		const char* RECORDING_SERVICE_NS = "http://www.onvif.org/ver10/recording/wsdl";
+		const char* SEARCH_SERVICE_NS = "http://www.onvif.org/ver10/search/wsdl";
+		const char* REPLAY_SERVICE_NS = "http://www.onvif.org/ver10/replay/wsdl";
+		const char* DEVICEIO_SERVICE_NS = "http://www.onvif.org/ver10/deviceIO/wsdl";
+		
+
+		//TODO: add returning another services
+		switch (service)
 		{
-			if (s && s->ns == service_namespace)
-				media_service_address = s->xaddr;
+		case SERVICES::MEDIA_SERVICE:
+				return MEDIA_SERVICE_NS;
 		}
 
-		return media_service_address;
+		return std::string();
 	}
 }

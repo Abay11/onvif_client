@@ -9,6 +9,7 @@ struct soap;
 
 namespace _onvif
 {
+	class ConnectionInfo;
 	class DeviceService;
 	class MediaService;
 
@@ -19,15 +20,24 @@ namespace _onvif
 		~Device();
 
 		//IDevice
-		virtual void Init();
-		virtual void SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI);
-		virtual void SetCreds(const char* login, const char* pass);
+		virtual void Init(const std::string& login, const std::string& pass);
+		virtual void SetCreds(const std::string& login, const std::string& pass);
 		virtual void StartLive();
 		virtual void StopLive();
+		virtual std::string GetServiceAddress(SERVICES service);
+
+	public:
+		//some helpers
+		void fillONVIFGeneralInfo(); //should be used in the Init(), to fill IDevice member params
+
 
 	private:
 		soap* soap_context_;
+		ConnectionInfo* conn_info_;
 		DeviceService* device_service_;
 		MediaService* media_service_;
 	};
+
+	//helpers
+	bool isMedia2Supported(const Services* services);
 }
