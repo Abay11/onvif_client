@@ -52,13 +52,6 @@ namespace _onvif
 		media_service_ = new MediaService(soap_context_, addr);
 	}
 
-	void Device::SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI)
-	{
-		ip_ = ip;
-		port_ = port;
-		device_service_uri_ = deviceServiceURI;
-	}
-
 	void Device::SetCreds(const std::string& login, const std::string& pass)
 	{
 		login_ = login;
@@ -78,5 +71,13 @@ namespace _onvif
 	void Device::StopLive()
 	{
 		std::cout << "Stop" << std::endl;
+	}
+	
+	std::string Device::GetServiceAddress(SERVICES service)
+	{
+		std::stringstream address_stream;
+		address_stream << "http://" << ip_ << ":" << port_ << get_service_address(&services_, service);
+
+		return address_stream.str();
 	}
 }

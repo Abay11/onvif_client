@@ -21,10 +21,10 @@ namespace _onvif
 
 		//IDevice
 		virtual void Init(const std::string& login, const std::string& pass);
-		virtual void SetAddressInfo(const std::string& ip, short port, const std::string& deviceServiceURI);
 		virtual void SetCreds(const std::string& login, const std::string& pass);
 		virtual void StartLive();
 		virtual void StopLive();
+		virtual std::string GetServiceAddress(SERVICES service);
 
 	private:
 		soap* soap_context_;
