@@ -8,17 +8,20 @@
 namespace _onvif
 {
 	//namespaces
-	extern const char* DEVICE_SERVICE_NS;
-	extern const char* MEDIA_SERVICE_NS;
-	extern const char* MEDIA2_SERVICE_NS;
-	extern const char* EVENTS_SERVICE_NS;
-	extern const char* PTZ_SERVICE_NS;
-	extern const char* IMAGING_SERVICE_NS;
-	extern const char* ANALYTICS_SERVICE_NS;
-	extern const char* RECORDING_SERVICE_NS;
-	extern const char* SEARCH_SERVICE_NS;
-	extern const char* REPLAY_SERVICE_NS;
-	extern const char* DEVICEIO_SERVICE_NS;
+	enum SERVICES
+	{
+		DEVICE_SERVICE,
+		MEDIA_SERVICE,
+		MEDIA2_SERVICE,
+		EVENTS_SERVICE,
+		PTZ_SERVICE,
+		IMAGING_SERVICE,
+		ANALYTICS_SERVICE,
+		RECORDING_SERVICE,
+		SEARCH_SERVICE,
+		REPLAY_SERVICE,
+		DEVICEIO_SERVICE
+	};
 
 	struct DeviceInformation
 	{

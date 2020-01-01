@@ -266,18 +266,30 @@ namespace _onvif
 		}
 
 		return std::move(services);
-	}
-	
-	std::string DeviceService::get_service_address(const Services* services, const char* service_namespace)
-	{
-		std::string media_service_address;
+	}	
 
-		for (const auto s : *services)
+	std::string get_service_address(const Services* services, SERVICES service)
+	{
+		const char* DEVICE_SERVICE_NS = "http://www.onvif.org/ver10/device/wsdl";
+		const char* MEDIA_SERVICE_NS = "http://www.onvif.org/ver10/media/wsdl";
+		const char* MEDIA2_SERVICE_NS = "http://www.onvif.org/ver20/media/wsdl";
+		const char* EVENTS_SERVICE_NS = "http://www.onvif.org/ver10/events/wsdl";
+		const char* PTZ_SERVICE_NS = "http://www.onvif.org/ver20/ptz/wsdl";
+		const char* IMAGING_SERVICE_NS = "http://www.onvif.org/ver20/imaging/wsdl";
+		const char* ANALYTICS_SERVICE_NS = "http://www.onvif.org/ver20/analytics/wsdl";
+		const char* RECORDING_SERVICE_NS = "http://www.onvif.org/ver10/recording/wsdl";
+		const char* SEARCH_SERVICE_NS = "http://www.onvif.org/ver10/search/wsdl";
+		const char* REPLAY_SERVICE_NS = "http://www.onvif.org/ver10/replay/wsdl";
+		const char* DEVICEIO_SERVICE_NS = "http://www.onvif.org/ver10/deviceIO/wsdl";
+		
+
+		//TODO: add returning another services
+		switch (service)
 		{
-			if (s && s->ns == service_namespace)
-				media_service_address = s->xaddr;
+		case SERVICES::MEDIA_SERVICE:
+				return MEDIA_SERVICE_NS;
 		}
 
-		return media_service_address;
+		return std::string();
 	}
 }

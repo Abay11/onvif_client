@@ -48,7 +48,7 @@ namespace _onvif
 
 		device_info_ = device_service_->get_device_info();
 
-		std::string addr = DeviceService::get_service_address(&services_, MEDIA_SERVICE_NS);
+		std::string addr = get_service_address(&services_, SERVICES::MEDIA_SERVICE);
 		media_service_ = new MediaService(soap_context_, addr);
 	}
 

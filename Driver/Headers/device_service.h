@@ -10,7 +10,7 @@ class DeviceBindingProxy;
 namespace _onvif
 {
 	class ConnectionInfo;
-
+		
 	class DeviceService
 	{
 	public:
@@ -26,7 +26,6 @@ namespace _onvif
 		DeviceInformationSP get_device_info();
 
 		Services get_service_addresses();
-		static std::string get_service_address(const Services* services, const char* service_namespace);
 
 		std::list<std::string> get_scopes();
 
@@ -36,4 +35,7 @@ namespace _onvif
 
 		std::string endpoint_reference_;
 	};
+	
+	//returns the address of the specific service
+	std::string get_service_address(const Services* services, SERVICES service);
 }
