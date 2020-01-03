@@ -28,6 +28,9 @@ add_executable(GUI_Util
   FormDeviceMaintenance.cpp
   FormDeviceMaintenance.h
   FormDeviceMaintenance.ui
+  FormVideoConfiguration.cpp
+  FormVideoConfiguration.h
+  FormVideoConfiguration.ui
 )
 
 include_directories("${ROOT_DIR}/Driver/Headers")
