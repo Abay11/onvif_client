@@ -15,6 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+		//hide controls holder frame until not the device be selected
+		ui->frameControlsHolder->setVisible(false);
+		connect(ui->listWidget, &QListWidget::itemClicked,
+						this, &MainWindow::slotListWidgetClicked);
+
    //handling of adding new devices
    connect(ui->btnAddDevice, &QPushButton::clicked, this, &MainWindow::slotAddDeviceClicked);
    connect(this, &MainWindow::sigAddDevice, devicesMgr, &DevicesManager::slotAddDevice);
@@ -27,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::slotListWidgetClicked()
+{
+	ui->frameControlsHolder->setVisible(true);
 }
 
 void MainWindow::slotAddDeviceClicked()
@@ -59,6 +69,7 @@ void MainWindow::slotAddDeviceDialogFinished()
     }
 }
 
+//received signal from DevicesManager
 void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
 {
     QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);

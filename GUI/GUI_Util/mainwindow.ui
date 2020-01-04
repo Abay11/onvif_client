@@ -60,7 +60,10 @@
        </layout>
       </item>
       <item>
-       <widget class="QFrame" name="frame_2">
+       <widget class="QFrame" name="frameControlsHolder">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -107,7 +110,7 @@
          <item>
           <widget class="QPushButton" name="btnVideo">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Video</string>

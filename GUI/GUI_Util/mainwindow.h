@@ -27,6 +27,9 @@ signals:
     void sigAddDevice(std::string ip, short port, std::string uri);
 
 private slots:
+		//to make the list widget visible
+		void slotListWidgetClicked();
+
     //emitted by the button AddDevice
     void slotAddDeviceClicked();
 
