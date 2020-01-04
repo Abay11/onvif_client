@@ -41,5 +41,6 @@ private slots:
 
     //slots to handle a device functionality
     void slotMaintenanceClicked();
+    void slotVideoSettingsClicked();
 };
 #endif // MAINWINDOW_H

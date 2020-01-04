@@ -1,6 +1,8 @@
 #include "formvideoconfiguration.h"
 #include "ui_formvideoconfiguration.h"
 
+#include <QDebug>
+
 FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FormVideoConfiguration)
@@ -11,4 +13,5 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 FormVideoConfiguration::~FormVideoConfiguration()
 {
     delete ui;
+	qDebug() << "FormVideoConfiguration deleted";
 }

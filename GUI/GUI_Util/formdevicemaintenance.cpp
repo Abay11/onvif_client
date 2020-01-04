@@ -1,5 +1,6 @@
 #include "formdevicemaintenance.h"
 #include "ui_formdevicemaintenance.h"
+#include <QDebug>
 
 FormDeviceMaintenance::FormDeviceMaintenance(QWidget *parent) :
     QWidget(parent),
@@ -11,6 +12,7 @@ FormDeviceMaintenance::FormDeviceMaintenance(QWidget *parent) :
 FormDeviceMaintenance::~FormDeviceMaintenance()
 {
     delete ui;
+	qDebug() << "FormDeviceMaintenance deleted";
 }
 
 void FormDeviceMaintenance::fillInfo(const _onvif::DeviceInformationSP devInfo, const _onvif::CapabilitiesSP caps, const _onvif::ONVIFGeneralInfoSP onvifInfo)

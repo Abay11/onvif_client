@@ -5,8 +5,12 @@
 #include "DevicesManager.h"
 #include "device.h"
 #include "formdevicemaintenance.h"
+#include "formvideoconfiguration.h"
 
 #include <QDebug>
+
+//free/helpers functions
+void deleteItems(QLayout* layout);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
    connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
 
    //Buttons for devices functionality management
-   connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
+	 connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
+	 connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 }
 
 MainWindow::~MainWindow()
@@ -88,27 +93,55 @@ void MainWindow::slotMaintenanceClicked()
         qDebug() << "Current selected item:" << selectedItem->text();
 
         //setting the maintanance widget to the frame
-        FormDeviceMaintenance* formMaintenance = new FormDeviceMaintenance(ui->frameWidgetsHolder);
+				FormDeviceMaintenance* formMaintenance = new FormDeviceMaintenance;
 
         auto frameLayout = ui->frameWidgetsHolder->layout();
         if(!frameLayout)
         {
             qDebug() << "Init new layout";
             ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
+						frameLayout = ui->frameWidgetsHolder->layout();
         }
-        else
-        {
-            frameLayout->removeItem(frameLayout->itemAt(0)); //expected that the form always will be hold only one item
-            qDebug() << "Deleting child";
-        }
+				else
+					deleteItems(frameLayout);
 
-        ui->frameWidgetsHolder->layout()->addWidget(formMaintenance);
+				frameLayout->addWidget(formMaintenance);
 
         auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
         if(requestedDevice)
-            formMaintenance->fillInfo(requestedDevice->getDeviceInfo(), requestedDevice->getCapabilities(), requestedDevice->getONVIFGeneralInfo());
+						formMaintenance->fillInfo(requestedDevice->getDeviceInfo(),
+																			requestedDevice->getCapabilities(),
+																			requestedDevice->getONVIFGeneralInfo());
         else
             qDebug() << "ERROR:" << "Can't find selected item from stored devices";
     }
 }
 
+void MainWindow::slotVideoSettingsClicked()
+{
+    auto* frameLayout = ui->frameWidgetsHolder->layout();
+    if(!frameLayout)
+    {
+				qDebug() << "Init a new layout";
+				ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
+				frameLayout = ui->frameWidgetsHolder->layout();
+		}
+		else
+			deleteItems(frameLayout);
+
+		auto* formVideoConf = new FormVideoConfiguration;
+		frameLayout->addWidget(formVideoConf);
+}
+
+/////////////////////////////
+// free/helpers functions //
+///////////////////////////
+
+void deleteItems(QLayout* layout)
+{
+	if(auto child = layout->takeAt(0)) // by current implementation it is assumed that layout will hold one child
+	{
+		delete child->widget();
+		delete child;
+	}
+}
