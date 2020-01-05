@@ -17,7 +17,8 @@ namespace _onvif
 	{
 	public:
 		/**
-		A soap context should be valid until a class object will be destroyed
+		A ConnectionInfo instance should be valid until a class object will be destroyed
+		and should be destroyed by client.
 		Param device_serivce_uri should to point to the full device service address
 		including protocol, ip and port
 		**/

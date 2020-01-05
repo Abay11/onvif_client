@@ -283,12 +283,20 @@ namespace _onvif
 		const char* REPLAY_SERVICE_NS = "http://www.onvif.org/ver10/replay/wsdl";
 		const char* DEVICEIO_SERVICE_NS = "http://www.onvif.org/ver10/deviceIO/wsdl";
 		
-
-		//TODO: add returning another services
+		//TODO: add converting other services
+		//here we search for passed service string representation
+		const char* requested_service_ns;
 		switch (service)
 		{
 		case SERVICES::MEDIA_SERVICE:
-				return MEDIA_SERVICE_NS;
+			requested_service_ns = MEDIA_SERVICE_NS;
+		//case SERVICES::others...
+		}
+
+		for (const auto& s : *services)
+		{
+			if (s->ns == requested_service_ns)
+				return s->xaddr;
 		}
 
 		return std::string();
