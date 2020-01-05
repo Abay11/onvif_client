@@ -53,6 +53,7 @@ namespace _onvif
 
 		fillONVIFGeneralInfo();
 
+		video_sources_ = media_service_->get_video_sources();
 		media_profiles_ = media_service_->get_profiles();
 	}
 
@@ -83,6 +84,16 @@ namespace _onvif
 		address_stream << "http://" << ip_ << ":" << port_ << get_service_address(&services_, service);
 
 		return address_stream.str();
+	}
+
+	VideoSourcesSP Device::GetVideoSources()
+	{
+		if (!video_sources_)
+		{
+			video_sources_ = media_service_->get_video_sources();
+		}
+
+		return video_sources_;
 	}
 
 	void Device::fillONVIFGeneralInfo()

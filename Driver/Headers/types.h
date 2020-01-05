@@ -116,6 +116,12 @@ namespace _onvif
 
 	using CapabilitiesSP = std::shared_ptr<Capabilities>;
 
+	struct VideoSources
+	{
+		StringList tokens;
+	};
+	using VideoSourcesSP = std::shared_ptr<VideoSources>;
+
 	enum VideoEncoding
 	{
 		//value and sequence should be the same

@@ -26,6 +26,9 @@ namespace _onvif
 		virtual void StopLive();
 		virtual std::string GetServiceAddress(SERVICES service);
 
+		//Media
+		virtual VideoSourcesSP GetVideoSources();
+
 		///IDevice
 
 	public:

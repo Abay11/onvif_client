@@ -137,6 +137,29 @@ namespace _onvif
 
 		return profile;
 	}
+
+	VideoSourcesSP MediaService::get_video_sources()
+	{
+		//the current realisation uses only tokens
+		_trt__GetVideoSources request;
+		_trt__GetVideoSourcesResponse response;
+		auto wrapper = [this](_trt__GetVideoSources* r1, _trt__GetVideoSourcesResponse& r2) {return mediaProxy->GetVideoSources(r1, r2); };
+		int res = GSoapRequestWrapper<_trt__GetVideoSources, _trt__GetVideoSourcesResponse>(wrapper, &request, response, conn_info_);
+
+		VideoSourcesSP video_sources;
+		StringList sources_list;
+		if (!res)
+		{
+			video_sources = std::make_shared<VideoSources>();
+			for (const auto* vs : response.VideoSources)
+			{
+				if (vs)
+					video_sources->tokens.push_back(vs->token);
+			}
+		}
+
+		return video_sources;
+	}
 	
 	std::string MediaService::get_stream_uri(const std::string& profileToken, StreamType type, TransportProtocol transport)
 	{

@@ -140,6 +140,7 @@ void MainWindow::slotVideoSettingsClicked()
 			auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
 			if(requestedDevice)
 			{
+				formVideoConf->fillInfo(requestedDevice->GetVideoSources(), requestedDevice->GetProfiles());
 			}
 			else
 				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
