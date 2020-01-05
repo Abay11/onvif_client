@@ -23,7 +23,7 @@ void DevicesManager::slotAddDevice(std::string ip, short port, std::string devic
     sigNewDeviceAdded(deviceInfo);
 }
 
-const _onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
+_onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
 {
     auto parsedInfo = addressInfo.split(":");
     if(parsedInfo.size() != 2) return nullptr;

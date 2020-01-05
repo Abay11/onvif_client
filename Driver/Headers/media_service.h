@@ -10,10 +10,16 @@ class MediaBindingProxy;
 
 namespace _onvif
 {
+	class ConnectionInfo;
+
 	class MediaService
 	{
 	public:
-		MediaService(soap* soap, const std::string& service_addr);
+		/**
+		A ConnectionInfo instance should be valid until a class object will be destroyed
+		and should be destroyed by client.
+		**/
+		MediaService(ConnectionInfo* connInfo, const std::string& media_service_uri);
 		~MediaService();
 
 	public:
@@ -22,9 +28,9 @@ namespace _onvif
 		std::string get_stream_uri(const std::string& profileToken, StreamType type = Unicast, TransportProtocol transport = UDP);
 
 	private:
-		soap* soap_context;
+		ConnectionInfo* conn_info_;
 		MediaBindingProxy* mediaProxy;
 
-		std::string service_addr_;
+		std::string media_service_uri_;
 	};
 }

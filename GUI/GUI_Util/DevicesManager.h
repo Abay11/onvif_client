@@ -20,7 +20,7 @@ public slots:
     void slotAddDevice(std::string ip, short port, std::string deviceServiceURI);
 
 public:
-    const _onvif::IDevice* getDevice(const QString& addressInfo);
+		_onvif::IDevice* getDevice(const QString& addressInfo);
 
 private:
     QList<_onvif::IDevice*> devices;

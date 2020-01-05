@@ -7,6 +7,8 @@
 
 namespace _onvif
 {
+	using StringList = std::list<std::string>;
+
 	//namespaces
 	enum SERVICES
 	{

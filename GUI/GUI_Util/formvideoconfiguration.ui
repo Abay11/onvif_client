@@ -53,9 +53,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-121</y>
+        <y>0</y>
         <width>589</width>
-        <height>638</height>
+        <height>651</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -99,6 +99,26 @@
             <widget class="QLabel" name="empty_lbl1">
              <property name="text">
               <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Profile name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="lblProfileName">
+             <property name="text">
+              <string>TextLabel</string>
              </property>
             </widget>
            </item>

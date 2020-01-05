@@ -19,12 +19,14 @@ namespace _onvif
 		Device(const std::string& endpoint, short port);
 		~Device();
 
-		//IDevice
+		///IDevice
 		virtual void Init(const std::string& login, const std::string& pass);
 		virtual void SetCreds(const std::string& login, const std::string& pass);
 		virtual void StartLive();
 		virtual void StopLive();
 		virtual std::string GetServiceAddress(SERVICES service);
+
+		///IDevice
 
 	public:
 		//some helpers

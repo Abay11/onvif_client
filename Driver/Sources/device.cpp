@@ -49,9 +49,11 @@ namespace _onvif
 		device_info_ = device_service_->get_device_info();
 
 		std::string addr = get_service_address(&services_, SERVICES::MEDIA_SERVICE);
-		media_service_ = new MediaService(soap_context_, addr);
+		media_service_ = new MediaService(conn_info_, addr);
 
 		fillONVIFGeneralInfo();
+
+		media_profiles_ = media_service_->get_profiles();
 	}
 
 	void Device::SetCreds(const std::string& login, const std::string& pass)

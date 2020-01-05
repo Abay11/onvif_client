@@ -1,4 +1,5 @@
 #include "media_service.h"
+#include "SoapHelpers.h"
 
 #include "soapStub.h"
 #include "soapMediaBindingProxy.h"
@@ -81,12 +82,12 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 
 namespace _onvif
 {
-	MediaService::MediaService(soap* soap, const std::string& service_addr)
-		:soap_context(soap),
-		mediaProxy(new MediaBindingProxy(soap_context)),
-		service_addr_(service_addr)
+	MediaService::MediaService(ConnectionInfo* connInfo, const std::string& media_service_uri)
+		:conn_info_(connInfo),
+		mediaProxy(new MediaBindingProxy(connInfo->getSoap())),
+		media_service_uri_(media_service_uri)
 	{
-		mediaProxy->soap_endpoint = service_addr_.c_str();
+		mediaProxy->soap_endpoint = media_service_uri_.c_str();
 	}
 
 	MediaService::~MediaService()
@@ -101,7 +102,10 @@ namespace _onvif
 		_trt__GetProfiles request;
 		_trt__GetProfilesResponse response;
 
-		if (mediaProxy->GetProfiles(&request, response) == SOAP_OK)
+		auto wrapper = [this](_trt__GetProfiles* r1, _trt__GetProfilesResponse& r2) {return mediaProxy->GetProfiles(r1, r2); };
+		int res = GSoapRequestWrapper<_trt__GetProfiles, _trt__GetProfilesResponse>(wrapper, &request, response, conn_info_);
+
+		if (res == SOAP_OK)
 		{
 			for (auto gprofile : response.Profiles)
 			{
@@ -140,9 +144,9 @@ namespace _onvif
 
 		_trt__GetStreamUri request;
 		request.ProfileToken = profileToken;
-		request.StreamSetup = soap_new_tt__StreamSetup(soap_context);
+		request.StreamSetup = soap_new_tt__StreamSetup(conn_info_->getSoap());
 		request.StreamSetup->Stream = static_cast<tt__StreamType>(type);
-		request.StreamSetup->Transport = soap_new_tt__Transport(soap_context);
+		request.StreamSetup->Transport = soap_new_tt__Transport(conn_info_->getSoap());
 		request.StreamSetup->Transport->Protocol = static_cast<tt__TransportProtocol>(transport);
 		_trt__GetStreamUriResponse response;
 		if (!mediaProxy->GetStreamUri(&request, response) && response.MediaUri)

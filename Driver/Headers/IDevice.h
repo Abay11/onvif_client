@@ -30,16 +30,23 @@ namespace _onvif
 
 		//should return a full address like http://ip:port//uri
 		virtual std::string GetServiceAddress(SERVICES service) = 0;
-
-		const CapabilitiesSP getCapabilities() const { return capabilities_; };
-		const DeviceInformationSP getDeviceInfo() const { return device_info_; };
-		const ONVIFGeneralInfoSP getONVIFGeneralInfo() const { return onvif_general_info_; };
+		
+		const CapabilitiesSP getCapabilities() const { return capabilities_; }
+        const DeviceInformationSP getDeviceInfo() const { return device_info_; }
+        const ONVIFGeneralInfoSP getONVIFGeneralInfo() const { return onvif_general_info_; }
+		
+		///////////////////////Media/////////////////////////
+		const Profiles* GetProfiles() const { return &media_profiles_; }
+		///////////////////////Media/////////////////////////
 	
+		
 	protected:		
 		Services services_;
 		DeviceInformationSP device_info_;
 		CapabilitiesSP capabilities_;
 		ONVIFGeneralInfoSP onvif_general_info_;
+
+		Profiles media_profiles_;
 
 		std::string ip_;
 		short port_;

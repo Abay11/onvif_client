@@ -95,16 +95,17 @@ void MainWindow::slotMaintenanceClicked()
         //setting the maintanance widget to the frame
 				FormDeviceMaintenance* formMaintenance = new FormDeviceMaintenance;
 
-        auto frameLayout = ui->frameWidgetsHolder->layout();
+				//switch on the maintaince widget
+				auto frameLayout = ui->frameWidgetsHolder->layout();
         if(!frameLayout)
         {
-            qDebug() << "Init new layout";
             ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
 						frameLayout = ui->frameWidgetsHolder->layout();
         }
 				else
+				{
 					deleteItems(frameLayout);
-
+				}
 				frameLayout->addWidget(formMaintenance);
 
         auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
@@ -113,24 +114,36 @@ void MainWindow::slotMaintenanceClicked()
 																			requestedDevice->getCapabilities(),
 																			requestedDevice->getONVIFGeneralInfo());
         else
-            qDebug() << "ERROR:" << "Can't find selected item from stored devices";
+						qDebug() << "ERROR:" << "Can't find selected item from stored devices";
     }
 }
 
 void MainWindow::slotVideoSettingsClicked()
 {
-    auto* frameLayout = ui->frameWidgetsHolder->layout();
-    if(!frameLayout)
-    {
+		auto selectedItem = ui->listWidget->currentItem();
+		if(selectedItem)
+			{
+			auto* frameLayout = ui->frameWidgetsHolder->layout();
+			if(!frameLayout)
+			{
 				qDebug() << "Init a new layout";
 				ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
 				frameLayout = ui->frameWidgetsHolder->layout();
-		}
-		else
-			deleteItems(frameLayout);
+			}
+			else
+				deleteItems(frameLayout);
 
-		auto* formVideoConf = new FormVideoConfiguration;
-		frameLayout->addWidget(formVideoConf);
+			auto* formVideoConf = new FormVideoConfiguration;
+
+			frameLayout->addWidget(formVideoConf);
+
+			auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
+			if(requestedDevice)
+			{
+			}
+			else
+				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
+		}
 }
 
 /////////////////////////////

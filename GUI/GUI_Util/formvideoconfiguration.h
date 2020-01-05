@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "types.h"
+
 namespace Ui {
 class FormVideoConfiguration;
 }
@@ -14,6 +16,9 @@ class FormVideoConfiguration : public QWidget
 public:
     explicit FormVideoConfiguration(QWidget *parent = nullptr);
     ~FormVideoConfiguration();
+
+	void fillInfo(const _onvif::VideoSourcesSP videoSources, const _onvif::Profiles* profiles);
+
 
 private:
     Ui::FormVideoConfiguration *ui;
