@@ -116,11 +116,14 @@ namespace _onvif
 
 	using CapabilitiesSP = std::shared_ptr<Capabilities>;
 
-	struct VideoSources
+	/*struct VideoSourceConfiguration
 	{
 		StringList tokens;
+		std::string bounds;
 	};
-	using VideoSourcesSP = std::shared_ptr<VideoSources>;
+	using VideoSourceSP = std::shared_ptr<VideoSourceConfiguration>;
+	using VideoSources = std::list<VideoSourceSP>;
+	*/
 
 	enum VideoEncoding
 	{
@@ -129,6 +132,14 @@ namespace _onvif
 		JPEG = 0,
 		MPEG,
 		H264
+	};
+
+	enum H264Profile
+	{
+		Baseline = 0,
+		Main = 1,
+		Extended = 2,
+		High = 3
 	};
 
 	enum AudioEncoding
@@ -164,12 +175,32 @@ namespace _onvif
 	class VideoSourceConfiguration : public BaseConfiguration
 	{
 	public:
+		std::string source_token;
+		std::string bounds;
 	};
+	using VideoSourceConfSP = std::shared_ptr<VideoSourceConfiguration>;
+	using VideoSources = std::list<VideoSourceConfSP>;
 
 	class VideoEncoderConfiguration : public BaseConfiguration
 	{
 	public:
-		VideoEncoding encoding;
+		std::string encoding;
+		std::string resolution;
+		float quality;
+		int framerate;
+		int encoding_interval;
+		int bitrate;
+		std::string codec_profile;
+		int gov_length;
+		/*
+			TODO: additional MPEG4 configurations
+		*/
+		std::string multicast_ip;
+		int multicast_port;
+		int multicast_ttl;
+		bool multicast_autostart;
+		std::string session_timeout;
+		//bool guaranteed_framerate; not used by current realisation
 	};
 
 	class AudioSourceConfiguration : public BaseConfiguration

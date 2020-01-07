@@ -37,8 +37,8 @@ namespace _onvif
 		
 		///////////////////////Media/////////////////////////
 		const Profiles* GetProfiles() const { return &media_profiles_; }
-		//Video sources should be saved to CapabiiltiesSP
-		virtual VideoSourcesSP GetVideoSources() = 0;
+		virtual VideoSources GetVideoSources() = 0;
+		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) = 0;
 		///////////////////////Media/////////////////////////
 	
 		
@@ -49,7 +49,7 @@ namespace _onvif
 		ONVIFGeneralInfoSP onvif_general_info_;
 
 		Profiles media_profiles_;
-		VideoSourcesSP video_sources_;
+		VideoSources video_sources_;
 
 		std::string ip_;
 		short port_;

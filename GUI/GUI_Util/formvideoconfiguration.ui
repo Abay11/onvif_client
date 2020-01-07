@@ -53,9 +53,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-150</y>
         <width>589</width>
-        <height>651</height>
+        <height>663</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -63,7 +63,7 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_2">
              <property name="font">
               <font>
@@ -72,14 +72,21 @@
               </font>
              </property>
              <property name="text">
-              <string>Video source</string>
+              <string>Set video source</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item row="2" column="1">
             <widget class="QComboBox" name="comboVideoSources"/>
            </item>
-           <item row="1" column="0">
+           <item row="5" column="0">
+            <widget class="QLabel" name="empty_lbl1">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
             <widget class="QLabel" name="label_4">
              <property name="font">
               <font>
@@ -92,17 +99,10 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="0" column="1">
             <widget class="QComboBox" name="comboMediaProfiles"/>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="empty_lbl1">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
+           <item row="1" column="0">
             <widget class="QLabel" name="label_11">
              <property name="font">
               <font>
@@ -115,7 +115,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="1" column="1">
             <widget class="QLabel" name="lblProfileName">
              <property name="text">
               <string>TextLabel</string>
@@ -417,7 +417,7 @@
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QComboBox" name="comboInterval"/>
+            <widget class="QComboBox" name="comboEncodingInterval"/>
            </item>
            <item row="8" column="0">
             <widget class="QLabel" name="label_22">
@@ -460,7 +460,7 @@
               </font>
              </property>
              <property name="text">
-              <string>H264 Profile</string>
+              <string>Codec profile</string>
              </property>
             </widget>
            </item>
@@ -481,7 +481,11 @@
             </widget>
            </item>
            <item row="11" column="1">
-            <widget class="QLineEdit" name="leMulticastIP"/>
+            <widget class="QLineEdit" name="leMulticastIP">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="12" column="0">
             <widget class="QLabel" name="label_26">
@@ -497,7 +501,11 @@
             </widget>
            </item>
            <item row="12" column="1">
-            <widget class="QLineEdit" name="leMulticastPort"/>
+            <widget class="QLineEdit" name="leMulticastPort">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="13" column="0">
             <widget class="QLabel" name="label_27">
@@ -513,7 +521,11 @@
             </widget>
            </item>
            <item row="13" column="1">
-            <widget class="QLineEdit" name="leMulticastTTL"/>
+            <widget class="QLineEdit" name="leMulticastTTL">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item row="14" column="0">
             <widget class="QLabel" name="label_28">
@@ -589,6 +601,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnUpdate">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Update info</string>
        </property>
@@ -596,6 +611,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnApply">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Apply</string>
        </property>
@@ -603,6 +621,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnCancel">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Cancel</string>
        </property>

@@ -27,7 +27,8 @@ namespace _onvif
 		virtual std::string GetServiceAddress(SERVICES service);
 
 		//Media
-		virtual VideoSourcesSP GetVideoSources();
+		virtual VideoSources GetVideoSources();
+		virtual VideoSources GetCompatibleVideoSources(const std::string& profile);
 
 		///IDevice
 

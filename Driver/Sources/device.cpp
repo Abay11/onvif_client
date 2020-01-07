@@ -86,14 +86,19 @@ namespace _onvif
 		return address_stream.str();
 	}
 
-	VideoSourcesSP Device::GetVideoSources()
+	VideoSources Device::GetVideoSources()
 	{
-		if (!video_sources_)
+		if (video_sources_.empty())
 		{
 			video_sources_ = media_service_->get_video_sources();
 		}
 
 		return video_sources_;
+	}
+
+	VideoSources Device::GetCompatibleVideoSources(const std::string& profile)
+	{
+		return media_service_->get_compatible_videosources(profile);
 	}
 
 	void Device::fillONVIFGeneralInfo()

@@ -17,7 +17,8 @@ public:
     explicit FormVideoConfiguration(QWidget *parent = nullptr);
     ~FormVideoConfiguration();
 
-	void fillInfo(const _onvif::VideoSourcesSP videoSources, const _onvif::Profiles* profiles);
+	void fillInfo(const _onvif::Profiles* profiles,
+								const _onvif::VideoSources& videoSources);
 
 
 private:

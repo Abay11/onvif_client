@@ -1,13 +1,48 @@
 #include "media_service.h"
 #include "SoapHelpers.h"
+#include "types.h"
 
 #include "soapStub.h"
 #include "soapMediaBindingProxy.h"
 #include "wsseapi.h"
 
 #include <list>
+#include <sstream>
 
 extern SOAP_NMAC struct Namespace namespaces[];
+
+//free-helpers functions
+std::string encodingToString(_onvif::VideoEncoding e)
+{
+	using namespace _onvif;
+
+	switch (e)
+	{
+	case VideoEncoding::H264: return "H264";
+	case VideoEncoding::JPEG: return "JPEG";
+	case VideoEncoding::MPEG: return "MPEG";
+	}
+}
+
+std::string resolutionToString(int weight, int height)
+{
+	std::stringstream ss;
+	ss << weight << "x" << height;
+	return ss.str();
+}
+
+std::string h264ProfileToString(_onvif::H264Profile profile_code)
+{
+	using namespace _onvif;
+
+	switch (profile_code)
+	{
+	case Baseline: return "Baseline";
+	case Main: return "Main";
+	case Extended: return "Extended";
+	case High: return "High";
+	}
+}
 
 //help to copy data from gSoap type Profile
 //to our type Profile
@@ -24,6 +59,9 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 		p.videoSource->name = gp->VideoSourceConfiguration->Name;
 		p.videoSource->token = gp->VideoSourceConfiguration->token;
 		p.videoSource->useCount = gp->VideoSourceConfiguration->UseCount;
+
+		if(auto* bounds = gp->VideoSourceConfiguration->Bounds)
+			p.videoSource->bounds = resolutionToString(bounds->width, bounds->height);
 	}
 
 	if (gp->VideoEncoderConfiguration)
@@ -34,7 +72,40 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 		p.videoEncoder->token = gp->VideoEncoderConfiguration->token;
 		p.videoEncoder->useCount = gp->VideoEncoderConfiguration->UseCount;
 		//this convertion correct only if order of the encoder the same in both types
-		p.videoEncoder->encoding = static_cast<_onvif::VideoEncoding>(gp->VideoEncoderConfiguration->Encoding);
+		p.videoEncoder->encoding = encodingToString(static_cast<_onvif::VideoEncoding>(gp->VideoEncoderConfiguration->Encoding));
+
+		p.videoEncoder->resolution = resolutionToString(gp->VideoEncoderConfiguration->Resolution->Width,
+			gp->VideoEncoderConfiguration->Resolution->Height);
+		p.videoEncoder->quality = gp->VideoEncoderConfiguration->Quality;
+		p.videoEncoder->framerate = gp->VideoEncoderConfiguration->RateControl->FrameRateLimit;
+		p.videoEncoder->encoding_interval = gp->VideoEncoderConfiguration->RateControl->EncodingInterval;
+		p.videoEncoder->bitrate = gp->VideoEncoderConfiguration->RateControl->BitrateLimit;
+
+		if (auto h264_props = gp->VideoEncoderConfiguration->H264)
+		{
+			//this convertion is dangerous and the order of the enums should be exactly the same
+			p.videoEncoder->codec_profile = h264ProfileToString(
+				static_cast<_onvif::H264Profile>(h264_props->H264Profile));
+			p.videoEncoder->gov_length = h264_props->GovLength;
+		}
+
+		/* NOTE: current implementation not use MPEG4 extentions
+		if (auto mpeg4_props = gp->VideoEncoderConfiguration->MPEG4)
+		{
+			mpeg4_props->Mpeg4Profile;
+		}
+		*/
+
+		if (auto ipv4 = gp->VideoEncoderConfiguration->Multicast->Address->IPv4Address)
+			p.videoEncoder->multicast_ip = *ipv4;
+		else if(auto ipv6 = gp->VideoEncoderConfiguration->Multicast->Address->IPv6Address)
+			p.videoEncoder->multicast_ip = *ipv6;
+
+		p.videoEncoder->multicast_port = gp->VideoEncoderConfiguration->Multicast->Port;
+		p.videoEncoder->multicast_ttl = gp->VideoEncoderConfiguration->Multicast->TTL;
+		p.videoEncoder->multicast_autostart = gp->VideoEncoderConfiguration->Multicast->AutoStart;
+		
+		p.videoEncoder->session_timeout = gp->VideoEncoderConfiguration->SessionTimeout;
 	}
 
 	if (gp->AudioSourceConfiguration)
@@ -79,6 +150,7 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 		p.metadata->useCount = gp->MetadataConfiguration->UseCount;
 	}
 }
+//free-helpers functions
 
 namespace _onvif
 {
@@ -138,23 +210,63 @@ namespace _onvif
 		return profile;
 	}
 
-	VideoSourcesSP MediaService::get_video_sources()
+	VideoSources MediaService::get_video_sources()
 	{
-		//the current realisation uses only tokens
+		//NOTE: current realisation uses only tokens
+
 		_trt__GetVideoSources request;
 		_trt__GetVideoSourcesResponse response;
 		auto wrapper = [this](_trt__GetVideoSources* r1, _trt__GetVideoSourcesResponse& r2) {return mediaProxy->GetVideoSources(r1, r2); };
 		int res = GSoapRequestWrapper<_trt__GetVideoSources, _trt__GetVideoSourcesResponse>(wrapper, &request, response, conn_info_);
 
-		VideoSourcesSP video_sources;
+		VideoSources video_sources;
 		StringList sources_list;
 		if (!res)
 		{
-			video_sources = std::make_shared<VideoSources>();
-			for (const auto* vs : response.VideoSources)
+			for (auto* vs : response.VideoSources)
 			{
 				if (vs)
-					video_sources->tokens.push_back(vs->token);
+				{
+					auto video_source_sp = std::make_shared<VideoSourceConfiguration>();
+					video_source_sp->source_token = vs->token;
+					if(auto* res = vs->Resolution)
+						video_source_sp->bounds = resolutionToString(res->Width, res->Height);
+
+					video_sources.push_back(video_source_sp);
+				}
+			}
+		}
+
+		return video_sources;
+	}
+
+	VideoSources MediaService::get_compatible_videosources(const std::string& profile_token)
+	{
+		using T1 = _trt__GetCompatibleVideoSourceConfigurations;
+		using T2 = _trt__GetCompatibleVideoSourceConfigurationsResponse;
+		T1 request;
+		request.ProfileToken = profile_token;
+		T2 response;
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetCompatibleVideoSourceConfigurations(r1, r2); };
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+
+		VideoSources video_sources;
+		if (!res)
+		{
+			for (const auto* vs : response.Configurations)
+			{
+				if (vs)
+				{
+					auto video_source_sp = std::make_shared<VideoSourceConfiguration>();
+
+					video_source_sp->token = vs->token;
+					video_source_sp->name = vs->Name;
+					video_source_sp->source_token = vs->SourceToken;
+					video_source_sp->bounds = resolutionToString(vs->Bounds->width,
+						vs->Bounds->height);
+
+					video_sources.push_back(video_source_sp);
+				}
 			}
 		}
 
