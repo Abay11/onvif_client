@@ -31,6 +31,10 @@ add_executable(GUI_Util
   FormVideoConfiguration.cpp
   FormVideoConfiguration.h
   FormVideoConfiguration.ui
+  DialogWaiting.cpp
+  DialogWaiting.h
+  DialogWaiting.ui
+  Resources.qrc
 )
 
 include_directories("${ROOT_DIR}/Driver/Headers")
