@@ -5,6 +5,10 @@
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
+
+class FormVideoConfiguration;
+class FormDeviceMaintenance;
+
 QT_END_NAMESPACE
 
 class DevicesManager;
@@ -22,6 +26,10 @@ private:
     Ui::MainWindow *ui;
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
+
+		//forms
+		FormVideoConfiguration* formVideoConf = nullptr;
+		FormDeviceMaintenance* formMaintenance = nullptr;
 
 signals:
     void sigAddDevice(std::string ip, short port, std::string uri);

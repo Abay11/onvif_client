@@ -90,10 +90,15 @@ void MainWindow::slotMaintenanceClicked()
     auto selectedItem = ui->listWidget->currentItem();
     if(selectedItem)
     {
-        qDebug() << "Current selected item:" << selectedItem->text();
-
         //setting the maintanance widget to the frame
-				FormDeviceMaintenance* formMaintenance = new FormDeviceMaintenance;
+				if(formMaintenance)
+				{
+					formMaintenance->setVisible(true);
+				}
+				else
+				{
+					formMaintenance = new FormDeviceMaintenance(this);
+				}
 
 				//switch on the maintaince widget
 				auto frameLayout = ui->frameWidgetsHolder->layout();
@@ -133,7 +138,14 @@ void MainWindow::slotVideoSettingsClicked()
 			else
 				deleteItems(frameLayout);
 
-			auto* formVideoConf = new FormVideoConfiguration;
+			if(formVideoConf)
+			{
+				formVideoConf->setVisible(true);
+			}
+			else
+			{
+				formVideoConf = new FormVideoConfiguration(this);
+			}
 
 			frameLayout->addWidget(formVideoConf);
 
@@ -160,7 +172,7 @@ void deleteItems(QLayout* layout)
 {
 	if(auto child = layout->takeAt(0)) // by current implementation it is assumed that layout will hold one child
 	{
-		delete child->widget();
+		child->widget()->setVisible(false);
 		delete child;
 	}
 }
