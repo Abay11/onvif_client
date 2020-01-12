@@ -260,5 +260,5 @@ namespace _onvif
 	};
 
 	using ProfileSP = std::shared_ptr<Profile>;
-	using Profiles = std::list<ProfileSP>;
+	using Profiles = std::vector<ProfileSP>;
 }

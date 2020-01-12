@@ -50,5 +50,9 @@ private slots:
     //slots to handle a device functionality
     void slotMaintenanceClicked();
     void slotVideoSettingsClicked();
+
+		//the slot to load info for specified profile
+		//uses when a user switches media profiles on the video configuration form
+		void slotMediaProfileSwitched(int new_index);
 };
 #endif // MAINWINDOW_H

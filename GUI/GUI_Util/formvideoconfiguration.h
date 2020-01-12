@@ -20,6 +20,8 @@ public:
 	void fillInfo(const _onvif::Profiles* profiles,
 								const _onvif::VideoSources& videoSources);
 
+signals:
+		void sigMediaProfilesSwitched(int new_index);
 
 private:
     Ui::FormVideoConfiguration *ui;

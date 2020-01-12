@@ -145,6 +145,8 @@ void MainWindow::slotVideoSettingsClicked()
 			else
 			{
 				formVideoConf = new FormVideoConfiguration(this);
+				connect(formVideoConf, &FormVideoConfiguration::sigMediaProfilesSwitched,
+								this, &MainWindow::slotMediaProfileSwitched);
 			}
 
 			frameLayout->addWidget(formVideoConf);
@@ -162,6 +164,26 @@ void MainWindow::slotVideoSettingsClicked()
 			else
 				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
 		}
+}
+
+void MainWindow::slotMediaProfileSwitched(int new_index)
+{
+	qDebug() << "Need to load info for a profile: " << new_index;
+
+	auto selectedItem = ui->listWidget->currentItem();
+	if(selectedItem)
+	{
+		auto device = devicesMgr->getDevice(selectedItem->text());
+		if(device == nullptr)
+		{
+			qDebug() << "Can't find specified device";
+			return;
+		}
+
+		formVideoConf->fillInfo(device->GetProfiles(),
+														device->GetVideoSources(),
+														new_index);
+	}
 }
 
 /////////////////////////////

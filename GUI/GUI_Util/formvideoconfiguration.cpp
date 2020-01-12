@@ -8,6 +8,9 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
     ui(new Ui::FormVideoConfiguration)
 {
     ui->setupUi(this);
+
+		connect(ui->comboMediaProfiles, SIGNAL(activated(int)),
+						this, SIGNAL(sigMediaProfilesSwitched(int)));
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -17,8 +20,14 @@ FormVideoConfiguration::~FormVideoConfiguration()
 }
 
 void FormVideoConfiguration::fillInfo(const _onvif::Profiles* profiles,
-																			const _onvif::VideoSources& videoSources)
+																			const _onvif::VideoSources& videoSources, int profile_index)
 {
+	if(profile_index >= profiles->size())
+	{
+		qDebug() << "skip invalid profile_index";
+		profile_index = 0;
+	}
+
 	//fill media profiles
 	QStringList profile_names;
 	for(const auto& p : *profiles)
@@ -28,8 +37,9 @@ void FormVideoConfiguration::fillInfo(const _onvif::Profiles* profiles,
 
 	ui->comboMediaProfiles->clear();
 	ui->comboMediaProfiles->addItems(profile_names);
+	ui->comboMediaProfiles->setCurrentIndex(profile_index);
 
-	auto current_profile = profiles->front();
+	auto current_profile = profiles->at(profile_index);
 
 	ui->lblProfileName->setText(current_profile->Name.c_str());
 
