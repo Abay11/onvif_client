@@ -25,6 +25,7 @@ namespace _onvif
 	public:
 		Profiles get_profiles();
 		ProfileSP get_profile(const std::string& token);
+		VideoEncoderOptionsSP get_videoencoders_opts(const std::string& profile_token, const std::string& enc_token);
 		VideoSources get_video_sources();
 		VideoSources get_compatible_videosources(const std::string& profile_token);
 		std::string get_stream_uri(const std::string& profileToken, StreamType type = Unicast, TransportProtocol transport = UDP);

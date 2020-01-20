@@ -101,6 +101,11 @@ namespace _onvif
 		return media_service_->get_compatible_videosources(profile);
 	}
 
+	VideoEncoderOptionsSP Device::GetVideoEncoderOptions(const std::string& profile, const std::string& encToken)
+	{
+		return media_service_->get_videoencoders_opts(profile, encToken);
+	}
+
 	void Device::fillONVIFGeneralInfo()
 	{
 		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();

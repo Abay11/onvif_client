@@ -44,6 +44,58 @@ std::string h264ProfileToString(_onvif::H264Profile profile_code)
 	}
 }
 
+_onvif::VideoEncoderConfigurationSP soapVEncoderToEncoder(const tt__VideoEncoderConfiguration* svec)
+{
+	using namespace _onvif;
+
+	VideoEncoderConfigurationSP vencoder;
+	if (svec)
+	{
+		vencoder = std::make_unique<VideoEncoderConfiguration>();
+
+		vencoder->name = svec->Name;
+		vencoder->token = svec->token;
+		vencoder->useCount = svec->UseCount;
+		//this convertion correct only if order of the encoder the same in both types
+		vencoder->encoding = encodingToString(static_cast<_onvif::VideoEncoding>(svec->Encoding));
+
+		vencoder->resolution = resolutionToString(svec->Resolution->Width,
+			svec->Resolution->Height);
+		vencoder->quality = svec->Quality;
+		vencoder->framerate = svec->RateControl->FrameRateLimit;
+		vencoder->encoding_interval = svec->RateControl->EncodingInterval;
+		vencoder->bitrate = svec->RateControl->BitrateLimit;
+
+		if (auto h264_props = svec->H264)
+		{
+			//this convertion is dangerous and the order of the enums should be exactly the same
+			vencoder->codec_profile = h264ProfileToString(
+				static_cast<_onvif::H264Profile>(h264_props->H264Profile));
+			vencoder->gov_length = h264_props->GovLength;
+		}
+
+		/* NOTE: current implementation not use MPEG4 extentions
+		if (auto mpeg4_props = gp->VideoEncoderConfiguration->MPEG4)
+		{
+			mpeg4_props->Mpeg4Profile;
+		}
+		*/
+
+		if (auto ipv4 = svec->Multicast->Address->IPv4Address)
+			vencoder->multicast_ip = *ipv4;
+		else if (auto ipv6 = svec->Multicast->Address->IPv6Address)
+			vencoder->multicast_ip = *ipv6;
+
+		vencoder->multicast_port = svec->Multicast->Port;
+		vencoder->multicast_ttl = svec->Multicast->TTL;
+		vencoder->multicast_autostart = svec->Multicast->AutoStart;
+
+		vencoder->session_timeout = svec->SessionTimeout;
+	}
+
+	return vencoder;
+}
+
 //help to copy data from gSoap type Profile
 //to our type Profile
 void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
@@ -64,49 +116,7 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 			p.videoSource->bounds = resolutionToString(bounds->width, bounds->height);
 	}
 
-	if (gp->VideoEncoderConfiguration)
-	{
-		p.videoEncoder = new _onvif::VideoEncoderConfiguration;
-
-		p.videoEncoder->name = gp->VideoEncoderConfiguration->Name;
-		p.videoEncoder->token = gp->VideoEncoderConfiguration->token;
-		p.videoEncoder->useCount = gp->VideoEncoderConfiguration->UseCount;
-		//this convertion correct only if order of the encoder the same in both types
-		p.videoEncoder->encoding = encodingToString(static_cast<_onvif::VideoEncoding>(gp->VideoEncoderConfiguration->Encoding));
-
-		p.videoEncoder->resolution = resolutionToString(gp->VideoEncoderConfiguration->Resolution->Width,
-			gp->VideoEncoderConfiguration->Resolution->Height);
-		p.videoEncoder->quality = gp->VideoEncoderConfiguration->Quality;
-		p.videoEncoder->framerate = gp->VideoEncoderConfiguration->RateControl->FrameRateLimit;
-		p.videoEncoder->encoding_interval = gp->VideoEncoderConfiguration->RateControl->EncodingInterval;
-		p.videoEncoder->bitrate = gp->VideoEncoderConfiguration->RateControl->BitrateLimit;
-
-		if (auto h264_props = gp->VideoEncoderConfiguration->H264)
-		{
-			//this convertion is dangerous and the order of the enums should be exactly the same
-			p.videoEncoder->codec_profile = h264ProfileToString(
-				static_cast<_onvif::H264Profile>(h264_props->H264Profile));
-			p.videoEncoder->gov_length = h264_props->GovLength;
-		}
-
-		/* NOTE: current implementation not use MPEG4 extentions
-		if (auto mpeg4_props = gp->VideoEncoderConfiguration->MPEG4)
-		{
-			mpeg4_props->Mpeg4Profile;
-		}
-		*/
-
-		if (auto ipv4 = gp->VideoEncoderConfiguration->Multicast->Address->IPv4Address)
-			p.videoEncoder->multicast_ip = *ipv4;
-		else if(auto ipv6 = gp->VideoEncoderConfiguration->Multicast->Address->IPv6Address)
-			p.videoEncoder->multicast_ip = *ipv6;
-
-		p.videoEncoder->multicast_port = gp->VideoEncoderConfiguration->Multicast->Port;
-		p.videoEncoder->multicast_ttl = gp->VideoEncoderConfiguration->Multicast->TTL;
-		p.videoEncoder->multicast_autostart = gp->VideoEncoderConfiguration->Multicast->AutoStart;
-		
-		p.videoEncoder->session_timeout = gp->VideoEncoderConfiguration->SessionTimeout;
-	}
+	p.videoEncoder = soapVEncoderToEncoder(gp->VideoEncoderConfiguration);
 
 	if (gp->AudioSourceConfiguration)
 	{
@@ -208,6 +218,140 @@ namespace _onvif
 		}
 
 		return profile;
+	}
+
+	VideoEncoderOptionsSP MediaService::get_videoencoders_opts(const std::string& profile_token, const std::string& enc_token)
+	{
+		VideoEncoderOptionsSP options;
+
+		using T1 = _trt__GetVideoEncoderConfigurationOptions;
+		using T2 = _trt__GetVideoEncoderConfigurationOptionsResponse;
+
+		T1 request;
+		//request.ProfileToken = token;
+		T2 response;
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetVideoEncoderConfigurationOptions(r1, r2); };
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+
+		auto* opts = response.Options;
+		if (res == SOAP_OK && opts)
+		{
+			options = std::make_shared<VideoEncoderOptions>();
+
+			if (opts->QualityRange)
+			{
+				options->QualityMax = opts->QualityRange->Max;
+				options->QualityMin = opts->QualityRange->Min;
+			}
+
+			if (auto* j = opts->JPEG)
+			{
+				auto& jpeg = options->JPEGOptions;
+				jpeg.isInit = true;
+
+				for (const auto* r : j->ResolutionsAvailable)
+					if (r) jpeg.Resolutions.push_back(resolutionToString(r->Width, r->Height));
+
+				if (const auto* f = j->FrameRateRange)
+				{
+					jpeg.FrameRateMax = f->Max;
+					jpeg.FrameRateMax = f->Min;
+				}
+
+				if (const auto* e = j->EncodingIntervalRange)
+				{
+					jpeg.EncodingIntervalMax = e->Max;
+					jpeg.EncodingIntervalMin = e->Min;
+				}
+			}
+
+			/*
+			if (const auto* m = opts->MPEG4)
+			{
+				auto& mpeg = options->MPEGOptions;
+				mpeg.isInit = true;
+
+				for (const auto* res : m->ResolutionsAvailable)
+					if (res) mpeg.Resolutions.push_back(resolutionToString(res->Width, res->Height));
+
+				if (const auto* gov = m->GovLengthRange)
+				{
+					mpeg.GovLengthMax = gov->Max;
+					mpeg.GovLengthMin = gov->Min;
+				}
+
+				if (const auto* fr = m->FrameRateRange)
+				{
+					mpeg.FrameRateMax = fr->Max;
+					mpeg.FrameRateMin = fr->Min;
+				}
+
+				if (const auto* ei = m->EncodingIntervalRange)
+				{
+					mpeg.EncodingIntervalMax = ei->Max;
+					mpeg.EncodingIntervalMin = ei->Min;
+				}
+
+				// SKIP MPEG Profiles// for (const auto& prof : m->Mpeg4ProfilesSupported){}
+			}
+			*/
+
+			if (const auto* h = opts->H264)
+			{
+				auto& h264 = options->H264Options;
+				h264.isInit = true;
+
+				for (const auto* res : h->ResolutionsAvailable)
+					if (res) h264.Resolutions.push_back(resolutionToString(res->Width, res->Height));
+
+				if (const auto* gov = h->GovLengthRange)
+				{
+					h264.GovLengthMax = gov->Max;
+					h264.GovLengthMin = gov->Min;
+				}
+
+				if (const auto* fr = h->FrameRateRange)
+				{
+					h264.FrameRateMax = fr->Max;
+					h264.FrameRateMin = fr->Min;
+				}
+
+				if (const auto* ei = h->EncodingIntervalRange)
+				{
+					h264.EncodingIntervalMax = ei->Max;
+					h264.EncodingIntervalMin = ei->Min;
+				}
+
+				for (const auto & pr : h->H264ProfilesSupported)
+					h264.Profiles.push_back(h264ProfileToString(static_cast<_onvif::H264Profile>(pr)));
+			}
+		}
+
+		return options;
+	}
+
+	VideoEncoderConfigs MediaService::get_compatible_videoencoders(const std::string& token)
+	{
+		VideoEncoderConfigs encoders;
+
+		using T1 = _trt__GetCompatibleVideoEncoderConfigurations;
+		using T2 = _trt__GetCompatibleVideoEncoderConfigurationsResponse;
+
+		T1 request;
+		request.ProfileToken = token;
+		T2 response;
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetCompatibleVideoEncoderConfigurations(r1, r2); };
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+		if (!res)
+		{
+			for (auto soapEncoder : response.Configurations)
+			{
+				auto encoder = soapVEncoderToEncoder(soapEncoder);
+				if (encoder) encoders.push_back(encoder);
+			}
+		}
+
+		return encoders;
 	}
 
 	VideoSources MediaService::get_video_sources()

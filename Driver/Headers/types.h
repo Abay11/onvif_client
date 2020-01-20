@@ -142,6 +142,12 @@ namespace _onvif
 		High = 3
 	};
 
+	enum MPEGProfile
+	{
+		SP = 0,
+		ASP = 1
+	};
+
 	enum AudioEncoding
 	{
 		G711,
@@ -202,6 +208,46 @@ namespace _onvif
 		std::string session_timeout;
 		//bool guaranteed_framerate; not used by current realisation
 	};
+
+	//Simple uses for JPEG codec,
+	//other codes have GOV length, etc.
+	struct SimpleCodecOptions
+	{
+		bool isInit = false;
+
+		std::vector<std::string> Resolutions;
+
+		int FrameRateMin = 0;
+		int FrameRateMax = 0;
+
+		int EncodingIntervalMin = 0;
+		int EncodingIntervalMax = 0;
+
+		int BitrateRangeMin = 0;
+		int BitrateRangeMax = 0;
+	};
+
+	//Extended SimpleCodecOptions for H264, MPEG etc
+	struct ComplexCodecOptions : public SimpleCodecOptions
+	{
+		int GovLengthMin = 0;
+		int GovLengthMax = 0;
+
+		//I think this one can be used for both h264 and mpeg profiles
+		std::vector<std::string> Profiles;
+	};
+
+	class VideoEncoderOptions
+	{
+	public:
+		int QualityMin = 0;
+		int QualityMax = 0;
+
+		SimpleCodecOptions JPEGOptions;
+		ComplexCodecOptions MPEGOptions;
+		ComplexCodecOptions H264Options;
+	};
+	using VideoEncoderOptionsSP = std::shared_ptr<VideoEncoderOptions>;
 
 	class AudioSourceConfiguration : public BaseConfiguration
 	{

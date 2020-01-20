@@ -39,6 +39,7 @@ namespace _onvif
 		const Profiles* GetProfiles() const { return &media_profiles_; }
 		virtual VideoSources GetVideoSources() = 0;
 		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) = 0;
+		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) = 0;
 		///////////////////////Media/////////////////////////
 	
 		
