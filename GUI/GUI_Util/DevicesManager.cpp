@@ -36,3 +36,11 @@ _onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
 
     return nullptr;
 }
+
+_onvif::IDevice *DevicesManager::getDevice(int index)
+{
+	if(devices.size() > index)
+		return devices.at(index);
+
+	return nullptr;
+}

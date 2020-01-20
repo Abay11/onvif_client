@@ -152,14 +152,21 @@ void MainWindow::slotVideoSettingsClicked()
 			frameLayout->addWidget(formVideoConf);
 
 			auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-			if(requestedDevice)
+			if(requestedDevice && requestedDevice->GetProfiles()
+				 && requestedDevice->GetProfiles()->front())
 			{
 				auto profiles = requestedDevice->GetProfiles();
 
+				//take the first profile as default and set it settings to the form
+				std::string current_profile_token = profiles->front()->token.c_str();
 				//as default show configs of the first profile from profiles list
-				auto videoSources = requestedDevice->GetCompatibleVideoSources(profiles->front()->token.c_str());
+				auto videoSources = requestedDevice->GetCompatibleVideoSources(current_profile_token);
 
+				//set current settings
 				formVideoConf->fillInfo(profiles, videoSources);
+				//set available settings
+				auto encoders = requestedDevice->GetVideoEncoderOptions(current_profile_token, profiles->front()->videoEncoder->token);
+				formVideoConf->appendInfo(encoders);
 			}
 			else
 				qDebug() << "ERROR:" << "Can't find selected item from stored devices";

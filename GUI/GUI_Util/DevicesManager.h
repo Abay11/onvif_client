@@ -21,6 +21,7 @@ public slots:
 
 public:
 		_onvif::IDevice* getDevice(const QString& addressInfo);
+		_onvif::IDevice* getDevice(int index);
 
 private:
     QList<_onvif::IDevice*> devices;
