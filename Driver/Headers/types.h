@@ -7,7 +7,7 @@
 
 namespace _onvif
 {
-	using StringList = std::list<std::string>;
+	using StringList = std::vector<std::string>;
 
 	//namespaces
 	enum SERVICES
@@ -306,5 +306,5 @@ namespace _onvif
 	};
 
 	using ProfileSP = std::shared_ptr<Profile>;
-	using Profiles = std::vector<ProfileSP>;
+	using Profiles = std::shared_ptr<std::vector<ProfileSP>>;
 }

@@ -90,13 +90,17 @@ namespace _onvif
 	{
 		if (video_sources_.empty())
 		{
-			video_sources_ = media_service_->get_video_sources();
-		}
-
-		return video_sources_;
+	Profiles Device::GetProfiles() const
+	{
+		return media_service_->get_profiles();
 	}
 
-	VideoSources Device::GetCompatibleVideoSources(const std::string& profile)
+	VideoSources Device::GetVideoSources() const
+	{
+		return media_service_->get_video_sources();
+	}
+
+	VideoSources Device::GetCompatibleVideoSources(const std::string& profile) const
 	{
 		return media_service_->get_compatible_videosources(profile);
 	}

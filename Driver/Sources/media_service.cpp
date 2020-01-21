@@ -189,13 +189,14 @@ namespace _onvif
 
 		if (res == SOAP_OK)
 		{
+			profiles = std::make_shared <std::vector<ProfileSP>>();
 			for (auto gprofile : response.Profiles)
 			{
 				if (gprofile)
 				{
 					auto profile = std::make_shared<Profile>();
 					soapProfileToProfile(gprofile, *profile);
-					profiles.push_back(profile);
+					profiles->push_back(profile);
 				}
 			}
 		}
