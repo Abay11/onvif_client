@@ -18,7 +18,7 @@ public:
     ~FormVideoConfiguration();
 
 	// the method will erase all previous settings and set updated settings for a specified profile
-	void fillInfo(const _onvif::Profiles* profiles,
+	void fillInfo(const _onvif::Profiles profiles,
 								const _onvif::VideoSources& videoSources,
 								int profile_index = 0);
 

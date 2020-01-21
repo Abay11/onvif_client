@@ -19,7 +19,7 @@ FormVideoConfiguration::~FormVideoConfiguration()
 	qDebug() << "FormVideoConfiguration deleted";
 }
 
-void FormVideoConfiguration::fillInfo(const _onvif::Profiles* profiles,
+void FormVideoConfiguration::fillInfo(const _onvif::Profiles profiles,
 																			const _onvif::VideoSources& videoSources, int profile_index)
 {
 	if(profile_index >= profiles->size())
