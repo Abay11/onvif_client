@@ -242,6 +242,8 @@ namespace _onvif
 	public:
 		int QualityMin = 0;
 		int QualityMax = 0;
+		
+		std::vector<std::string> Resolutions;
 
 		SimpleCodecOptions JPEGOptions;
 		ComplexCodecOptions MPEGOptions;
@@ -287,6 +289,7 @@ namespace _onvif
 
 		VideoSourceConfiguration* videoSource = nullptr;
 		VideoEncoderConfiguration* videoEncoder = nullptr;
+		VideoEncoderOptionsSP videoEncoderOptions;
 		AudioSourceConfiguration* audioSource = nullptr;
 		AudioEncoderConfiguration* audioEncoder = nullptr;
 		VideoAnalyticsConfiguration* videoAnalytics = nullptr;

@@ -36,10 +36,11 @@ namespace _onvif
         const ONVIFGeneralInfoSP getONVIFGeneralInfo() const { return onvif_general_info_; }
 		
 		///////////////////////Media/////////////////////////
-		const Profiles* GetProfiles() const { return &media_profiles_; }
-		virtual VideoSources GetVideoSources() = 0;
-		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) = 0;
-		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) = 0;
+		virtual StringList GetProfilesTokens() const = 0;
+		virtual Profiles GetProfiles() const = 0;
+		virtual ProfileSP GetProfile(const std::string& token) const = 0;
+		virtual VideoSources GetVideoSources() const = 0;
+		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const = 0;
 		///////////////////////Media/////////////////////////
 	
 		
@@ -48,9 +49,6 @@ namespace _onvif
 		DeviceInformationSP device_info_;
 		CapabilitiesSP capabilities_;
 		ONVIFGeneralInfoSP onvif_general_info_;
-
-		Profiles media_profiles_;
-		VideoSources video_sources_;
 
 		std::string ip_;
 		short port_;

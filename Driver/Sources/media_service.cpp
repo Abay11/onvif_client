@@ -31,6 +31,14 @@ std::string resolutionToString(int weight, int height)
 	return ss.str();
 }
 
+std::string mpegProfileToString(_onvif::MPEGProfile profile_code)
+{
+	using namespace _onvif;
+
+	if (profile_code == SP) return "SP";
+	return "ASP";
+}
+
 std::string h264ProfileToString(_onvif::H264Profile profile_code)
 {
 	using namespace _onvif;
@@ -207,10 +215,15 @@ namespace _onvif
 	ProfileSP MediaService::get_profile(const std::string& token) {
 		ProfileSP profile = std::make_shared<Profile>();
 
-		_trt__GetProfile request;
+		using T1 = _trt__GetProfile;
+		using T2 = _trt__GetProfileResponse;
+
+		T1 request;
 		request.ProfileToken = token;
-		_trt__GetProfileResponse response;
-		if (!mediaProxy->GetProfile(&request, response))
+		T2 response;
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetProfile(r1, r2); };
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+		if (res == SOAP_OK)
 		{
 			if (response.Profile)
 			{
@@ -229,7 +242,10 @@ namespace _onvif
 		using T2 = _trt__GetVideoEncoderConfigurationOptionsResponse;
 
 		T1 request;
-		//request.ProfileToken = token;
+		request.ProfileToken = soap_new_std__string(conn_info_->getSoap());
+		*request.ProfileToken = profile_token;
+		request.ConfigurationToken = soap_new_std__string(conn_info_->getSoap());
+		*request.ConfigurationToken = enc_token;
 		T2 response;
 		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetVideoEncoderConfigurationOptions(r1, r2); };
 		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
@@ -266,7 +282,6 @@ namespace _onvif
 				}
 			}
 
-			/*
 			if (const auto* m = opts->MPEG4)
 			{
 				auto& mpeg = options->MPEGOptions;
@@ -293,9 +308,11 @@ namespace _onvif
 					mpeg.EncodingIntervalMin = ei->Min;
 				}
 
-				// SKIP MPEG Profiles// for (const auto& prof : m->Mpeg4ProfilesSupported){}
+				for (const auto& prof : m->Mpeg4ProfilesSupported)
+				{
+					mpeg.Profiles.push_back(mpegProfileToString(static_cast<_onvif::MPEGProfile>(prof)));
+				}
 			}
-			*/
 
 			if (const auto* h = opts->H264)
 			{

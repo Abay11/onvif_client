@@ -17,14 +17,17 @@ public:
     explicit FormVideoConfiguration(QWidget *parent = nullptr);
     ~FormVideoConfiguration();
 
-	// the method will erase all previous settings and set updated settings for a specified profile
-	void fillInfo(const _onvif::Profiles profiles,
+	/***
+	The method will erase all previous settings and set updated settings with available
+options for a specified profile.
+	@profilesTokens is a string list of tokens of all available profiles on a camera
+	@profileParams is a current parameters and available ones for a specified profile@
+	@profile_index specifies a used profile token from  profilesTokens.
+	***/
+	void fillInfo(const _onvif::StringList* profilesTokens,
+								const _onvif::ProfileSP profileParams,
 								const _onvif::VideoSources& videoSources,
 								int profile_index = 0);
-
-	// the method not erase any data and
-	//it intended to show available video encoding settings
-	void appendInfo(const _onvif::VideoEncoderOptionsSP options);
 
 signals:
 		void sigMediaProfilesSwitched(int new_index);

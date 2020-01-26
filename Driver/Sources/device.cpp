@@ -52,9 +52,6 @@ namespace _onvif
 		media_service_ = new MediaService(conn_info_, addr);
 
 		fillONVIFGeneralInfo();
-
-		video_sources_ = media_service_->get_video_sources();
-		media_profiles_ = media_service_->get_profiles();
 	}
 
 	void Device::SetCreds(const std::string& login, const std::string& pass)
@@ -86,13 +83,37 @@ namespace _onvif
 		return address_stream.str();
 	}
 
-	VideoSources Device::GetVideoSources()
+	StringList Device::GetProfilesTokens() const
 	{
-		if (video_sources_.empty())
+		StringList tokens;
+
+		Profiles profiles = media_service_->get_profiles();
+		if (profiles)
 		{
+			for (const auto& t : *profiles)
+				if(t) tokens.push_back(t->token);
+		}
+
+		return tokens;
+	}
+
 	Profiles Device::GetProfiles() const
 	{
 		return media_service_->get_profiles();
+	}
+
+	ProfileSP Device::GetProfile(const std::string& token) const
+	{
+		//at first fill current options the specified profile
+		//then append some compatible options for different
+		//device's components
+
+		auto profile =  media_service_->get_profile(token);
+
+		if(profile && profile->videoEncoder)
+			profile->videoEncoderOptions = media_service_->get_videoencoders_opts(token, profile->videoEncoder->token);
+
+		return profile;
 	}
 
 	VideoSources Device::GetVideoSources() const
@@ -105,7 +126,7 @@ namespace _onvif
 		return media_service_->get_compatible_videosources(profile);
 	}
 
-	VideoEncoderOptionsSP Device::GetVideoEncoderOptions(const std::string& profile, const std::string& encToken)
+	VideoEncoderOptionsSP Device::GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const
 	{
 		return media_service_->get_videoencoders_opts(profile, encToken);
 	}
