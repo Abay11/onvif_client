@@ -208,6 +208,8 @@ namespace _onvif
 		std::string session_timeout;
 		//bool guaranteed_framerate; not used by current realisation
 	};
+	using VEncoderConfigSP = std::shared_ptr<VideoEncoderConfiguration>;
+	using VEncoders = std::shared_ptr<std::vector<VEncoderConfigSP>>;
 
 	//Simple uses for JPEG codec,
 	//other codes have GOV length, etc.
@@ -289,6 +291,8 @@ namespace _onvif
 
 		VSrcConfigSP videoSource;
 		VideoSources compatibleVideoSources;
+		VEncoderConfigSP videoEncoder;
+		VEncoders compatibleVideoEncoders;
 		VideoEncoderOptionsSP videoEncoderOptions;
 		AudioSourceConfiguration* audioSource = nullptr;
 		AudioEncoderConfiguration* audioEncoder = nullptr;
@@ -298,8 +302,6 @@ namespace _onvif
 
 		~Profile()
 		{
-			delete videoSource;
-			delete videoEncoder;
 			delete audioSource;
 			delete audioEncoder;
 			delete videoAnalytics;

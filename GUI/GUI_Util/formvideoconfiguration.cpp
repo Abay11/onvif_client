@@ -29,7 +29,6 @@ FormVideoConfiguration::~FormVideoConfiguration()
 
 void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 																			const _onvif::ProfileSP current_profile,
-																			const _onvif::VideoSources& videoSources,
 																			int profile_index)
 {
 	if(!current_profile)

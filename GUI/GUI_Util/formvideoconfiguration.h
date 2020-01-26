@@ -26,7 +26,6 @@ options for a specified profile.
 	***/
 	void fillInfo(const _onvif::StringList* profilesTokens,
 								const _onvif::ProfileSP profileParams,
-								const _onvif::VideoSources& videoSources,
 								int profile_index = 0);
 
 signals:

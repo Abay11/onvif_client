@@ -52,14 +52,14 @@ std::string h264ProfileToString(_onvif::H264Profile profile_code)
 	}
 }
 
-_onvif::VideoEncoderConfigurationSP soapVEncoderToEncoder(const tt__VideoEncoderConfiguration* svec)
+_onvif::VEncoderConfigSP soapVEncoderToEncoder(const tt__VideoEncoderConfiguration* svec)
 {
 	using namespace _onvif;
 
-	VideoEncoderConfigurationSP vencoder;
+	VEncoderConfigSP vencoder;
 	if (svec)
 	{
-		vencoder = std::make_unique<VideoEncoderConfiguration>();
+		vencoder = std::make_shared<VideoEncoderConfiguration>();
 
 		vencoder->name = svec->Name;
 		vencoder->token = svec->token;
@@ -348,9 +348,9 @@ namespace _onvif
 		return options;
 	}
 
-	VideoEncoderConfigs MediaService::get_compatible_videoencoders(const std::string& token)
+	VEncoders MediaService::get_compatible_videoencoders(const std::string& token)
 	{
-		VideoEncoderConfigs encoders;
+		VEncoders encoders;
 
 		using T1 = _trt__GetCompatibleVideoEncoderConfigurations;
 		using T2 = _trt__GetCompatibleVideoEncoderConfigurationsResponse;
@@ -362,10 +362,11 @@ namespace _onvif
 		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
 		if (!res)
 		{
+			encoders = std::make_shared<std::vector<VEncoderConfigSP>>();
 			for (auto soapEncoder : response.Configurations)
 			{
 				auto encoder = soapVEncoderToEncoder(soapEncoder);
-				if (encoder) encoders.push_back(encoder);
+				if (encoder) encoders->push_back(encoder);
 			}
 		}
 

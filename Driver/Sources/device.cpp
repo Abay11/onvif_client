@@ -112,9 +112,13 @@ namespace _onvif
 
 		if (profile)
 		{
-			//video source options
+			//compatible video sources
 			if (profile->videoSource)
 				profile->compatibleVideoSources = media_service_->get_compatible_videosources(token);
+
+			//compatible video encoders
+			if (profile->videoEncoder)
+				profile->compatibleVideoEncoders = media_service_->get_compatible_videoencoders(token);
 
 			//video encoder options
 			if (profile->videoEncoder)
