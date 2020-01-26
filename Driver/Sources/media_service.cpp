@@ -114,7 +114,7 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 
 	if (gp->VideoSourceConfiguration)
 	{
-		p.videoSource = new _onvif::VideoSourceConfiguration;
+		p.videoSource = std::make_shared<_onvif::VideoSourceConfiguration>();
 		
 		p.videoSource->name = gp->VideoSourceConfiguration->Name;
 		p.videoSource->token = gp->VideoSourceConfiguration->token;
@@ -385,6 +385,7 @@ namespace _onvif
 		StringList sources_list;
 		if (!res)
 		{
+			video_sources = std::make_shared<std::vector<VSrcConfigSP>>();
 			for (auto* vs : response.VideoSources)
 			{
 				if (vs)
@@ -394,7 +395,7 @@ namespace _onvif
 					if(auto* res = vs->Resolution)
 						video_source_sp->bounds = resolutionToString(res->Width, res->Height);
 
-					video_sources.push_back(video_source_sp);
+					video_sources->push_back(video_source_sp);
 				}
 			}
 		}
@@ -415,6 +416,7 @@ namespace _onvif
 		VideoSources video_sources;
 		if (!res)
 		{
+			video_sources = std::make_shared <std::vector<VSrcConfigSP>>();
 			for (const auto* vs : response.Configurations)
 			{
 				if (vs)
@@ -427,7 +429,7 @@ namespace _onvif
 					video_source_sp->bounds = resolutionToString(vs->Bounds->width,
 						vs->Bounds->height);
 
-					video_sources.push_back(video_source_sp);
+					video_sources->push_back(video_source_sp);
 				}
 			}
 		}

@@ -110,8 +110,16 @@ namespace _onvif
 
 		auto profile =  media_service_->get_profile(token);
 
-		if(profile && profile->videoEncoder)
-			profile->videoEncoderOptions = media_service_->get_videoencoders_opts(token, profile->videoEncoder->token);
+		if (profile)
+		{
+			//video source options
+			if (profile->videoSource)
+				profile->compatibleVideoSources = media_service_->get_compatible_videosources(token);
+
+			//video encoder options
+			if (profile->videoEncoder)
+				profile->videoEncoderOptions = media_service_->get_videoencoders_opts(token, profile->videoEncoder->token);
+		}
 
 		return profile;
 	}

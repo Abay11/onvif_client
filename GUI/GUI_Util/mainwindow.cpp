@@ -158,9 +158,6 @@ void MainWindow::slotVideoSettingsClicked()
 
 				//take the first profile as default and set it settings to the form
 				std::string current_profile_token = profilesTokens.front().c_str();
-				//as default show configs of the first profile from profiles list
-				auto videoSources = requestedDevice->GetCompatibleVideoSources(current_profile_token);
-
 				auto profile = requestedDevice->GetProfile(current_profile_token);
 				if(!profile)
 				{
@@ -169,7 +166,7 @@ void MainWindow::slotVideoSettingsClicked()
 				}
 
 				//set current settings
-				formVideoConf->fillInfo(&profilesTokens, profile, videoSources);
+				formVideoConf->fillInfo(&profilesTokens, profile);
 			}
 			else
 				qDebug() << "ERROR:" << "Can't find selected item from stored devices";

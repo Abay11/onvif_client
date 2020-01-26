@@ -181,11 +181,11 @@ namespace _onvif
 	class VideoSourceConfiguration : public BaseConfiguration
 	{
 	public:
-		std::string source_token;
+		std::string source_token; //also here are @token from base class - is the config token themself
 		std::string bounds;
 	};
-	using VideoSourceConfSP = std::shared_ptr<VideoSourceConfiguration>;
-	using VideoSources = std::list<VideoSourceConfSP>;
+	using VSrcConfigSP = std::shared_ptr<VideoSourceConfiguration>;
+	using VideoSources = std::shared_ptr<std::vector<VSrcConfigSP>>;
 
 	class VideoEncoderConfiguration : public BaseConfiguration
 	{
@@ -287,8 +287,8 @@ namespace _onvif
 		std::string token;
 		bool* fixed;
 
-		VideoSourceConfiguration* videoSource = nullptr;
-		VideoEncoderConfiguration* videoEncoder = nullptr;
+		VSrcConfigSP videoSource;
+		VideoSources compatibleVideoSources;
 		VideoEncoderOptionsSP videoEncoderOptions;
 		AudioSourceConfiguration* audioSource = nullptr;
 		AudioEncoderConfiguration* audioEncoder = nullptr;

@@ -57,17 +57,17 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 
 	ui->lblProfileName->setText(current_profile->Name.c_str());
 
-	//fill comboVideoSources
-	QStringList video_sources_tokens;
-	for(const auto& vs : videoSources)
-	{
-		video_sources_tokens.push_back(vs->source_token.c_str());
-	}
+	//fill videosources
 	ui->comboVideoSources->clear();
-	ui->comboVideoSources->addItems(video_sources_tokens);
+	for(const auto& vs : *current_profile->compatibleVideoSources)
+	{
+		ui->comboVideoSources->addItem(vs->token.c_str());
+		if(vs->token == current_profile->videoSource->token)
+			ui->comboVideoSources->setCurrentIndex(ui->comboVideoSources->count() - 1);
+	}
 
 	//video sources configurations
-	if(auto* vs = current_profile->videoSource)
+	if(auto vs = current_profile->videoSource)
 	{
 		ui->lblVSName->setText(vs->name.c_str());
 		ui->lblVSToken->setText(vs->token.c_str());
