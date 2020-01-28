@@ -187,9 +187,11 @@ void MainWindow::slotMediaProfileSwitched(int new_index)
 			return;
 		}
 
-		formVideoConf->fillInfo(device->GetProfiles(),
-														device->GetVideoSources(),
-														new_index);
+		auto profilesTokens = device->GetProfilesTokens();
+		std::string current_profile_token = profilesTokens.at(static_cast<size_t>(new_index)).c_str();
+		auto profileConf = device->GetProfile(current_profile_token);
+
+		formVideoConf->fillInfo(&profilesTokens, profileConf, new_index);
 	}
 }
 
