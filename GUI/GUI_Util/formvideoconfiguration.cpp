@@ -77,13 +77,23 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 		ui->lblVSBounds->setText(vs->bounds.c_str());
 	}
 
+	ui->cmbECToken->clear();
+	if(const auto& cmpve = current_profile->compatibleVideoEncoders)
+	{
+		for(const auto& ve_iter : *cmpve)
+		{
+			ui->cmbECToken->addItem(ve_iter->token.c_str());
+			if(ve_iter->token == current_profile->videoEncoder->token)
+				ui->cmbECToken->setCurrentIndex(ui->cmbECToken->count() - 1);
+		}
+	}
+	else
+		ui->cmbECToken->addItem(current_profile->token.c_str());
+
 	//video encoder configurations
 	if(auto& ve = current_profile->videoEncoder)
 	{
 		ui->lblECName->setText(ve->name.c_str());
-
-		ui->cmbECToken->clear();
-		ui->cmbECToken->addItem(ve->token.c_str());
 
 		ui->lblECUseCount->setNum(ve->useCount);
 
