@@ -2,6 +2,7 @@
 #define FORMVIDEOCONFIGURATION_H
 
 #include <QWidget>
+#include <QMap>
 
 #include "types.h"
 
@@ -31,8 +32,28 @@ options for a specified profile.
 signals:
 		void sigMediaProfilesSwitched(int new_index);
 
+private slots:
+	//when user selectes other encoding, to escape side effects
+	//disable all other settings
+	void slotDisableSettings();
+
+private:
+	void saveValues();
+	//this method is used to handle
+	//state state of all GUI elements
+	void makeElementsEnable(bool value);
+
 private:
     Ui::FormVideoConfiguration *ui;
+
+		//Maps GUI elements with it's value
+		//used to save a current values. it helpfull to restore
+		//values if a user canceled changing settings or when need
+		//to determine which values changed
+		//to send to the device only changed values.
+		//Should be set actual values after applying settings,
+		//loading new settings and etc.
+		QMap<const QObject*, QString> value_holder_;
 };
 
 #endif // FORMVIDEOCONFIGURATION_H

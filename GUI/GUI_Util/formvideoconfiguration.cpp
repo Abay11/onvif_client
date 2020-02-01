@@ -19,6 +19,9 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 
 		connect(ui->cmbMediaProfiles, SIGNAL(activated(int)), this, SIGNAL(sigMediaProfilesSwitched(int)));
 
+		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotDisableSettings);
+
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -294,4 +297,49 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 
 		ui->lblSessionTimeout->setText(ve->session_timeout.c_str());
 	}
+
+	//save actuall values
+	saveValues();
+	//elements may be disabled before,
+	//need to restore their availibility
+	makeElementsEnable(true);
+}
+
+void FormVideoConfiguration::slotDisableSettings()
+{
+	//if current text is equal saved one, it means that a user switched back value
+	//and in that case isNotSwitched will be TRUE. In this case, elements should be ENABLED.
+	//Otherwise, if values are not the same, it means the user switched value
+	//and now need to force him to apply settings
+	bool isNotSwitched = ui->cmbECToken->currentText() == value_holder_.value(ui->cmbECToken);
+	makeElementsEnable(isNotSwitched);
+}
+
+void FormVideoConfiguration::saveValues()
+{
+	value_holder_.insert(ui->cmbVideoSources, ui->cmbVideoSources->currentText());
+	value_holder_.insert(ui->cmbECToken, ui->cmbECToken->currentText());
+	value_holder_.insert(ui->cmbEncodings, ui->cmbEncodings->currentText());
+	value_holder_.insert(ui->cmbResolutions, ui->cmbResolutions->currentText());
+	value_holder_.insert(ui->cmbQualities, ui->cmbQualities->currentText());
+	value_holder_.insert(ui->cmbFramerate, ui->cmbFramerate->currentText());
+	value_holder_.insert(ui->cmbEncodingInterval, ui->cmbEncodingInterval->currentText());
+	value_holder_.insert(ui->cmbBitrate, ui->cmbBitrate->currentText());
+	value_holder_.insert(ui->cmbGOVLength, ui->cmbGOVLength->currentText());
+	value_holder_.insert(ui->cmbCodecProfiles, ui->cmbCodecProfiles->currentText());
+	value_holder_.insert(ui->cmbMulticastAutostart, ui->cmbMulticastAutostart->currentText());
+}
+
+void FormVideoConfiguration::makeElementsEnable(bool value)
+{
+	ui->cmbEncodings->setEnabled(value);
+	ui->cmbResolutions->setEnabled(value);
+	ui->cmbQualities->setEnabled(value);
+	ui->cmbFramerate->setEnabled(value);
+	ui->cmbEncodingInterval->setEnabled(value);
+	ui->cmbBitrate->setEnabled(value);
+	ui->cmbGOVLength->setEnabled(value && !ui->cmbGOVLength->currentText().isEmpty());
+	ui->cmbCodecProfiles->setEnabled(value && !ui->cmbGOVLength->currentText().isEmpty());
+	ui->cmbMulticastAutostart->setEnabled(value);
+
 }
