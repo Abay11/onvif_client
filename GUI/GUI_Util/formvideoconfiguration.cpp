@@ -17,8 +17,8 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 {
     ui->setupUi(this);
 
-		connect(ui->comboMediaProfiles, SIGNAL(activated(int)),
-						this, SIGNAL(sigMediaProfilesSwitched(int)));
+		connect(ui->cmbMediaProfiles, SIGNAL(activated(int)), this, SIGNAL(sigMediaProfilesSwitched(int)));
+
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -50,19 +50,19 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 		profilesTokensList.push_back(p.c_str());
 	}
 
-	ui->comboMediaProfiles->clear();
-	ui->comboMediaProfiles->addItems(profilesTokensList);
-	ui->comboMediaProfiles->setCurrentIndex(profile_index);
+	ui->cmbMediaProfiles->clear();
+	ui->cmbMediaProfiles->addItems(profilesTokensList);
+	ui->cmbMediaProfiles->setCurrentIndex(profile_index);
 
 	ui->lblProfileName->setText(current_profile->Name.c_str());
 
 	//fill videosources
-	ui->comboVideoSources->clear();
+	ui->cmbVideoSources->clear();
 	for(const auto& vs : *current_profile->compatibleVideoSources)
 	{
-		ui->comboVideoSources->addItem(vs->token.c_str());
+		ui->cmbVideoSources->addItem(vs->token.c_str());
 		if(vs->token == current_profile->videoSource->token)
-			ui->comboVideoSources->setCurrentIndex(ui->comboVideoSources->count() - 1);
+			ui->cmbVideoSources->setCurrentIndex(ui->cmbVideoSources->count() - 1);
 	}
 
 	//video sources configurations
@@ -94,13 +94,13 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 		//with available values
 		//else fill them with only current parameter
 		ui->cmbEncodings->clear();
-		ui->comboResolutions->clear();
-		ui->comboQualities->clear();
-		ui->comboFramerate->clear();
-		ui->comboEncodingInterval->clear();
-		ui->comboBitrate->clear();
-		ui->comboGOVLength->clear();
-		ui->comboGOVLength->setEnabled(false);
+		ui->cmbResolutions->clear();
+		ui->cmbQualities->clear();
+		ui->cmbFramerate->clear();
+		ui->cmbEncodingInterval->clear();
+		ui->cmbBitrate->clear();
+		ui->cmbGOVLength->clear();
+		ui->cmbGOVLength->setEnabled(false);
 		ui->cmbCodecProfiles->clear();
 		ui->cmbCodecProfiles->setEnabled(false);
 
@@ -165,13 +165,13 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 			//resolution
 			if(resolutionsPtr)
 			{
-				ui->comboResolutions->clear();
+				ui->cmbResolutions->clear();
 				for(auto& res : *resolutionsPtr)
 				{
-					ui->comboResolutions->addItem(res.c_str());
+					ui->cmbResolutions->addItem(res.c_str());
 
 					if(ve->resolution == res.c_str())
-						ui->comboResolutions->setCurrentIndex(ui->comboResolutions->count() - 1);
+						ui->cmbResolutions->setCurrentIndex(ui->cmbResolutions->count() - 1);
 				}
 			}
 
@@ -180,13 +180,13 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 			//need to change on gui combobox with some range element
 			//doule currentQuality <- TYPE SHOULD BE DOUBLE/FLOAT NOT INT
 			int currentQuality = static_cast<int>(ve->quality);
-			ui->comboQualities->clear();
+			ui->cmbQualities->clear();
 			for(int i = opts->QualityMin; i <= opts->QualityMax; ++i)
 			{
-				ui->comboQualities->addItem(QString::number(i));
+				ui->cmbQualities->addItem(QString::number(i));
 
 				if(currentQuality == i)
-					ui->comboQualities->setCurrentIndex(ui->comboQualities->count() - 1);
+					ui->cmbQualities->setCurrentIndex(ui->cmbQualities->count() - 1);
 			}
 
 			//frames
@@ -196,13 +196,13 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 			{
 				for(int i = *frameMin; i <= *frameMax; ++i)
 				{
-					ui->comboFramerate->addItem(QString::number(i));
+					ui->cmbFramerate->addItem(QString::number(i));
 					if(ve->framerate == i)
-						ui->comboFramerate->setCurrentIndex(ui->comboFramerate->count() - 1);
+						ui->cmbFramerate->setCurrentIndex(ui->cmbFramerate->count() - 1);
 				}
 			}
 			else
-					ui->comboFramerate->addItem(QString::number(ve->framerate));
+					ui->cmbFramerate->addItem(QString::number(ve->framerate));
 
 			//encoding interval
 			//if both not are 0, consider they are init
@@ -210,26 +210,26 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 			{
 				for(int i = *encIntervalMin; i <= *encIntervalMax; ++i)
 				{
-					ui->comboEncodingInterval->addItem(QString::number(i));
+					ui->cmbEncodingInterval->addItem(QString::number(i));
 					if(ve->encoding_interval == i)
-						ui->comboEncodingInterval->setCurrentIndex(ui->comboEncodingInterval->count() - 1);
+						ui->cmbEncodingInterval->setCurrentIndex(ui->cmbEncodingInterval->count() - 1);
 				}
 			}
 			else
-					ui->comboEncodingInterval->addItem(QString::number(ve->encoding_interval));
+					ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
 
 			//bitrate
 			if(isRangeValueSet(bitrateMin, bitrateMax))
 			{
 				for(int i = *bitrateMin; i <= *bitrateMax; ++i)
 				{
-					ui->comboBitrate->addItem(QString::number(i));
+					ui->cmbBitrate->addItem(QString::number(i));
 					if(ve->bitrate == i)
-						ui->comboBitrate->setCurrentIndex(ui->comboBitrate->count() - 1);
+						ui->cmbBitrate->setCurrentIndex(ui->cmbBitrate->count() - 1);
 				}
 			}
 			else
-					ui->comboBitrate->addItem(QString::number(ve->bitrate));
+					ui->cmbBitrate->addItem(QString::number(ve->bitrate));
 
 			//codec profile
 			//note codec profiles not uses for JPEG codec
@@ -249,27 +249,27 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 			//also not applies for JPEG codec
 			if(isRangeValueSet(govLengthMax, govLengthMin))
 			{
-				ui->comboGOVLength->setEnabled(true);
+				ui->cmbGOVLength->setEnabled(true);
 				for(int i = *govLengthMin; i < *govLengthMax; ++i)
 				{
-					ui->comboGOVLength->addItem(QString::number(i));
+					ui->cmbGOVLength->addItem(QString::number(i));
 					if(i == ve->gov_length)
-						ui->comboGOVLength->setCurrentIndex(ui->comboGOVLength->count() - 1);
+						ui->cmbGOVLength->setCurrentIndex(ui->cmbGOVLength->count() - 1);
 				}
 			}
 			else if(ve->gov_length)
 			{
-				ui->comboGOVLength->setEnabled(true);
-				ui->comboGOVLength->addItem(QString::number(ve->gov_length));
+				ui->cmbGOVLength->setEnabled(true);
+				ui->cmbGOVLength->addItem(QString::number(ve->gov_length));
 			}
 		}
 		else //filling only current parameters
 		{
-			ui->comboResolutions->addItem(ve->resolution.c_str());
-			ui->comboQualities->addItem(QString::number(static_cast<double>(ve->quality)));
-			ui->comboFramerate->addItem(QString::number(ve->framerate));
-			ui->comboEncodingInterval->addItem(QString::number(ve->encoding_interval));
-			ui->comboBitrate->addItem(QString::number(ve->bitrate));
+			ui->cmbResolutions->addItem(ve->resolution.c_str());
+			ui->cmbQualities->addItem(QString::number(static_cast<double>(ve->quality)));
+			ui->cmbFramerate->addItem(QString::number(ve->framerate));
+			ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
+			ui->cmbBitrate->addItem(QString::number(ve->bitrate));
 
 			if(!ve->codec_profile.empty())
 			{
@@ -279,8 +279,8 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 
 			if(ve->gov_length)
 			{
-				ui->comboGOVLength->addItem(QString::number(ve->gov_length));
-				ui->comboGOVLength->setEnabled(true);
+				ui->cmbGOVLength->addItem(QString::number(ve->gov_length));
+				ui->cmbGOVLength->setEnabled(true);
 			}
 		}
 
@@ -288,8 +288,9 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 		ui->leMulticastPort->setText(QString::number(ve->multicast_port));
 		ui->leMulticastTTL->setText(QString::number(ve->multicast_ttl));
 
-		ui->comboMulticastAutostart->addItem(ve->multicast_autostart ? "Yes" : "No");
-		ui->comboMulticastAutostart->addItem(ve->multicast_autostart ? "No" : "Yes");
+		ui->cmbMulticastAutostart->clear();
+		ui->cmbMulticastAutostart->addItem(ve->multicast_autostart ? "Yes" : "No");
+		ui->cmbMulticastAutostart->addItem(ve->multicast_autostart ? "No" : "Yes");
 
 		ui->lblSessionTimeout->setText(ve->session_timeout.c_str());
 	}

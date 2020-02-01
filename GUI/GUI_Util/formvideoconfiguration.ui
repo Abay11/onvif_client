@@ -77,7 +77,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="comboVideoSources"/>
+            <widget class="QComboBox" name="cmbVideoSources"/>
            </item>
            <item row="5" column="0">
             <widget class="QLabel" name="empty_lbl1">
@@ -100,7 +100,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QComboBox" name="comboMediaProfiles"/>
+            <widget class="QComboBox" name="cmbMediaProfiles"/>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_11">
@@ -362,7 +362,7 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QComboBox" name="comboResolutions"/>
+            <widget class="QComboBox" name="cmbResolutions"/>
            </item>
            <item row="5" column="0">
             <widget class="QLabel" name="label_19">
@@ -378,7 +378,7 @@
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QComboBox" name="comboQualities"/>
+            <widget class="QComboBox" name="cmbQualities"/>
            </item>
            <item row="6" column="0">
             <widget class="QLabel" name="label_20">
@@ -394,7 +394,7 @@
             </widget>
            </item>
            <item row="6" column="1">
-            <widget class="QComboBox" name="comboFramerate"/>
+            <widget class="QComboBox" name="cmbFramerate"/>
            </item>
            <item row="7" column="0">
             <widget class="QLabel" name="label_21">
@@ -410,7 +410,7 @@
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QComboBox" name="comboEncodingInterval"/>
+            <widget class="QComboBox" name="cmbEncodingInterval"/>
            </item>
            <item row="8" column="0">
             <widget class="QLabel" name="label_22">
@@ -426,7 +426,7 @@
             </widget>
            </item>
            <item row="8" column="1">
-            <widget class="QComboBox" name="comboBitrate"/>
+            <widget class="QComboBox" name="cmbBitrate"/>
            </item>
            <item row="9" column="0">
             <widget class="QLabel" name="label_23">
@@ -442,7 +442,7 @@
             </widget>
            </item>
            <item row="9" column="1">
-            <widget class="QComboBox" name="comboGOVLength"/>
+            <widget class="QComboBox" name="cmbGOVLength"/>
            </item>
            <item row="10" column="0">
             <widget class="QLabel" name="label_24">
@@ -534,7 +534,7 @@
             </widget>
            </item>
            <item row="14" column="1">
-            <widget class="QComboBox" name="comboMulticastAutostart"/>
+            <widget class="QComboBox" name="cmbMulticastAutostart"/>
            </item>
            <item row="15" column="0">
             <widget class="QLabel" name="label_29">
