@@ -12,13 +12,11 @@ DialogWaiting::DialogWaiting(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	QMovie *movie = new QMovie("://resources/loader.gif");
+	movie = new QMovie("://resources/loader.gif");
 	movie->setScaledSize(QSize(WIDTH, HEIGHT));
 	ui->lblLoading->setMovie(movie);
 	// remove a shape which was set for convinience on the UI editor
 	ui->lblLoading->setFrameShape(QFrame::Shape::NoFrame);
-	movie->start();
-
 	setWindowFlag(Qt::WindowType::FramelessWindowHint);
 	adjustSize();
 }
@@ -31,4 +29,17 @@ DialogWaiting::~DialogWaiting()
 void DialogWaiting::setDialogText(const QString &text)
 {
 	ui->label->setText(text);
+}
+
+void DialogWaiting::open()
+{
+	movie->start();
+
+	QDialog::open();
+}
+
+void DialogWaiting::closeEvent(QCloseEvent *event)
+{
+	movie->stop();
+	QDialog::closeEvent(event);
 }

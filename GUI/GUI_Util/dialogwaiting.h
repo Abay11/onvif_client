@@ -19,6 +19,15 @@ public:
 
 private:
 	Ui::DialogWaiting *ui;
+	QMovie *movie;
+
+	// QDialog interface
+public slots:
+	void open();
+
+	// QWidget interface
+protected:
+	void closeEvent(QCloseEvent *event);
 };
 
 #endif // DIALOGWAITING_H
