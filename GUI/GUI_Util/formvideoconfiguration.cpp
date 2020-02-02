@@ -22,6 +22,8 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotDisableSettings);
 
+		connect(ui->cmbEncodings, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotEncodingSwitched);
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -39,6 +41,11 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 		qDebug() << "Received an invalid profile";
 		return;
 	}
+
+	//save/update current profile params
+	//it's important to save received profile here
+	//because it's used further by helper methods
+	profile_params_ = current_profile;
 
 	if(static_cast<size_t>(profile_index) >= profilesTokens->size())
 	{
@@ -97,205 +104,9 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 
 		ui->lblECUseCount->setNum(ve->useCount);
 
-		//need to declare them somewhere else
-		const char* JPEG = "JPEG";
-		const char* H264 = "H264";
-		const char* MPEG = "MPEG";
-
-		//next lines do clearing combo boxes of elements
-		//if a passed profile holds options then fill elements
-		//with available values
-		//else fill them with only current parameter
-		ui->cmbEncodings->clear();
-		ui->cmbResolutions->clear();
-		ui->cmbQualities->clear();
-		ui->cmbFramerate->clear();
-		ui->cmbEncodingInterval->clear();
-		ui->cmbBitrate->clear();
-		ui->cmbGOVLength->clear();
-		ui->cmbGOVLength->setEnabled(false);
-		ui->cmbCodecProfiles->clear();
-		ui->cmbCodecProfiles->setEnabled(false);
-
-		ui->cmbEncodings->addItem(ve->encoding.c_str());
-		//filling with options
-		if(auto opts = current_profile->videoEncoderOptions)
-		{
-			//encoding
-			if(opts->JPEGOptions.isInit && ve->encoding != JPEG)
-				ui->cmbEncodings->addItem(JPEG);
-			if(opts->H264Options.isInit && ve->encoding != H264)
-				ui->cmbEncodings->addItem(H264);
-			if(opts->MPEGOptions.isInit && ve->encoding != MPEG)
-				ui->cmbEncodings->addItem(MPEG);
-
-			const std::vector<std::string>* resolutionsPtr = nullptr;
-			const int* frameMin = nullptr;
-			const int* frameMax = nullptr;
-			const int* encIntervalMin = nullptr;
-			const int* encIntervalMax = nullptr;
-			const int* bitrateMin = nullptr;
-			const int* bitrateMax = nullptr;
-			const std::vector<std::string>* profilesPtr = nullptr;
-			const int* govLengthMin = nullptr;
-			const int* govLengthMax = nullptr;
-
-			if(ve->encoding == JPEG)
-			{
-				resolutionsPtr = &opts->JPEGOptions.Resolutions;
-				frameMin = &opts->JPEGOptions.FrameRateMin;
-				frameMax = &opts->JPEGOptions.FrameRateMax;
-				encIntervalMax = &opts->JPEGOptions.EncodingIntervalMax;
-				encIntervalMin = &opts->JPEGOptions.EncodingIntervalMin;
-				bitrateMax = &opts->JPEGOptions.BitrateRangeMax;
-				bitrateMin = &opts->JPEGOptions.BitrateRangeMin;
-			}
-			else if(ve->encoding == H264)
-			{
-				resolutionsPtr = &opts->H264Options.Resolutions;
-				frameMin = &opts->H264Options.FrameRateMin;
-				frameMax = &opts->H264Options.FrameRateMax;
-				encIntervalMax = &opts->H264Options.EncodingIntervalMax;
-				encIntervalMin = &opts->H264Options.EncodingIntervalMin;
-				bitrateMax = &opts->H264Options.BitrateRangeMax;
-				bitrateMin = &opts->H264Options.BitrateRangeMin;
-				profilesPtr = &opts->H264Options.Profiles;
-				govLengthMax = &opts->H264Options.GovLengthMax;
-				govLengthMin = &opts->H264Options.GovLengthMin;
-			}
-			else if(ve->encoding == MPEG)
-			{
-				resolutionsPtr = &opts->MPEGOptions.Resolutions;
-				frameMin = &opts->MPEGOptions.FrameRateMin;
-				frameMax = &opts->MPEGOptions.FrameRateMin;
-				encIntervalMax = &opts->MPEGOptions.EncodingIntervalMax;
-				encIntervalMin = &opts->MPEGOptions.EncodingIntervalMin;
-				profilesPtr = &opts->MPEGOptions.Profiles;
-				govLengthMax = &opts->MPEGOptions.GovLengthMax;
-				govLengthMin = &opts->MPEGOptions.GovLengthMin;
-			}
-
-			//resolution
-			if(resolutionsPtr)
-			{
-				ui->cmbResolutions->clear();
-				for(auto& res : *resolutionsPtr)
-				{
-					ui->cmbResolutions->addItem(res.c_str());
-
-					if(ve->resolution == res.c_str())
-						ui->cmbResolutions->setCurrentIndex(ui->cmbResolutions->count() - 1);
-				}
-			}
-
-			//qualities
-			//NOTE: range is int type, but param type is float
-			//need to change on gui combobox with some range element
-			//doule currentQuality <- TYPE SHOULD BE DOUBLE/FLOAT NOT INT
-			int currentQuality = static_cast<int>(ve->quality);
-			ui->cmbQualities->clear();
-			for(int i = opts->QualityMin; i <= opts->QualityMax; ++i)
-			{
-				ui->cmbQualities->addItem(QString::number(i));
-
-				if(currentQuality == i)
-					ui->cmbQualities->setCurrentIndex(ui->cmbQualities->count() - 1);
-			}
-
-			//frames
-			//check if min and max not NULL
-			//otherwise, consider that values not was read
-			if(isRangeValueSet(frameMin, frameMax))
-			{
-				for(int i = *frameMin; i <= *frameMax; ++i)
-				{
-					ui->cmbFramerate->addItem(QString::number(i));
-					if(ve->framerate == i)
-						ui->cmbFramerate->setCurrentIndex(ui->cmbFramerate->count() - 1);
-				}
-			}
-			else
-					ui->cmbFramerate->addItem(QString::number(ve->framerate));
-
-			//encoding interval
-			//if both not are 0, consider they are init
-			if(isRangeValueSet(encIntervalMax, encIntervalMin))
-			{
-				for(int i = *encIntervalMin; i <= *encIntervalMax; ++i)
-				{
-					ui->cmbEncodingInterval->addItem(QString::number(i));
-					if(ve->encoding_interval == i)
-						ui->cmbEncodingInterval->setCurrentIndex(ui->cmbEncodingInterval->count() - 1);
-				}
-			}
-			else
-					ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
-
-			//bitrate
-			if(isRangeValueSet(bitrateMin, bitrateMax))
-			{
-				for(int i = *bitrateMin; i <= *bitrateMax; ++i)
-				{
-					ui->cmbBitrate->addItem(QString::number(i));
-					if(ve->bitrate == i)
-						ui->cmbBitrate->setCurrentIndex(ui->cmbBitrate->count() - 1);
-				}
-			}
-			else
-					ui->cmbBitrate->addItem(QString::number(ve->bitrate));
-
-			//codec profile
-			//note codec profiles not uses for JPEG codec
-			if(profilesPtr)
-			{
-				for(const auto& profStr : *profilesPtr)
-				{
-					ui->cmbCodecProfiles->addItem(profStr.c_str());
-					if(ve->codec_profile == profStr)
-						ui->cmbCodecProfiles->setCurrentIndex(ui->cmbCodecProfiles->count() - 1);
-				}
-
-				ui->cmbCodecProfiles->setEnabled(true);
-			}
-
-			//GOV Length
-			//also not applies for JPEG codec
-			if(isRangeValueSet(govLengthMax, govLengthMin))
-			{
-				ui->cmbGOVLength->setEnabled(true);
-				for(int i = *govLengthMin; i < *govLengthMax; ++i)
-				{
-					ui->cmbGOVLength->addItem(QString::number(i));
-					if(i == ve->gov_length)
-						ui->cmbGOVLength->setCurrentIndex(ui->cmbGOVLength->count() - 1);
-				}
-			}
-			else if(ve->gov_length)
-			{
-				ui->cmbGOVLength->setEnabled(true);
-				ui->cmbGOVLength->addItem(QString::number(ve->gov_length));
-			}
-		}
-		else //filling only current parameters
-		{
-			ui->cmbResolutions->addItem(ve->resolution.c_str());
-			ui->cmbQualities->addItem(QString::number(static_cast<double>(ve->quality)));
-			ui->cmbFramerate->addItem(QString::number(ve->framerate));
-			ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
-			ui->cmbBitrate->addItem(QString::number(ve->bitrate));
-
-			if(!ve->codec_profile.empty())
-			{
-				ui->cmbCodecProfiles->addItem(ve->codec_profile.c_str());
-				ui->cmbCodecProfiles->setEnabled(true);
-			}
-
-			if(ve->gov_length)
-			{
-				ui->cmbGOVLength->addItem(QString::number(ve->gov_length));
-				ui->cmbGOVLength->setEnabled(true);
-			}
-		}
+		//filling encoder options
+		//like available fps, resolutions etc.
+		fillEncodingParams(ve->encoding.c_str());
 
 		ui->leMulticastIP->setText(ve->multicast_ip.c_str());
 		ui->leMulticastPort->setText(QString::number(ve->multicast_port));
@@ -325,6 +136,12 @@ void FormVideoConfiguration::slotDisableSettings()
 	makeElementsEnable(isNotSwitched);
 }
 
+void FormVideoConfiguration::slotEncodingSwitched()
+{
+	qDebug() << "Do load new encoding configs";
+	fillEncodingParams(ui->cmbEncodings->currentText());
+}
+
 void FormVideoConfiguration::saveValues()
 {
 	value_holder_.insert(ui->cmbVideoSources, ui->cmbVideoSources->currentText());
@@ -352,4 +169,226 @@ void FormVideoConfiguration::makeElementsEnable(bool value)
 	ui->cmbCodecProfiles->setEnabled(value && !ui->cmbGOVLength->currentText().isEmpty());
 	ui->cmbMulticastAutostart->setEnabled(value);
 
+}
+
+void FormVideoConfiguration::fillEncodingParams(const QString& encoding)
+{
+	//need to declare them somewhere else
+	const char* JPEG = "JPEG";
+	const char* H264 = "H264";
+	const char* MPEG = "MPEG";
+
+	//grab currently used encoding
+	const auto& ve = profile_params_->videoEncoder;
+	if(!ve) return;
+
+	//next lines do clearing combo boxes of elements
+	//if a passed profile holds options then fill elements
+	//with available values
+	//else fill them with only current parameter
+	ui->cmbEncodings->clear();
+	ui->cmbResolutions->clear();
+	ui->cmbQualities->clear();
+	ui->cmbFramerate->clear();
+	ui->cmbEncodingInterval->clear();
+	ui->cmbBitrate->clear();
+	ui->cmbGOVLength->clear();
+	ui->cmbGOVLength->setEnabled(false);
+	ui->cmbCodecProfiles->clear();
+	ui->cmbCodecProfiles->setEnabled(false);
+
+	const auto& opts = profile_params_->videoEncoderOptions;
+	if(opts)
+	{
+		//encoding
+		if(opts->JPEGOptions.isInit)
+		{
+			ui->cmbEncodings->addItem(JPEG);
+
+			if(encoding == JPEG)
+				ui->cmbEncodings->setCurrentIndex(0);
+		}
+		if(opts->H264Options.isInit)
+		{
+			ui->cmbEncodings->addItem(H264);
+
+			if(encoding == H264)
+				ui->cmbEncodings->setCurrentIndex(1);
+		}
+		if(opts->MPEGOptions.isInit)
+		{
+			ui->cmbEncodings->addItem(MPEG);
+
+			if(encoding == MPEG)
+				ui->cmbEncodings->setCurrentIndex(2);
+		}
+
+		const std::vector<std::string>* resolutionsPtr = nullptr;
+		const int* frameMin = nullptr;
+		const int* frameMax = nullptr;
+		const int* encIntervalMin = nullptr;
+		const int* encIntervalMax = nullptr;
+		const int* bitrateMin = nullptr;
+		const int* bitrateMax = nullptr;
+		const std::vector<std::string>* profilesPtr = nullptr;
+		const int* govLengthMin = nullptr;
+		const int* govLengthMax = nullptr;
+
+		if(ui->cmbEncodings->currentText() == JPEG)
+		{
+			resolutionsPtr = &opts->JPEGOptions.Resolutions;
+			frameMin = &opts->JPEGOptions.FrameRateMin;
+			frameMax = &opts->JPEGOptions.FrameRateMax;
+			encIntervalMax = &opts->JPEGOptions.EncodingIntervalMax;
+			encIntervalMin = &opts->JPEGOptions.EncodingIntervalMin;
+			bitrateMax = &opts->JPEGOptions.BitrateRangeMax;
+			bitrateMin = &opts->JPEGOptions.BitrateRangeMin;
+		}
+		else if(ui->cmbEncodings->currentText() == H264)
+		{
+			resolutionsPtr = &opts->H264Options.Resolutions;
+			frameMin = &opts->H264Options.FrameRateMin;
+			frameMax = &opts->H264Options.FrameRateMax;
+			encIntervalMax = &opts->H264Options.EncodingIntervalMax;
+			encIntervalMin = &opts->H264Options.EncodingIntervalMin;
+			bitrateMax = &opts->H264Options.BitrateRangeMax;
+			bitrateMin = &opts->H264Options.BitrateRangeMin;
+			profilesPtr = &opts->H264Options.Profiles;
+			govLengthMax = &opts->H264Options.GovLengthMax;
+			govLengthMin = &opts->H264Options.GovLengthMin;
+		}
+		else if(ui->cmbEncodings->currentText() == MPEG)
+		{
+			resolutionsPtr = &opts->MPEGOptions.Resolutions;
+			frameMin = &opts->MPEGOptions.FrameRateMin;
+			frameMax = &opts->MPEGOptions.FrameRateMin;
+			encIntervalMax = &opts->MPEGOptions.EncodingIntervalMax;
+			encIntervalMin = &opts->MPEGOptions.EncodingIntervalMin;
+			profilesPtr = &opts->MPEGOptions.Profiles;
+			govLengthMax = &opts->MPEGOptions.GovLengthMax;
+			govLengthMin = &opts->MPEGOptions.GovLengthMin;
+		}
+
+		//resolution
+		if(resolutionsPtr)
+		{
+			ui->cmbResolutions->clear();
+			for(auto& res : *resolutionsPtr)
+			{
+				ui->cmbResolutions->addItem(res.c_str());
+
+				if(ve->resolution == res.c_str())
+					ui->cmbResolutions->setCurrentIndex(ui->cmbResolutions->count() - 1);
+			}
+		}
+
+		//qualities
+		//NOTE: range is int type, but param type is float
+		//need to change on gui combobox with some range element
+		//doule currentQuality <- TYPE SHOULD BE DOUBLE/FLOAT NOT INT
+		int currentQuality = static_cast<int>(ve->quality);
+		ui->cmbQualities->clear();
+		for(int i = opts->QualityMin; i <= opts->QualityMax; ++i)
+		{
+			ui->cmbQualities->addItem(QString::number(i));
+
+			if(currentQuality == i)
+				ui->cmbQualities->setCurrentIndex(ui->cmbQualities->count() - 1);
+		}
+
+		//frames
+		//check if min and max not NULL
+		//otherwise, consider that values not was read
+		if(isRangeValueSet(frameMin, frameMax))
+		{
+			for(int i = *frameMin; i <= *frameMax; ++i)
+			{
+				ui->cmbFramerate->addItem(QString::number(i));
+				if(ve->framerate == i)
+					ui->cmbFramerate->setCurrentIndex(ui->cmbFramerate->count() - 1);
+			}
+		}
+		else
+			ui->cmbFramerate->addItem(QString::number(ve->framerate));
+
+		//encoding interval
+		//if both not are 0, consider they are init
+		if(isRangeValueSet(encIntervalMax, encIntervalMin))
+		{
+			for(int i = *encIntervalMin; i <= *encIntervalMax; ++i)
+			{
+				ui->cmbEncodingInterval->addItem(QString::number(i));
+				if(ve->encoding_interval == i)
+					ui->cmbEncodingInterval->setCurrentIndex(ui->cmbEncodingInterval->count() - 1);
+			}
+		}
+		else
+			ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
+
+		//bitrate
+		if(isRangeValueSet(bitrateMin, bitrateMax))
+		{
+			for(int i = *bitrateMin; i <= *bitrateMax; ++i)
+			{
+				ui->cmbBitrate->addItem(QString::number(i));
+				if(ve->bitrate == i)
+					ui->cmbBitrate->setCurrentIndex(ui->cmbBitrate->count() - 1);
+			}
+		}
+		else
+			ui->cmbBitrate->addItem(QString::number(ve->bitrate));
+
+		//codec profile
+		//note codec profiles not uses for JPEG codec
+		if(profilesPtr)
+		{
+			for(const auto& profStr : *profilesPtr)
+			{
+				ui->cmbCodecProfiles->addItem(profStr.c_str());
+				if(ve->codec_profile == profStr)
+					ui->cmbCodecProfiles->setCurrentIndex(ui->cmbCodecProfiles->count() - 1);
+			}
+
+			ui->cmbCodecProfiles->setEnabled(true);
+		}
+
+		//GOV Length
+		//also not applies for JPEG codec
+		if(isRangeValueSet(govLengthMax, govLengthMin))
+		{
+			ui->cmbGOVLength->setEnabled(true);
+			for(int i = *govLengthMin; i < *govLengthMax; ++i)
+			{
+				ui->cmbGOVLength->addItem(QString::number(i));
+				if(i == ve->gov_length)
+					ui->cmbGOVLength->setCurrentIndex(ui->cmbGOVLength->count() - 1);
+			}
+		}
+	}
+	else //if can't get options, just fill elements with current single values
+	{
+		//TODO: current realisation just set value for encoding
+		//that used in saved profile params
+		//it's logical error because this method may be called also
+		//when encoding checked by user and need to load info not for encoding
+		//from saved profile, but for currently set encoding in GUI element
+		ui->cmbEncodings->addItem(ve->encoding.c_str());
+		ui->cmbResolutions->addItem(ve->resolution.c_str());
+		ui->cmbQualities->addItem(QString::number(static_cast<double>(ve->quality)));
+		ui->cmbFramerate->addItem(QString::number(ve->framerate));
+		ui->cmbEncodingInterval->addItem(QString::number(ve->encoding_interval));
+		ui->cmbBitrate->addItem(QString::number(ve->bitrate));
+
+		if(!ve->codec_profile.empty())
+		{
+			ui->cmbCodecProfiles->addItem(ve->codec_profile.c_str());
+			ui->cmbCodecProfiles->setEnabled(true);
+		}
+
+		if(ve->gov_length)
+		{
+			ui->cmbGOVLength->addItem(QString::number(ve->gov_length));
+			ui->cmbGOVLength->setEnabled(true);
+		}
+	}
 }

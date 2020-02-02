@@ -30,18 +30,32 @@ options for a specified profile.
 								int profile_index = 0);
 
 signals:
-		void sigMediaProfilesSwitched(int new_index);
+	//some cases hanled internally by this class-widget itself
+	//like switching codecs etc., in that case
+	//we already have the requered info
+	//but when profiles switched we need emit this signal
+	//to notify parent-holder widget
+	//that we need additional actions (for example, it's more
+	//correctly to request configs for currently selected profile
+	//to dynamically re-fill elements with received configs)
+	void sigMediaProfilesSwitched(int new_index);
 
 private slots:
 	//when user selectes other encoding, to escape side effects
 	//disable all other settings
 	void slotDisableSettings();
 
+	void slotEncodingSwitched();
+
 private:
 	void saveValues();
+
 	//this method is used to handle
-	//state state of all GUI elements
+	//state of all GUI elements
 	void makeElementsEnable(bool value);
+
+	//fill specified encoding's params
+	void fillEncodingParams(const QString& encoding);
 
 private:
     Ui::FormVideoConfiguration *ui;
@@ -54,6 +68,14 @@ private:
 		//Should be set actual values after applying settings,
 		//loading new settings and etc.
 		QMap<const QObject*, QString> value_holder_;
+
+		//save current profile encoder options
+		//should be saved after each call the method fillInfo,
+		//which receive profile options
+		//I think there will not be any issues with what
+		//we not requere dynamically encoding params and store them
+		//At least them should be updated every fiilInfo call
+		_onvif::ProfileSP profile_params_;
 };
 
 #endif // FORMVIDEOCONFIGURATION_H
