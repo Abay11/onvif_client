@@ -33,6 +33,7 @@ namespace _onvif
 		virtual VideoSources GetVideoSources() const override;
 		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) const override;
 		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const override;
+		virtual VEncoders GetVideoEncoders(const std::string& profile) const override;
 
 		///IDevice
 
