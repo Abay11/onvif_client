@@ -6,6 +6,7 @@
 #include "device.h"
 #include "formdevicemaintenance.h"
 #include "formvideoconfiguration.h"
+#include "dialogwaiting.h"
 
 #include <QDebug>
 
@@ -46,11 +47,11 @@ void MainWindow::slotListWidgetClicked()
 
 void MainWindow::slotAddDeviceClicked()
 {
-    if(!addDeviceDialog)
-    {
+		if(!addDeviceDialog){}
+		{
         addDeviceDialog = new AddDeviceDialog(this);
         connect(addDeviceDialog, &AddDeviceDialog::finished, this, &MainWindow::slotAddDeviceDialogFinished);
-    }
+		}
 
     addDeviceDialog->open();
 }
@@ -59,7 +60,7 @@ void MainWindow::slotAddDeviceDialogFinished()
 {
     if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
     {
-        auto ip = addDeviceDialog->getIP();
+				auto ip = addDeviceDialog->getIP();
         auto port = addDeviceDialog->getPort();
         auto uri = addDeviceDialog->getURI();
         if(!ip.empty() && port && !uri.empty())

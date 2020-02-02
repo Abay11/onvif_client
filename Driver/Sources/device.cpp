@@ -31,6 +31,7 @@ namespace _onvif
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
+		soap_register_plugin(soap_context_, http_da);
 
 		login_ = login;
 		pass_ = pass;
@@ -141,6 +142,11 @@ namespace _onvif
 	VideoEncoderOptionsSP Device::GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const
 	{
 		return media_service_->get_videoencoders_opts(profile, encToken);
+	}
+
+	VEncoders Device::GetVideoEncoders(const std::string& profile) const
+	{
+		return media_service_->get_compatible_videoencoders(profile);
 	}
 
 	void Device::fillONVIFGeneralInfo()
