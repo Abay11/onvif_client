@@ -2,6 +2,7 @@
 
 #include "soapStub.h"
 #include "wsseapi.h"
+#include "httpda.h"
 
 #include <functional>
 #include <string>
@@ -55,6 +56,7 @@ namespace _onvif
 		int getPort() { return port_; }
 		std::string getLogin() { return login_; }
 		std::string getPass() { return password_; }
+		http_da_info* get_http_da_info() { return &info; }
 		AUTH_SCHEME auth_scheme() const { return auth_scheme_; }
 		void set_auth_scheme(AUTH_SCHEME new_scheme) { auth_scheme_ = new_scheme; }
 
@@ -65,6 +67,9 @@ namespace _onvif
 		std::string login_;
 		std::string password_;
 		AUTH_SCHEME auth_scheme_;
+		
+		//soap struct
+		http_da_info info;
 	};
 
 	/***
@@ -106,6 +111,19 @@ namespace _onvif
 			res = f(r1, r2); //TODO: if res also 401 client should change credentials
 			break;
 		}
+
+			/*
+			http_da_save(connInfo->getSoap(),
+				connInfo->get_http_da_info(),
+				connInfo->getSoap()->authrealm,
+				"aaaaa",
+				connInfo->getPass().c_str());
+				*/
+			
+			/*
+			http_da_restore(connInfo->getSoap(), connInfo->get_http_da_info());
+			http_da_release(connInfo->getSoap(), connInfo->get_http_da_info()); // release if auth is no longer needed
+			*/
 
 		return res;
 	}

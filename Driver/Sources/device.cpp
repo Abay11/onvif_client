@@ -31,6 +31,7 @@ namespace _onvif
 	{
 		soap_context_ = soap_new();
 		soap_register_plugin(soap_context_, soap_wsse);
+		soap_register_plugin(soap_context_, http_da);
 
 		login_ = login;
 		pass_ = pass;
