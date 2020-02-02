@@ -9,6 +9,7 @@
 #include "dialogwaiting.h"
 
 #include <QDebug>
+#include <QThread>
 
 //free/helpers functions
 void deleteItems(QLayout* layout);
@@ -16,27 +17,34 @@ void deleteItems(QLayout* layout);
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , devicesMgr(new DevicesManager)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
-		//hide controls holder frame until not the device be selected
-		ui->frameControlsHolder->setVisible(false);
-		connect(ui->listWidget, &QListWidget::itemClicked,
-						this, &MainWindow::slotListWidgetClicked);
+	//hide controls holder frame until not the device be selected
+	ui->frameControlsHolder->setVisible(false);
+	connect(ui->listWidget, &QListWidget::itemClicked,
+					this, &MainWindow::slotListWidgetClicked);
 
-   //handling of adding new devices
-   connect(ui->btnAddDevice, &QPushButton::clicked, this, &MainWindow::slotAddDeviceClicked);
-   connect(this, &MainWindow::sigAddDevice, devicesMgr, &DevicesManager::slotAddDevice);
-   connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
+	dmngr_thread_ = new QThread(this);
+	devicesMgr = new DevicesManager;
+	devicesMgr->moveToThread(dmngr_thread_);
 
-   //Buttons for devices functionality management
-	 connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
-	 connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
+	//handling of adding new devices
+	connect(ui->btnAddDevice, &QPushButton::clicked, this, &MainWindow::slotAddDeviceClicked);
+	connect(this, &MainWindow::sigAddDevice, devicesMgr, &DevicesManager::slotAddDevice);
+	connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
+
+	//Buttons for devices functionality management
+	connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
+	connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
+
+	dmngr_thread_->start();
 }
 
 MainWindow::~MainWindow()
 {
+	dmngr_thread_->quit();
+	dmngr_thread_->wait();
     delete ui;
 }
 
@@ -63,9 +71,9 @@ void MainWindow::slotAddDeviceDialogFinished()
 				auto ip = addDeviceDialog->getIP();
         auto port = addDeviceDialog->getPort();
         auto uri = addDeviceDialog->getURI();
-        if(!ip.empty() && port && !uri.empty())
+				if(!ip.isEmpty() && port && !uri.isEmpty())
         {
-            emit sigAddDevice(ip, port, uri);
+						emit sigAddDevice(ip, port, uri);
         }
         else
         {

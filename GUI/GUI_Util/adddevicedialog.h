@@ -17,9 +17,9 @@ public:
     explicit AddDeviceDialog(QWidget *parent = nullptr);
     ~AddDeviceDialog();
 
-    std::string getIP();
+		QString getIP();
     short getPort();
-    std::string getURI();
+		QString getURI();
 
 private:
     Ui::AddDeviceDialog *ui;

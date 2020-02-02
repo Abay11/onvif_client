@@ -6,20 +6,20 @@
 
 #include "device.h"
 
-void DevicesManager::slotAddDevice(std::string ip, short port, std::string deviceServiceURI)
+void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
 {
-    qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip.c_str()).arg(port).arg(deviceServiceURI.c_str());
+		qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip).arg(port).arg(deviceServiceURI);
 
     using namespace _onvif;
-    IDevice* device = new Device(ip, port);
-    device->SetDeviceServiceURI(deviceServiceURI);
+		IDevice* device = new Device(ip.toStdString(), port);
+		device->SetDeviceServiceURI(deviceServiceURI.toStdString());
     device->Init("admin", "admin");
 
     devices.push_back(device);
 
     QString deviceInfo;
     QTextStream stream(&deviceInfo);
-    stream << ip.c_str() << ":" << port;
+		stream << ip << ":" << port;
     sigNewDeviceAdded(deviceInfo);
 }
 

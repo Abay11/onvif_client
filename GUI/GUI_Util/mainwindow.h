@@ -27,12 +27,15 @@ private:
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
 
+		//DevicesManager instance works in separate thread
+		QThread* dmngr_thread_;
+
 		//forms
 		FormVideoConfiguration* formVideoConf = nullptr;
 		FormDeviceMaintenance* formMaintenance = nullptr;
 
 signals:
-    void sigAddDevice(std::string ip, short port, std::string uri);
+		void sigAddDevice(QString ip, short port, QString uri);
 
 private slots:
 		//to make the list widget visible

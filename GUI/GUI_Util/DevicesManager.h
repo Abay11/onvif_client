@@ -17,7 +17,7 @@ signals:
     void sigNewDeviceAdded(QString address);
 
 public slots:
-    void slotAddDevice(std::string ip, short port, std::string deviceServiceURI);
+		void slotAddDevice(QString ip, short port, QString deviceServiceURI);
 
 public:
 		_onvif::IDevice* getDevice(const QString& addressInfo);

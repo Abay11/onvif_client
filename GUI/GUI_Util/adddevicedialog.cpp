@@ -15,12 +15,12 @@ AddDeviceDialog::~AddDeviceDialog()
     delete ui;
 }
 
-std::string AddDeviceDialog::getIP()
+QString AddDeviceDialog::getIP()
 {
     if(ui)
-        return ui->leIP->text().toStdString();
+				return ui->leIP->text();
 
-    return std::string("");
+		return QString("");
 }
 
 short AddDeviceDialog::getPort()
@@ -31,10 +31,10 @@ short AddDeviceDialog::getPort()
     return 0;
 }
 
-std::string AddDeviceDialog::getURI()
+QString AddDeviceDialog::getURI()
 {
     if(ui)
-        return ui->leURI->text().toStdString();
+				return ui->leURI->text();
 
-    return std::string("");
+		return QString("");
 }
