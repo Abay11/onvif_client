@@ -13,6 +13,7 @@ QT_END_NAMESPACE
 
 class DevicesManager;
 class AddDeviceDialog;
+class DialogWaiting;
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +27,7 @@ private:
     Ui::MainWindow *ui;
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
+		DialogWaiting* dwaiting = nullptr;
 
 		//DevicesManager instance works in separate thread
 		QThread* dmngr_thread_;
@@ -56,6 +58,7 @@ private slots:
 
 		//the slot to load info for specified profile
 		//uses when a user switches media profiles on the video configuration form
-		void slotMediaProfileSwitched(int new_index);
+		void slotMediaProfileSwitched(const QString& /*newProfileToken*/);
+		void slotMediaProfileSwitchedReady();
 };
 #endif // MAINWINDOW_H

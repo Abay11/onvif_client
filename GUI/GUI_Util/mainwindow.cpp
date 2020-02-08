@@ -16,7 +16,8 @@ void deleteItems(QLayout* layout);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+		, ui(new Ui::MainWindow)
+		, dwaiting(new DialogWaiting(this))
 {
 	ui->setupUi(this);
 
@@ -38,6 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
 	connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 
+	//waiting dialog connections
+	connect(devicesMgr, &DevicesManager::sigAsyncGetProfileReady,
+					this, &MainWindow::slotMediaProfileSwitchedReady);
+
 	dmngr_thread_->start();
 }
 
@@ -45,7 +50,7 @@ MainWindow::~MainWindow()
 {
 	dmngr_thread_->quit();
 	dmngr_thread_->wait();
-    delete ui;
+	delete ui;
 }
 
 void MainWindow::slotListWidgetClicked()
@@ -55,32 +60,33 @@ void MainWindow::slotListWidgetClicked()
 
 void MainWindow::slotAddDeviceClicked()
 {
-		if(!addDeviceDialog){}
-		{
-        addDeviceDialog = new AddDeviceDialog(this);
-        connect(addDeviceDialog, &AddDeviceDialog::finished, this, &MainWindow::slotAddDeviceDialogFinished);
-		}
+	if(!addDeviceDialog)
+	{
+		addDeviceDialog = new AddDeviceDialog(this);
+		connect(addDeviceDialog, &AddDeviceDialog::finished, this, &MainWindow::slotAddDeviceDialogFinished);
+	}
 
-    addDeviceDialog->open();
+	addDeviceDialog->open();
 }
 
 void MainWindow::slotAddDeviceDialogFinished()
 {
-    if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
-    {
-				auto ip = addDeviceDialog->getIP();
-        auto port = addDeviceDialog->getPort();
-        auto uri = addDeviceDialog->getURI();
-				if(!ip.isEmpty() && port && !uri.isEmpty())
-        {
-						emit sigAddDevice(ip, port, uri);
-        }
-        else
-        {
-            //do log about incorrect address or something
-        }
+	if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
+	{
+		auto ip = addDeviceDialog->getIP();
+		auto port = addDeviceDialog->getPort();
+		auto uri = addDeviceDialog->getURI();
+		if(!ip.isEmpty() && port && !uri.isEmpty())
+		{
+			dwaiting->open();
 
-    }
+			emit sigAddDevice(ip, port, uri);
+		}
+		else
+		{
+			//do log about incorrect address or something
+		}
+	}
 }
 
 //received signal from DevicesManager
@@ -89,6 +95,8 @@ void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
     QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);
     newDevice->setText(deviceAddresses);
     ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
+
+		dwaiting->close();
 }
 
 //if Maintenance buttons of clicked, we should to set and show a proper widget
@@ -175,38 +183,37 @@ void MainWindow::slotVideoSettingsClicked()
 				}
 
 				//set current settings
-				formVideoConf->fillInfo(&profilesTokens, profile);
+				formVideoConf->fillInfo(profile, &profilesTokens);
 			}
 			else
 				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
 		}
 }
 
-void MainWindow::slotMediaProfileSwitched(int new_index)
+void MainWindow::slotMediaProfileSwitched(const QString& newProfileToken)
 {
-	qDebug() << "Need to load info for a profile: " << new_index;
+	qDebug() << "Need to load info for a profile: " << newProfileToken;
 
 	auto selectedItem = ui->listWidget->currentItem();
 	if(selectedItem)
 	{
-		auto device = devicesMgr->getDevice(selectedItem->text());
-		if(device == nullptr)
-		{
-			qDebug() << "Can't find specified device";
-			return;
-		}
+		QString deviceID = selectedItem->text();
 
-		auto profilesTokens = device->GetProfilesTokens();
-		std::string current_profile_token = profilesTokens.at(static_cast<size_t>(new_index)).c_str();
-		auto profileConf = device->GetProfile(current_profile_token);
-
-		formVideoConf->fillInfo(&profilesTokens, profileConf, new_index);
+		devicesMgr->asyncGetProfile(selectedItem->text(),
+																newProfileToken);
+		dwaiting->open();
 	}
 }
 
-/////////////////////////////
-// free/helpers functions //
-///////////////////////////
+void MainWindow::slotMediaProfileSwitchedReady()
+{
+		formVideoConf->fillInfo(devicesMgr->getAsyncGetProfileResult());
+		dwaiting->close();
+}
+
+	////////////////////////////
+ // free/helpers functions //
+////////////////////////////
 
 void deleteItems(QLayout* layout)
 {

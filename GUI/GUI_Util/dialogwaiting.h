@@ -13,21 +13,19 @@ class DialogWaiting : public QDialog
 
 public:
 	explicit DialogWaiting(QWidget *parent = nullptr);
-	~DialogWaiting();
+	~DialogWaiting() override;
 
 	void setDialogText(const QString& text);
 
+public slots:
+	// QDialog interface
+	void open() override;
+
+	void close(); /*override QDialog???? */
+
 private:
 	Ui::DialogWaiting *ui;
-	QMovie *movie;
-
-	// QDialog interface
-public slots:
-	void open();
-
-	// QWidget interface
-protected:
-	void closeEvent(QCloseEvent *event);
+	QMovie *movie_;
 };
 
 #endif // DIALOGWAITING_H

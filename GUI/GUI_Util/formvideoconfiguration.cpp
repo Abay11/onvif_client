@@ -17,7 +17,8 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 {
     ui->setupUi(this);
 
-		connect(ui->cmbMediaProfiles, SIGNAL(activated(int)), this, SIGNAL(sigMediaProfilesSwitched(int)));
+		connect(ui->cmbMediaProfiles, QOverload<const QString&>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::sigMediaProfilesSwitched);
 
 		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotDisableSettings);
@@ -28,13 +29,11 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 
 FormVideoConfiguration::~FormVideoConfiguration()
 {
-    delete ui;
-	qDebug() << "FormVideoConfiguration deleted";
+	delete ui;
 }
 
-void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
-																			const _onvif::ProfileSP current_profile,
-																			int profile_index)
+void FormVideoConfiguration::fillInfo(const _onvif::ProfileSP current_profile,
+																			const _onvif::StringList* profilesTokens)
 {
 	if(!current_profile)
 	{
@@ -47,22 +46,23 @@ void FormVideoConfiguration::fillInfo(const _onvif::StringList* profilesTokens,
 	//because it's used further by helper methods
 	profile_params_ = current_profile;
 
-	if(static_cast<size_t>(profile_index) >= profilesTokens->size())
-	{
-		qDebug() << "skip invalid profile_index";
-		profile_index = 0;
-	}
-
 	//fill media profiles
-	QStringList profilesTokensList;
-	for(const auto& p : *profilesTokens)
+	//when profileTokens is specified, elemenets are copied
+	//and the first is selected as current by default
+	//when it is no specified, then it is means
+	//that profiles were switched and current element is
+	//already selected
+	if(profilesTokens)
 	{
-		profilesTokensList.push_back(p.c_str());
-	}
+		QStringList profilesTokensList;
+		for(const auto& p : *profilesTokens)
+		{
+			profilesTokensList.push_back(p.c_str());
+		}
 
-	ui->cmbMediaProfiles->clear();
-	ui->cmbMediaProfiles->addItems(profilesTokensList);
-	ui->cmbMediaProfiles->setCurrentIndex(profile_index);
+		ui->cmbMediaProfiles->clear();
+		ui->cmbMediaProfiles->addItems(profilesTokensList);
+	}
 
 	ui->lblProfileName->setText(current_profile->Name.c_str());
 

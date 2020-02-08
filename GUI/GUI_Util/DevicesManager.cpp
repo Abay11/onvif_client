@@ -6,6 +6,13 @@
 
 #include "device.h"
 
+DevicesManager::DevicesManager(QObject *parent)
+	: QObject(parent)
+{
+	connect(this, &DevicesManager::sigAsyncGetProfile,
+					this, &DevicesManager::slotAsyncGetProfile);
+}
+
 void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
 {
 		qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip).arg(port).arg(deviceServiceURI);
@@ -43,4 +50,38 @@ _onvif::IDevice *DevicesManager::getDevice(int index)
 		return devices.at(index);
 
 	return nullptr;
+}
+
+void DevicesManager::slotAsyncGetProfile(const QString& deviceID, const QString& profileToken)
+{
+	auto device = getDevice(deviceID);
+	//in theory, before emitting signal and invoking this slot
+	//the value were checked already and no need to recheck again
+	if(device == nullptr)
+		return;
+
+	asyncGetProfileResultHolder_ = device->GetProfile(profileToken.toStdString());
+
+	emit sigAsyncGetProfileReady();
+}
+
+bool DevicesManager::asyncGetProfile(const QString& deviceID, const QString &profileToken)
+{
+	auto device = getDevice(deviceID);
+	if(device == nullptr)
+	{
+		qDebug() << "Could not find a device to async request profile!";
+		return false;
+	}
+
+	emit sigAsyncGetProfile(deviceID, profileToken);
+
+	return true;
+}
+
+_onvif::ProfileSP DevicesManager::getAsyncGetProfileResult()
+{
+	_onvif::ProfileSP res = asyncGetProfileResultHolder_;
+	asyncGetProfileResultHolder_.reset();
+	return res;
 }

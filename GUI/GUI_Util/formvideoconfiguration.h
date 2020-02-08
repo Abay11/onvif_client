@@ -20,14 +20,14 @@ public:
 
 	/***
 	The method will erase all previous settings and set updated settings with available
-options for a specified profile.
-	@profilesTokens is a string list of tokens of all available profiles on a camera
+options for a specified profil.
 	@profileParams is a current parameters and available ones for a specified profile@
-	@profile_index specifies a used profile token from  profilesTokens.
+	@profilesTokens is a optional string list of tokens of all available profiles on a camera.
+	It should be specified when FormVideoConfiguration opens
+	and not should be specified when profiles were just switched.
 	***/
-	void fillInfo(const _onvif::StringList* profilesTokens,
-								const _onvif::ProfileSP profileParams,
-								int profile_index = 0);
+	void fillInfo(const _onvif::ProfileSP profileParams,
+								const _onvif::StringList* profilesTokens = nullptr);
 
 signals:
 	//some cases hanled internally by this class-widget itself
@@ -38,7 +38,7 @@ signals:
 	//that we need additional actions (for example, it's more
 	//correctly to request configs for currently selected profile
 	//to dynamically re-fill elements with received configs)
-	void sigMediaProfilesSwitched(int new_index);
+	void sigMediaProfilesSwitched(const QString& newProfile);
 
 private slots:
 	//when user selectes other encoding, to escape side effects
@@ -65,7 +65,7 @@ private:
 		//values if a user canceled changing settings or when need
 		//to determine which values changed
 		//to send to the device only changed values.
-		//Should be set actual values after applying settings,
+		//Actual values SHOULD BE set after applying settings,
 		//loading new settings and etc.
 		QMap<const QObject*, QString> value_holder_;
 
