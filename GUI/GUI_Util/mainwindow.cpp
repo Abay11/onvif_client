@@ -39,9 +39,11 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
 	connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 
-	//waiting dialog connections
+	//async requests' results handlers
 	connect(devicesMgr, &DevicesManager::sigAsyncGetProfileReady,
 					this, &MainWindow::slotMediaProfileSwitchedReady);
+	connect(devicesMgr, &DevicesManager::sigAsyncGetVideoSettingsReady,
+					this, &MainWindow::slotVideoSettingsReady);
 
 	dmngr_thread_->start();
 }
@@ -168,26 +170,19 @@ void MainWindow::slotVideoSettingsClicked()
 
 			frameLayout->addWidget(formVideoConf);
 
-			auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-			if(requestedDevice)
-			{
-				auto profilesTokens = requestedDevice->GetProfilesTokens();
-
-				//take the first profile as default and set it settings to the form
-				std::string current_profile_token = profilesTokens.front().c_str();
-				auto profile = requestedDevice->GetProfile(current_profile_token);
-				if(!profile)
-				{
-					qDebug() << "Can't get a profile from a device. Please try again.";
-					return;
-				}
-
-				//set current settings
-				formVideoConf->fillInfo(profile, &profilesTokens);
-			}
-			else
-				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
+			dwaiting->open();
+			devicesMgr->asyncGetVideoSettings(selectedItem->text());
 		}
+}
+
+void MainWindow::slotVideoSettingsReady()
+{
+	QStringList profilesTokens;
+	_onvif::ProfileSP profile;
+	devicesMgr->getAsyncGetVideoSettingsResult(profilesTokens, profile);
+	formVideoConf->fillInfo(profile, &profilesTokens);
+
+	dwaiting->close();
 }
 
 void MainWindow::slotMediaProfileSwitched(const QString& newProfileToken)

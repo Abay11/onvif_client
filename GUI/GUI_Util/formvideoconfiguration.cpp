@@ -33,7 +33,7 @@ FormVideoConfiguration::~FormVideoConfiguration()
 }
 
 void FormVideoConfiguration::fillInfo(const _onvif::ProfileSP current_profile,
-																			const _onvif::StringList* profilesTokens)
+																			const QStringList* profilesTokens)
 {
 	if(!current_profile)
 	{
@@ -54,14 +54,8 @@ void FormVideoConfiguration::fillInfo(const _onvif::ProfileSP current_profile,
 	//already selected
 	if(profilesTokens)
 	{
-		QStringList profilesTokensList;
-		for(const auto& p : *profilesTokens)
-		{
-			profilesTokensList.push_back(p.c_str());
-		}
-
 		ui->cmbMediaProfiles->clear();
-		ui->cmbMediaProfiles->addItems(profilesTokensList);
+		ui->cmbMediaProfiles->addItems(*profilesTokens);
 	}
 
 	ui->lblProfileName->setText(current_profile->Name.c_str());

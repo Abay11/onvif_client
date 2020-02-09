@@ -11,6 +11,8 @@ DevicesManager::DevicesManager(QObject *parent)
 {
 	connect(this, &DevicesManager::sigAsyncGetProfile,
 					this, &DevicesManager::slotAsyncGetProfile);
+	connect(this, &DevicesManager::sigAsyncGetVideoSettings,
+					this, &DevicesManager::slotAsyncGetVideoSettings);
 }
 
 void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
@@ -65,6 +67,24 @@ void DevicesManager::slotAsyncGetProfile(const QString& deviceID, const QString&
 	emit sigAsyncGetProfileReady();
 }
 
+#include <QVector>
+
+void DevicesManager::slotAsyncGetVideoSettings(const QString& deviceID)
+{
+	auto device = getDevice(deviceID);
+	if(device == nullptr)
+		return;
+
+	auto stdstrtokens = device->GetProfilesTokens();
+	for(const auto& s : stdstrtokens)
+		asyncGetProfileTokensResultHolder_.push_back(QString::fromStdString(s));
+
+	//take the first profile as default and set it settings to the form
+	asyncGetProfileResultHolder_ = device->GetProfile(stdstrtokens.front());
+
+	emit sigAsyncGetVideoSettingsReady();
+}
+
 bool DevicesManager::asyncGetProfile(const QString& deviceID, const QString &profileToken)
 {
 	auto device = getDevice(deviceID);
@@ -79,9 +99,31 @@ bool DevicesManager::asyncGetProfile(const QString& deviceID, const QString &pro
 	return true;
 }
 
+bool DevicesManager::asyncGetVideoSettings(const QString & deviceID)
+{
+	auto device = getDevice(deviceID);
+	if(device == nullptr)
+	{
+		qDebug() << "Could not find a device to async request profile!";
+		return false;
+	}
+
+	emit sigAsyncGetVideoSettings(deviceID);
+
+	return true;
+}
+
 _onvif::ProfileSP DevicesManager::getAsyncGetProfileResult()
 {
 	_onvif::ProfileSP res = asyncGetProfileResultHolder_;
 	asyncGetProfileResultHolder_.reset();
 	return res;
+}
+
+void DevicesManager::getAsyncGetVideoSettingsResult(QStringList& tokens, _onvif::ProfileSP& profile)
+{
+	tokens = asyncGetProfileTokensResultHolder_;
+	asyncGetProfileTokensResultHolder_.clear();
+	profile = asyncGetProfileResultHolder_;
+	asyncGetProfileResultHolder_.reset();
 }

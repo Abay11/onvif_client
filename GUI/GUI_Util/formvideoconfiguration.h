@@ -27,7 +27,7 @@ options for a specified profil.
 	and not should be specified when profiles were just switched.
 	***/
 	void fillInfo(const _onvif::ProfileSP profileParams,
-								const _onvif::StringList* profilesTokens = nullptr);
+								const QStringList* profilesTokens = nullptr);
 
 signals:
 	//some cases hanled internally by this class-widget itself

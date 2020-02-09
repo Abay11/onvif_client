@@ -37,6 +37,7 @@ private:
 		FormDeviceMaintenance* formMaintenance = nullptr;
 
 signals:
+		//connected to the DevicesManager to try add a device
 		void sigAddDevice(QString ip, short port, QString uri);
 
 private slots:
@@ -55,6 +56,7 @@ private slots:
     //slots to handle a device functionality
     void slotMaintenanceClicked();
     void slotVideoSettingsClicked();
+		void slotVideoSettingsReady();
 
 		//the slot to load info for specified profile
 		//uses when a user switches media profiles on the video configuration form
