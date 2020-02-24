@@ -35,6 +35,9 @@ namespace _onvif
 		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const override;
 		virtual VEncoders GetVideoEncoders(const std::string& profile) const override;
 
+		//Media applying settings
+		virtual bool AddVideoEncoderConfig(const std::string& /*profile*/, const std::string& /*vetoken*/) const override;
+
 		///IDevice
 
 	public:

@@ -40,11 +40,6 @@ namespace _onvif
 
 		~ConnectionInfo(){}
 
-		~ConnectionInfo()
-		{
-		
-		}
-
 		void setCreds(const std::string& login, const std::string& pass)
 		{
 			login_ = login;

@@ -29,6 +29,10 @@ options for a specified profil.
 	void fillInfo(const _onvif::ProfileSP profileParams,
 								const QStringList* profilesTokens = nullptr);
 
+	//next methods are used to extract currently
+	//selected values from UI elements
+	QString getMediaProfileToken();
+
 signals:
 	//some cases hanled internally by this class-widget itself
 	//like switching codecs etc., in that case
@@ -40,12 +44,19 @@ signals:
 	//to dynamically re-fill elements with received configs)
 	void sigMediaProfilesSwitched(const QString& newProfile);
 
+	//notify when user want to change encoding for a profile
+	void sigAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncodingToken*/);
+
 private slots:
 	//when user selectes other encoding, to escape side effects
 	//disable all other settings
 	void slotDisableSettings();
 
 	void slotEncodingSwitched();
+
+	//the slot should to determine and fill video encoder configs struct
+	//with changed settings after that emit signal
+	void slotApplyClicked();
 
 private:
 	void saveValues();

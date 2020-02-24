@@ -41,9 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	//async requests' results handlers
 	connect(devicesMgr, &DevicesManager::sigAsyncGetProfileReady,
-					this, &MainWindow::slotMediaProfileSwitchedReady);
+					this, &MainWindow::slotLoadMediaProfileReady);
 	connect(devicesMgr, &DevicesManager::sigAsyncGetVideoSettingsReady,
 					this, &MainWindow::slotVideoSettingsReady);
+	connect(devicesMgr, &DevicesManager::sigVideoEncoderConfigAdded,
+					this, &MainWindow::slotVideoEncoderConfigAdded);
 
 	dmngr_thread_->start();
 }
@@ -165,7 +167,9 @@ void MainWindow::slotVideoSettingsClicked()
 			{
 				formVideoConf = new FormVideoConfiguration(this);
 				connect(formVideoConf, &FormVideoConfiguration::sigMediaProfilesSwitched,
-								this, &MainWindow::slotMediaProfileSwitched);
+								this, &MainWindow::slotLoadMediaProfile);
+				connect(formVideoConf, &FormVideoConfiguration::sigAddVideoEncoderConfig,
+								this, &MainWindow::slotAddVideoEncoderConfig);
 			}
 
 			frameLayout->addWidget(formVideoConf);
@@ -185,10 +189,14 @@ void MainWindow::slotVideoSettingsReady()
 	dwaiting->close();
 }
 
-void MainWindow::slotMediaProfileSwitched(const QString& newProfileToken)
+void MainWindow::slotVideoEncoderConfigAdded()
 {
 	qDebug() << "Need to load info for a profile: " << newProfileToken;
+	slotLoadMediaProfile(formVideoConf->getMediaProfileToken());
+}
 
+void MainWindow::slotLoadMediaProfile(const QString& newProfileToken)
+{
 	auto selectedItem = ui->listWidget->currentItem();
 	if(selectedItem)
 	{
@@ -200,10 +208,28 @@ void MainWindow::slotMediaProfileSwitched(const QString& newProfileToken)
 	}
 }
 
-void MainWindow::slotMediaProfileSwitchedReady()
+void MainWindow::slotLoadMediaProfileReady()
 {
 		formVideoConf->fillInfo(devicesMgr->getAsyncGetProfileResult());
 		dwaiting->close();
+}
+
+void MainWindow::slotAddVideoEncoderConfig(const QString& profileToken, const QString& newEncToken)
+{
+	qDebug() << "New encoding value to apply for profile:" << profileToken << newEncToken;
+
+
+	bool isCorrectDeviceID = devicesMgr->addVideoEncoderToProfile(ui->listWidget->currentItem()->text(),
+																			 profileToken, newEncToken);
+
+	if(isCorrectDeviceID)
+	{
+		//the dialog windows should be closed only after sending settings
+		//and acquiring new encoding parameters
+		//device manager should emit signal that config added to a profile
+		//and in this class call acquiring new settings
+		dwaiting->open();
+	} //else open dialog with error text
 }
 
 	////////////////////////////

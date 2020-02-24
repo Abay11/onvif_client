@@ -57,10 +57,14 @@ private slots:
     void slotMaintenanceClicked();
     void slotVideoSettingsClicked();
 		void slotVideoSettingsReady();
+		void slotVideoEncoderConfigAdded();
 
 		//the slot to load info for specified profile
 		//uses when a user switches media profiles on the video configuration form
-		void slotMediaProfileSwitched(const QString& /*newProfileToken*/);
-		void slotMediaProfileSwitchedReady();
+		void slotLoadMediaProfile(const QString& /*newProfileToken*/);
+		void slotLoadMediaProfileReady();
+
+		//need to process separately when user apply new encoding for a media profile
+		void slotAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncToken*/);
 };
 #endif // MAINWINDOW_H

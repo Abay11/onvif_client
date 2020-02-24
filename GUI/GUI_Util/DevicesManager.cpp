@@ -13,6 +13,8 @@ DevicesManager::DevicesManager(QObject *parent)
 					this, &DevicesManager::slotAsyncGetProfile);
 	connect(this, &DevicesManager::sigAsyncGetVideoSettings,
 					this, &DevicesManager::slotAsyncGetVideoSettings);
+	connect(this, &DevicesManager::sigAddVideoEncoderConfig,
+					this, &DevicesManager::slotAddVideoEncoderConfig);
 }
 
 void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
@@ -85,6 +87,18 @@ void DevicesManager::slotAsyncGetVideoSettings(const QString& deviceID)
 	emit sigAsyncGetVideoSettingsReady();
 }
 
+void DevicesManager::slotAddVideoEncoderConfig(const QString& deviceID,
+																									const QString& profile,
+																									const QString& config)
+{
+	auto device = getDevice(deviceID);
+	auto res = device->AddVideoEncoderConfig(profile.toStdString(), config.toStdString());
+
+	emit sigVideoEncoderConfigAdded();
+
+	qDebug() << "DeviceMgr finished adding a new ve config to profile. res:" << res;
+}
+
 bool DevicesManager::asyncGetProfile(const QString& deviceID, const QString &profileToken)
 {
 	auto device = getDevice(deviceID);
@@ -126,4 +140,20 @@ void DevicesManager::getAsyncGetVideoSettingsResult(QStringList& tokens, _onvif:
 	asyncGetProfileTokensResultHolder_.clear();
 	profile = asyncGetProfileResultHolder_;
 	asyncGetProfileResultHolder_.reset();
+}
+
+bool DevicesManager::addVideoEncoderToProfile(const QString& deviceID, const QString& profile, const QString& config)
+{
+	qDebug() << "DevicesManager started adding video config to profile";
+	auto device = getDevice(deviceID);
+	if(device == nullptr)
+	{
+		qDebug() << "Could not find a device to async request profile!";
+		return false;
+	}
+
+	//videoEncoderConfigHolder_ = new _onvif::VideoEncoderConfiguration(configs);
+
+	emit sigAddVideoEncoderConfig(deviceID, profile, config);
+	return true;
 }

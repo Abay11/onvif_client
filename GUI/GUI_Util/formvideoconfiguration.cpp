@@ -25,6 +25,9 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 
 		connect(ui->cmbEncodings, QOverload<int>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotEncodingSwitched);
+
+		connect(ui->btnApply, &QPushButton::clicked,
+						this, &FormVideoConfiguration::slotApplyClicked);
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -120,20 +123,40 @@ void FormVideoConfiguration::fillInfo(const _onvif::ProfileSP current_profile,
 	makeElementsEnable(true);
 }
 
+
+QString FormVideoConfiguration::getMediaProfileToken()
+{
+	return ui->cmbMediaProfiles->currentText();
+}
+
 void FormVideoConfiguration::slotDisableSettings()
 {
 	//if current text is equal saved one, it means that a user switched back value
 	//and in that case isNotSwitched will be TRUE. In this case, elements should be ENABLED.
 	//Otherwise, if values are not the same, it means the user switched value
 	//and now need to force him to apply settings
-	bool isNotSwitched = ui->cmbECToken->currentText() == value_holder_.value(ui->cmbECToken);
-	makeElementsEnable(isNotSwitched);
+	bool isSwitched = ui->cmbECToken->currentText() != value_holder_.value(ui->cmbECToken);
+	makeElementsEnable(isSwitched == false);
+
+	//'Apply' should be enabled when some settings were changed
+	ui->btnApply->setEnabled(isSwitched);
 }
 
 void FormVideoConfiguration::slotEncodingSwitched()
 {
 	qDebug() << "Do load new encoding configs";
 	fillEncodingParams(ui->cmbEncodings->currentText());
+}
+
+void FormVideoConfiguration::slotApplyClicked()
+{
+	//at first determine is video encoder changed or other label
+	//in first case need to add new encoder to a profile
+	//otherwise send new values to apply settings
+	if(ui->cmbECToken->currentText() != value_holder_.value(ui->cmbECToken))
+	{
+		emit sigAddVideoEncoderConfig(ui->cmbMediaProfiles->currentText(), ui->cmbECToken->currentText());
+	}
 }
 
 void FormVideoConfiguration::saveValues()
@@ -153,6 +176,9 @@ void FormVideoConfiguration::saveValues()
 
 void FormVideoConfiguration::makeElementsEnable(bool value)
 {
+	//@value 'true' when video encoder were not changed
+	//and 'false' when changed
+	//so elements will be disabled when encoder changed
 	ui->cmbEncodings->setEnabled(value);
 	ui->cmbResolutions->setEnabled(value);
 	ui->cmbQualities->setEnabled(value);
@@ -162,7 +188,6 @@ void FormVideoConfiguration::makeElementsEnable(bool value)
 	ui->cmbGOVLength->setEnabled(value && !ui->cmbGOVLength->currentText().isEmpty());
 	ui->cmbCodecProfiles->setEnabled(value && !ui->cmbGOVLength->currentText().isEmpty());
 	ui->cmbMulticastAutostart->setEnabled(value);
-
 }
 
 void FormVideoConfiguration::fillEncodingParams(const QString& encoding)

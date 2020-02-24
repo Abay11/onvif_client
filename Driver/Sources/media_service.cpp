@@ -168,7 +168,6 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 		p.metadata->useCount = gp->MetadataConfiguration->UseCount;
 	}
 }
-//free-helpers functions
 
 namespace _onvif
 {
@@ -455,5 +454,23 @@ namespace _onvif
 		}
 
 		return result_uri;
+	}
+
+	bool MediaService::add_videoencoder_config(const std::string& profiletoken, const std::string& vetoken)
+	{
+		using T1 = _trt__AddVideoEncoderConfiguration;
+		using T2 = _trt__AddVideoEncoderConfigurationResponse;
+
+		T1 request;
+		request.ProfileToken = profiletoken;
+		request.ConfigurationToken = vetoken;
+
+		T2 response;
+
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->AddVideoEncoderConfiguration(r1, r2); };
+
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+
+		return res == SOAP_OK;
 	}
 }

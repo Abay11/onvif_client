@@ -34,7 +34,7 @@ namespace _onvif
 		const CapabilitiesSP getCapabilities() const { return capabilities_; }
         const DeviceInformationSP getDeviceInfo() const { return device_info_; }
         const ONVIFGeneralInfoSP getONVIFGeneralInfo() const { return onvif_general_info_; }
-		
+
 		///////////////////////Media/////////////////////////
 		virtual StringList GetProfilesTokens() const = 0;
 		virtual Profiles GetProfiles() const = 0;
@@ -43,6 +43,11 @@ namespace _onvif
 		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) const = 0;
 		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const = 0;
 		virtual VEncoders GetVideoEncoders(const std::string& profile) const = 0;
+
+		//APPLYING NEW SETTINGS
+		//Following methods return true if settings applied successfully, otherwise false
+
+		virtual bool AddVideoEncoderConfig(const std::string& /*profile*/, const std::string& /*vetoken*/) const = 0;
 		///////////////////////Media/////////////////////////
 	
 		
