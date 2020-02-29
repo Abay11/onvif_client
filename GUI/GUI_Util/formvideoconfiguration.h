@@ -58,6 +58,10 @@ private slots:
 	//with changed settings after that emit signal
 	void slotApplyClicked();
 
+	//by default buttons Apply and Cancel are disabled
+	//and they are enabled when at least one parameter changed
+	void slotSetupButtons();
+
 private:
 	void saveValues();
 

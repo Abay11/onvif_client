@@ -28,6 +28,28 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 
 		connect(ui->btnApply, &QPushButton::clicked,
 						this, &FormVideoConfiguration::slotApplyClicked);
+
+		//connections to check if any parameter changed
+		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbEncodings, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbResolutions, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbQualities, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbFramerate, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbEncodingInterval, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbBitrate, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbGOVLength, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbCodecProfiles, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
+		connect(ui->cmbMulticastAutostart, QOverload<int>::of(&QComboBox::activated),
+						this, &FormVideoConfiguration::slotSetupButtons);
 }
 
 FormVideoConfiguration::~FormVideoConfiguration()
@@ -157,6 +179,81 @@ void FormVideoConfiguration::slotApplyClicked()
 	{
 		emit sigAddVideoEncoderConfig(ui->cmbMediaProfiles->currentText(), ui->cmbECToken->currentText());
 	}
+
+	//emit sigApplyClicked();
+}
+
+void FormVideoConfiguration::slotSetupButtons()
+{
+	//check and if some parameter changed enable
+	//otherwise disable buttons
+
+	bool enableButtons = false;
+	do
+	{
+		if(ui->cmbECToken->currentText() != value_holder_.value(ui->cmbECToken))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbEncodings->currentText() != value_holder_.value(ui->cmbEncodings))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbResolutions->currentText() != value_holder_.value(ui->cmbResolutions))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbQualities->currentText() != value_holder_.value(ui->cmbQualities))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbFramerate->currentText() != value_holder_.value(ui->cmbFramerate))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbEncodingInterval->currentText() != value_holder_.value(ui->cmbEncodingInterval))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbBitrate->currentText() != value_holder_.value(ui->cmbBitrate))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbGOVLength->currentText() != value_holder_.value(ui->cmbGOVLength))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbCodecProfiles->currentText() != value_holder_.value(ui->cmbCodecProfiles))
+		{
+			enableButtons = true;
+			break;
+		}
+
+		if(ui->cmbMulticastAutostart->currentText() != value_holder_.value(ui->cmbMulticastAutostart))
+		{
+			enableButtons = true;
+			break;
+		}
+	}while(false);
+
+	ui->btnApply->setEnabled(enableButtons);
+	ui->btnCancel->setEnabled(enableButtons);
 }
 
 void FormVideoConfiguration::saveValues()
