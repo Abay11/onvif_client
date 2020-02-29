@@ -52,11 +52,14 @@ private slots:
 	//disable all other settings
 	void slotDisableSettings();
 
-	void slotEncodingSwitched();
+	void slotEncodingSwitched(const QString& /*encoding*/);
 
 	//the slot should to determine and fill video encoder configs struct
 	//with changed settings after that emit signal
 	void slotApplyClicked();
+
+	//reset all settings to holder_values_ saved
+	void slotCancelClicked();
 
 	//by default buttons Apply and Cancel are disabled
 	//and they are enabled when at least one parameter changed
@@ -64,6 +67,7 @@ private slots:
 
 private:
 	void saveValues();
+	void restoreValues();
 
 	//this method is used to handle
 	//state of all GUI elements

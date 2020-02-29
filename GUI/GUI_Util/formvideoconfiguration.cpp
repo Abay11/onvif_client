@@ -20,14 +20,17 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 		connect(ui->cmbMediaProfiles, QOverload<const QString&>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::sigMediaProfilesSwitched);
 
-		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
+		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::currentIndexChanged),
 						this, &FormVideoConfiguration::slotDisableSettings);
 
-		connect(ui->cmbEncodings, QOverload<int>::of(&QComboBox::activated),
+		connect(ui->cmbEncodings, QOverload<const QString&>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotEncodingSwitched);
 
+		//buttons
 		connect(ui->btnApply, &QPushButton::clicked,
 						this, &FormVideoConfiguration::slotApplyClicked);
+		connect(ui->btnCancel, &QPushButton::clicked,
+						this, &FormVideoConfiguration::slotCancelClicked);
 
 		//connections to check if any parameter changed
 		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
@@ -159,15 +162,12 @@ void FormVideoConfiguration::slotDisableSettings()
 	//and now need to force him to apply settings
 	bool isSwitched = ui->cmbECToken->currentText() != value_holder_.value(ui->cmbECToken);
 	makeElementsEnable(isSwitched == false);
-
-	//'Apply' should be enabled when some settings were changed
-	ui->btnApply->setEnabled(isSwitched);
 }
 
-void FormVideoConfiguration::slotEncodingSwitched()
+void FormVideoConfiguration::slotEncodingSwitched(const QString& encoding)
 {
 	qDebug() << "Do load new encoding configs";
-	fillEncodingParams(ui->cmbEncodings->currentText());
+	fillEncodingParams(encoding);
 }
 
 void FormVideoConfiguration::slotApplyClicked()
@@ -181,6 +181,15 @@ void FormVideoConfiguration::slotApplyClicked()
 	}
 
 	//emit sigApplyClicked();
+}
+
+void FormVideoConfiguration::slotCancelClicked()
+{
+	//restore all values from value_holder_
+	//at first refill elements with specified encoding options
+	//then restore values
+	slotEncodingSwitched(value_holder_.value(ui->cmbEncodings));
+	restoreValues();
 }
 
 void FormVideoConfiguration::slotSetupButtons()
@@ -269,6 +278,35 @@ void FormVideoConfiguration::saveValues()
 	value_holder_.insert(ui->cmbGOVLength, ui->cmbGOVLength->currentText());
 	value_holder_.insert(ui->cmbCodecProfiles, ui->cmbCodecProfiles->currentText());
 	value_holder_.insert(ui->cmbMulticastAutostart, ui->cmbMulticastAutostart->currentText());
+}
+
+void FormVideoConfiguration::restoreValues()
+{
+	ui->cmbECToken->setCurrentText(value_holder_.value(ui->cmbECToken));
+	ui->cmbEncodings->setCurrentText(value_holder_.value(ui->cmbEncodings));
+	ui->cmbResolutions->setCurrentText(value_holder_.value(ui->cmbResolutions));
+	ui->cmbQualities->setCurrentText(value_holder_.value(ui->cmbQualities));
+	ui->cmbFramerate->setCurrentText(value_holder_.value(ui->cmbFramerate));
+	ui->cmbEncodingInterval->setCurrentText(value_holder_.value(ui->cmbEncodingInterval));
+	ui->cmbBitrate->setCurrentText(value_holder_.value(ui->cmbBitrate));
+	if(!value_holder_.value(ui->cmbGOVLength).isEmpty())
+	{
+		ui->cmbGOVLength->setEnabled(true);
+		ui->cmbGOVLength->setCurrentText(value_holder_.value(ui->cmbGOVLength));
+	}
+	if(!value_holder_.value(ui->cmbCodecProfiles).isEmpty())
+	{
+		ui->cmbCodecProfiles->setEnabled(true);
+		ui->cmbCodecProfiles->setCurrentText(value_holder_.value(ui->cmbCodecProfiles));
+	}
+//	ui->leMulticastIP->setText(value_holder_.value(ui->leMulticastIP));
+//	ui->leMulticastPort->setText(value_holder_.value(ui->leMulticastPort));
+//	ui->leMulticastTTL->setText(value_holder_.value(ui->leMulticastTTL));
+	ui->cmbMulticastAutostart->setCurrentText(
+				value_holder_.value(ui->cmbMulticastAutostart));
+
+	ui->btnApply->setEnabled(false);
+	ui->btnCancel->setEnabled(false);
 }
 
 void FormVideoConfiguration::makeElementsEnable(bool value)
