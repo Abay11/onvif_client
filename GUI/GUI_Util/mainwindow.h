@@ -44,6 +44,9 @@ private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
 
+		//process filter events
+		void slotFilterTextChanged(const QString&);
+
     //emitted by the button AddDevice
     void slotAddDeviceClicked();
 

@@ -26,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->listWidget, &QListWidget::itemClicked,
 					this, &MainWindow::slotListWidgetClicked);
 
+	connect(ui->leFilter, QOverload<const QString&>::of(&QLineEdit::textEdited),
+					this, &MainWindow::slotFilterTextChanged);
+
 	dmngr_thread_ = new QThread(this);
 	devicesMgr = new DevicesManager;
 	devicesMgr->moveToThread(dmngr_thread_);
@@ -60,6 +63,19 @@ MainWindow::~MainWindow()
 void MainWindow::slotListWidgetClicked()
 {
 	ui->frameControlsHolder->setVisible(true);
+}
+
+void MainWindow::slotFilterTextChanged(const QString& filter)
+{
+	for(int i = 0; i < ui->listWidget->count(); ++i)
+	{
+		auto curItem = ui->listWidget->item(i);
+		bool isHidden = true;
+		if(filter.isEmpty() || curItem->text().contains(filter, Qt::CaseInsensitive))
+			isHidden = false;
+
+		ui->listWidget->setItemHidden(curItem, isHidden);
+	}
 }
 
 void MainWindow::slotAddDeviceClicked()
@@ -191,7 +207,7 @@ void MainWindow::slotVideoSettingsReady()
 
 void MainWindow::slotVideoEncoderConfigAdded()
 {
-	qDebug() << "Need to load info for a profile: " << newProfileToken;
+	qDebug() << "Video config added. Do acquire new settings";
 	slotLoadMediaProfile(formVideoConf->getMediaProfileToken());
 }
 
