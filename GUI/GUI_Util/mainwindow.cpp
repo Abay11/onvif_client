@@ -184,6 +184,8 @@ void MainWindow::slotVideoSettingsClicked()
 				formVideoConf = new FormVideoConfiguration(this);
 				connect(formVideoConf, &FormVideoConfiguration::sigMediaProfilesSwitched,
 								this, &MainWindow::slotLoadMediaProfile);
+				connect(formVideoConf, &FormVideoConfiguration::sigApplyClicked,
+					this, &MainWindow::slotVideoEncoderApplyClicked);
 				connect(formVideoConf, &FormVideoConfiguration::sigAddVideoEncoderConfig,
 								this, &MainWindow::slotAddVideoEncoderConfig);
 			}
@@ -228,6 +230,15 @@ void MainWindow::slotLoadMediaProfileReady()
 {
 		formVideoConf->fillInfo(devicesMgr->getAsyncGetProfileResult());
 		dwaiting->close();
+}
+
+void MainWindow::slotVideoEncoderApplyClicked()
+{
+	qDebug() << "Sending video encoder params is started";
+
+	devicesMgr->setVideoEncoderSettings(ui->listWidget->currentItem()->text(),
+																			formVideoConf->getNewSettings());
+	qDebug() << "Sending video encoder params is finished";
 }
 
 void MainWindow::slotAddVideoEncoderConfig(const QString& profileToken, const QString& newEncToken)

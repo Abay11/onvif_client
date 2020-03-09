@@ -47,9 +47,11 @@ namespace _onvif
 		//APPLYING NEW SETTINGS
 		//Following methods return true if settings applied successfully, otherwise false
 
+		//Sending new settings
+		virtual bool SetVideoEncoderSettings(const VideoEncoderConfiguration& /*new_configs*/) const = 0;
 		virtual bool AddVideoEncoderConfig(const std::string& /*profile*/, const std::string& /*vetoken*/) const = 0;
 		///////////////////////Media/////////////////////////
-	
+
 		
 	protected:		
 		Services services_;

@@ -33,6 +33,8 @@ options for a specified profil.
 	//selected values from UI elements
 	QString getMediaProfileToken();
 
+	_onvif::VideoEncoderConfiguration getNewSettings();
+
 signals:
 	//some cases hanled internally by this class-widget itself
 	//like switching codecs etc., in that case
@@ -44,6 +46,12 @@ signals:
 	//to dynamically re-fill elements with received configs)
 	void sigMediaProfilesSwitched(const QString& newProfile);
 
+	//notify parent when a user clicked Apply
+	//to send settings to a device
+	//assumed that signal is emitted for currently
+	//selected item on devices widget/lists
+	void sigApplyClicked();
+
 	//notify when user want to change encoding for a profile
 	void sigAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncodingToken*/);
 
@@ -54,8 +62,7 @@ private slots:
 
 	void slotEncodingSwitched(const QString& /*encoding*/);
 
-	//the slot should to determine and fill video encoder configs struct
-	//with changed settings after that emit signal
+	//emits signals depending of changed labels
 	void slotApplyClicked();
 
 	//reset all settings to holder_values_ saved
@@ -95,6 +102,11 @@ private:
 		//we not requere dynamically encoding params and store them
 		//At least them should be updated every fiilInfo call
 		_onvif::ProfileSP profile_params_;
+
+		//holder for changed params which will be
+		//send to the device
+		//should be cleared after send to client immediately
+		//TODO: _onvif::VideoEncoderConfiguration new_encoder_params_;
 };
 
 #endif // FORMVIDEOCONFIGURATION_H

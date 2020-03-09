@@ -9,6 +9,7 @@ namespace _onvif
 class IDevice;
 struct Profile;
 using ProfileSP = std::shared_ptr<Profile>;
+class VideoEncoderConfiguration;
 }
 
 class DevicesManager : public QObject
@@ -30,6 +31,7 @@ signals:
 	void sigAsyncGetVideoSettingsReady();
 
 	//SIGNALS emited when to set settings
+	void sigSetVideoEncoderSettings(const QString& /*deviceID*/);
 	void sigAddVideoEncoderConfig(const QString& /*deviceID*/,
 																				 const QString& /*profile*/,
 																				 const QString& /*config*/);
@@ -59,6 +61,7 @@ public:
 																			_onvif::ProfileSP& /*profile*/);
 
 	//set settings request assumed to be async
+	void setVideoEncoderSettings(const QString& /*deviceID*/, const _onvif::VideoEncoderConfiguration& /*ve*/);
 	bool addVideoEncoderToProfile(const QString& /*deviceID*/,
 																const QString& /*profile*/,
 																const QString& /*veToken*/);
@@ -67,9 +70,10 @@ private slots:
 	void slotAsyncGetProfile(const QString& /*deviceID*/,
 													 const QString& /*profileToken*/);
 	void slotAsyncGetVideoSettings(const QString& /*deviceID*/);
+	void slotSetVideoEncoderSetting(const QString& /*deviceID*/ );
 	void slotAddVideoEncoderConfig(const QString& /*deviceID*/,
-																		const QString& /*profile*/,
-																		const QString& /*config*/);
+																 const QString& /*profile*/,
+																 const QString& /*config*/);
 
 private:
 	//ASYNC RESULT HOLDERS
@@ -77,6 +81,9 @@ private:
 	//getters calling
 	_onvif::ProfileSP asyncGetProfileResultHolder_;
 	QStringList asyncGetProfileTokensResultHolder_;
+
+	//holders to save settings should be send to a device
+	_onvif::VideoEncoderConfiguration* videoEncoderConfigHolder_ = nullptr;
 
 	QVector<_onvif::IDevice*> devices;
 };

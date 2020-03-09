@@ -31,6 +31,7 @@ namespace _onvif
 		VideoSources get_compatible_videosources(const std::string& profile_token);
 		std::string get_stream_uri(const std::string& profileToken, StreamType type = Unicast, TransportProtocol transport = UDP);
 
+		bool set_videoencoder_settings(const VideoEncoderConfiguration& veConfigs);
 		bool add_videoencoder_config(const std::string& /*profiletoken*/, const std::string& /*vetoken*/);
 
 	private:

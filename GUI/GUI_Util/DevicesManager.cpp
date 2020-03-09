@@ -13,6 +13,8 @@ DevicesManager::DevicesManager(QObject *parent)
 					this, &DevicesManager::slotAsyncGetProfile);
 	connect(this, &DevicesManager::sigAsyncGetVideoSettings,
 					this, &DevicesManager::slotAsyncGetVideoSettings);
+	connect(this, &DevicesManager::sigSetVideoEncoderSettings,
+					this, &DevicesManager::slotSetVideoEncoderSetting);
 	connect(this, &DevicesManager::sigAddVideoEncoderConfig,
 					this, &DevicesManager::slotAddVideoEncoderConfig);
 }
@@ -87,9 +89,23 @@ void DevicesManager::slotAsyncGetVideoSettings(const QString& deviceID)
 	emit sigAsyncGetVideoSettingsReady();
 }
 
+void DevicesManager::slotSetVideoEncoderSetting(const QString& deviceID)
+{
+	auto device = getDevice(deviceID);
+	//videoEncoderConfigHolder_ is filled by calling client previously
+	//so just take it and send to a device
+	//after need to clear the holder
+	auto res = device->SetVideoEncoderSettings(*videoEncoderConfigHolder_);
+
+	delete  videoEncoderConfigHolder_;
+	videoEncoderConfigHolder_ = nullptr;
+
+	qDebug() << "Sending video encoder settings result: " << res;
+}
+
 void DevicesManager::slotAddVideoEncoderConfig(const QString& deviceID,
-																									const QString& profile,
-																									const QString& config)
+																							 const QString& profile,
+																							 const QString& config)
 {
 	auto device = getDevice(deviceID);
 	auto res = device->AddVideoEncoderConfig(profile.toStdString(), config.toStdString());
@@ -140,6 +156,21 @@ void DevicesManager::getAsyncGetVideoSettingsResult(QStringList& tokens, _onvif:
 	asyncGetProfileTokensResultHolder_.clear();
 	profile = asyncGetProfileResultHolder_;
 	asyncGetProfileResultHolder_.reset();
+}
+
+void DevicesManager::setVideoEncoderSettings(const QString& deviceID, const _onvif::VideoEncoderConfiguration& configs)
+{
+	qDebug() << "DevicesManager started sending video encoder settings";
+	auto device = getDevice(deviceID);
+	if(device == nullptr)
+	{
+		qDebug() << "Could not find a device to async request profile!";
+		return;
+	}
+
+	videoEncoderConfigHolder_ = new _onvif::VideoEncoderConfiguration(configs);
+
+	emit sigSetVideoEncoderSettings(deviceID);
 }
 
 bool DevicesManager::addVideoEncoderToProfile(const QString& deviceID, const QString& profile, const QString& config)

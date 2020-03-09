@@ -169,6 +169,27 @@ void soapProfileToProfile(const tt__Profile* gp, _onvif::Profile& p)
 	}
 }
 
+//to not init every time return a static instance
+tt__VideoEncoderConfiguration* get_video_encoder_instance(soap* context)
+{
+	static tt__VideoEncoderConfiguration* instance = nullptr;
+	if (!instance)
+	{
+		instance = soap_new_tt__VideoEncoderConfiguration(context);
+		instance->Resolution = soap_new_tt__VideoResolution(context);
+		instance->Multicast = soap_new_tt__MulticastConfiguration(context);
+		instance->Multicast->Address = soap_new_tt__IPAddress(context);
+		instance->Multicast->Address->Type = tt__IPType::tt__IPType__IPv4;
+		instance->Multicast->Address->IPv4Address = soap_new_std__string(context);
+
+		instance->H264 = soap_new_tt__H264Configuration(context);
+	}
+
+	return instance;
+}
+
+//free-helpers functions end
+
 namespace _onvif
 {
 	MediaService::MediaService(ConnectionInfo* connInfo, const std::string& media_service_uri)
@@ -454,6 +475,36 @@ namespace _onvif
 		}
 
 		return result_uri;
+	}
+
+	bool MediaService::set_videoencoder_settings(const VideoEncoderConfiguration& veConfigs)
+	{
+		using T1 = _trt__SetVideoEncoderConfiguration;
+		using T2 = _trt__SetVideoEncoderConfigurationResponse;
+		
+		//TODO: fill received values
+		T1 request;
+		request.Configuration = get_video_encoder_instance(conn_info_->getSoap());
+		request.Configuration->UseCount = 1;
+		request.Configuration->Name = "V_ENC_000";
+		request.Configuration->token = "V_ENC_000";
+		request.Configuration->Encoding = tt__VideoEncoding__H264;
+		request.Configuration->Resolution->Width = 320;
+		request.Configuration->Resolution->Height = 240;
+		request.Configuration->Quality = 3;
+		*request.Configuration->Multicast->Address->IPv4Address = "239.0.1.0";
+		request.Configuration->Multicast->Port = 32002;
+		request.Configuration->SessionTimeout = "PT10S";
+		request.ForcePersistence = false;
+		request.Configuration->H264->GovLength = 50;
+		request.Configuration->H264->H264Profile = tt__H264Profile__Main;
+
+		T2 response;
+
+		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->SetVideoEncoderConfiguration(r1, r2); };
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+
+		return res == SOAP_OK;
 	}
 
 	bool MediaService::add_videoencoder_config(const std::string& profiletoken, const std::string& vetoken)

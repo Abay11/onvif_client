@@ -147,10 +147,17 @@ void FormVideoConfiguration::fillInfo(const _onvif::ProfileSP current_profile,
 	makeElementsEnable(true);
 }
 
-
 QString FormVideoConfiguration::getMediaProfileToken()
 {
 	return ui->cmbMediaProfiles->currentText();
+}
+
+_onvif::VideoEncoderConfiguration FormVideoConfiguration::getNewSettings()
+{
+	//TODO:
+	//add normal clearing
+	return _onvif::VideoEncoderConfiguration();
+	//return std::move(new_encoder_params_);
 }
 
 void FormVideoConfiguration::slotDisableSettings()
@@ -177,9 +184,9 @@ void FormVideoConfiguration::slotEncodingSwitched(const QString& encoding)
 
 void FormVideoConfiguration::slotApplyClicked()
 {
-	//at first determine is video encoder changed or other label
-	//in first case need to add new encoder to a profile
-	//otherwise send new values to apply settings
+	/* At first checks if user selected another video encoder token
+	 * that means we should to add video encoder config to the specified profile
+	 * therwise just send new parameters to a device */
 	if(ui->cmbECToken->currentText() != value_holder_.value(ui->cmbECToken))
 	{
 		emit sigAddVideoEncoderConfig(ui->cmbMediaProfiles->currentText(), ui->cmbECToken->currentText());

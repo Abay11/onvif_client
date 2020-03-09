@@ -67,7 +67,10 @@ private slots:
 		void slotLoadMediaProfile(const QString& /*newProfileToken*/);
 		void slotLoadMediaProfileReady();
 
-		//need to process separately when user apply new encoding for a media profile
+		//apply buttons handlers
+		void slotVideoEncoderApplyClicked();
+
+		//need to process separately when user apply new encoder config to a media profile
 		void slotAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncToken*/);
 };
 #endif // MAINWINDOW_H
