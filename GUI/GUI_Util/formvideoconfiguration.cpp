@@ -33,9 +33,8 @@ FormVideoConfiguration::FormVideoConfiguration(QWidget *parent) :
 						this, &FormVideoConfiguration::slotCancelClicked);
 
 		//connections to check if any parameter changed
+		//used to enable Apply and Cancel buttons
 		connect(ui->cmbECToken, QOverload<int>::of(&QComboBox::activated),
-						this, &FormVideoConfiguration::slotSetupButtons);
-		connect(ui->cmbEncodings, QOverload<int>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotSetupButtons);
 		connect(ui->cmbResolutions, QOverload<int>::of(&QComboBox::activated),
 						this, &FormVideoConfiguration::slotSetupButtons);
@@ -166,8 +165,14 @@ void FormVideoConfiguration::slotDisableSettings()
 
 void FormVideoConfiguration::slotEncodingSwitched(const QString& encoding)
 {
-	qDebug() << "Do load new encoding configs";
 	fillEncodingParams(encoding);
+
+	/* This slot is called here because if call it like others (meaning other
+	 * signals connected to slotSetupButtons)
+	 * the behavior goes wrong due of some reason at first
+	 * it call slotSetupButtons and only then fillEncodingParams
+	 * and so compared old values */
+	slotSetupButtons();
 }
 
 void FormVideoConfiguration::slotApplyClicked()
@@ -194,9 +199,8 @@ void FormVideoConfiguration::slotCancelClicked()
 
 void FormVideoConfiguration::slotSetupButtons()
 {
-	//check and if some parameter changed enable
-	//otherwise disable buttons
-
+	//checking and if some parameter changed enabling
+	//otherwise disabling buttons
 	bool enableButtons = false;
 	do
 	{
