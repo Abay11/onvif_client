@@ -53,7 +53,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-157</y>
+        <y>0</y>
         <width>589</width>
         <height>670</height>
        </rect>
@@ -77,7 +77,11 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="cmbVideoSources"/>
+            <widget class="QComboBox" name="cmbVideoSources">
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+            </widget>
            </item>
            <item row="5" column="0">
             <widget class="QLabel" name="empty_lbl1">
@@ -100,7 +104,11 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QComboBox" name="cmbMediaProfiles"/>
+            <widget class="QComboBox" name="cmbMediaProfiles">
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_11">
@@ -557,7 +565,11 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QComboBox" name="cmbECToken"/>
+            <widget class="QComboBox" name="cmbECToken">
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>

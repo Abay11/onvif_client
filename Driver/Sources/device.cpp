@@ -160,6 +160,16 @@ namespace _onvif
 		onvif_general_info_->deviceServiceURI = device_service_uri_;
 	}
 
+	bool Device::SetVideoEncoderSettings(const VideoEncoderConfiguration& veConfigs) const
+	{
+		return media_service_->set_videoencoder_settings(veConfigs);
+	}
+	
+	bool Device::AddVideoEncoderConfig(const std::string& profile, const std::string& vetoken) const
+	{
+		return media_service_->add_videoencoder_config(profile, vetoken);
+	}
+
 	bool isMedia2Supported(const Services* services)
 	{
 		for (const auto s : *services)

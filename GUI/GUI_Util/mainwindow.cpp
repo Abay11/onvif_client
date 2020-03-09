@@ -16,7 +16,8 @@ void deleteItems(QLayout* layout);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+		, ui(new Ui::MainWindow)
+		, dwaiting(new DialogWaiting(this))
 {
 	ui->setupUi(this);
 
@@ -24,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->frameControlsHolder->setVisible(false);
 	connect(ui->listWidget, &QListWidget::itemClicked,
 					this, &MainWindow::slotListWidgetClicked);
+
+	connect(ui->leFilter, QOverload<const QString&>::of(&QLineEdit::textEdited),
+					this, &MainWindow::slotFilterTextChanged);
 
 	dmngr_thread_ = new QThread(this);
 	devicesMgr = new DevicesManager;
@@ -38,6 +42,14 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
 	connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 
+	//async requests' results handlers
+	connect(devicesMgr, &DevicesManager::sigAsyncGetProfileReady,
+					this, &MainWindow::slotLoadMediaProfileReady);
+	connect(devicesMgr, &DevicesManager::sigAsyncGetVideoSettingsReady,
+					this, &MainWindow::slotVideoSettingsReady);
+	connect(devicesMgr, &DevicesManager::sigVideoEncoderConfigAdded,
+					this, &MainWindow::slotVideoEncoderConfigAdded);
+
 	dmngr_thread_->start();
 }
 
@@ -45,7 +57,7 @@ MainWindow::~MainWindow()
 {
 	dmngr_thread_->quit();
 	dmngr_thread_->wait();
-    delete ui;
+	delete ui;
 }
 
 void MainWindow::slotListWidgetClicked()
@@ -53,34 +65,48 @@ void MainWindow::slotListWidgetClicked()
 	ui->frameControlsHolder->setVisible(true);
 }
 
+void MainWindow::slotFilterTextChanged(const QString& filter)
+{
+	for(int i = 0; i < ui->listWidget->count(); ++i)
+	{
+		auto curItem = ui->listWidget->item(i);
+		bool isHidden = true;
+		if(filter.isEmpty() || curItem->text().contains(filter, Qt::CaseInsensitive))
+			isHidden = false;
+
+		ui->listWidget->setItemHidden(curItem, isHidden);
+	}
+}
+
 void MainWindow::slotAddDeviceClicked()
 {
-		if(!addDeviceDialog){}
-		{
-        addDeviceDialog = new AddDeviceDialog(this);
-        connect(addDeviceDialog, &AddDeviceDialog::finished, this, &MainWindow::slotAddDeviceDialogFinished);
-		}
+	if(!addDeviceDialog)
+	{
+		addDeviceDialog = new AddDeviceDialog(this);
+		connect(addDeviceDialog, &AddDeviceDialog::finished, this, &MainWindow::slotAddDeviceDialogFinished);
+	}
 
-    addDeviceDialog->open();
+	addDeviceDialog->open();
 }
 
 void MainWindow::slotAddDeviceDialogFinished()
 {
-    if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
-    {
-				auto ip = addDeviceDialog->getIP();
-        auto port = addDeviceDialog->getPort();
-        auto uri = addDeviceDialog->getURI();
-				if(!ip.isEmpty() && port && !uri.isEmpty())
-        {
-						emit sigAddDevice(ip, port, uri);
-        }
-        else
-        {
-            //do log about incorrect address or something
-        }
+	if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
+	{
+		auto ip = addDeviceDialog->getIP();
+		auto port = addDeviceDialog->getPort();
+		auto uri = addDeviceDialog->getURI();
+		if(!ip.isEmpty() && port && !uri.isEmpty())
+		{
+			dwaiting->open();
 
-    }
+			emit sigAddDevice(ip, port, uri);
+		}
+		else
+		{
+			//do log about incorrect address or something
+		}
+	}
 }
 
 //received signal from DevicesManager
@@ -89,6 +115,8 @@ void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
     QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);
     newDevice->setText(deviceAddresses);
     ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
+
+		dwaiting->close();
 }
 
 //if Maintenance buttons of clicked, we should to set and show a proper widget
@@ -155,58 +183,85 @@ void MainWindow::slotVideoSettingsClicked()
 			{
 				formVideoConf = new FormVideoConfiguration(this);
 				connect(formVideoConf, &FormVideoConfiguration::sigMediaProfilesSwitched,
-								this, &MainWindow::slotMediaProfileSwitched);
+								this, &MainWindow::slotLoadMediaProfile);
+				connect(formVideoConf, &FormVideoConfiguration::sigApplyClicked,
+					this, &MainWindow::slotVideoEncoderApplyClicked);
+				connect(formVideoConf, &FormVideoConfiguration::sigAddVideoEncoderConfig,
+								this, &MainWindow::slotAddVideoEncoderConfig);
 			}
 
 			frameLayout->addWidget(formVideoConf);
 
-			auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-			if(requestedDevice)
-			{
-				auto profilesTokens = requestedDevice->GetProfilesTokens();
-
-				//take the first profile as default and set it settings to the form
-				std::string current_profile_token = profilesTokens.front().c_str();
-				auto profile = requestedDevice->GetProfile(current_profile_token);
-				if(!profile)
-				{
-					qDebug() << "Can't get a profile from a device. Please try again.";
-					return;
-				}
-
-				//set current settings
-				formVideoConf->fillInfo(&profilesTokens, profile);
-			}
-			else
-				qDebug() << "ERROR:" << "Can't find selected item from stored devices";
+			dwaiting->open();
+			devicesMgr->asyncGetVideoSettings(selectedItem->text());
 		}
 }
 
-void MainWindow::slotMediaProfileSwitched(int new_index)
+void MainWindow::slotVideoSettingsReady()
 {
-	qDebug() << "Need to load info for a profile: " << new_index;
+	QStringList profilesTokens;
+	_onvif::ProfileSP profile;
+	devicesMgr->getAsyncGetVideoSettingsResult(profilesTokens, profile);
+	formVideoConf->fillInfo(profile, &profilesTokens);
 
+	dwaiting->close();
+}
+
+void MainWindow::slotVideoEncoderConfigAdded()
+{
+	qDebug() << "Video config added. Do acquire new settings";
+	slotLoadMediaProfile(formVideoConf->getMediaProfileToken());
+}
+
+void MainWindow::slotLoadMediaProfile(const QString& newProfileToken)
+{
 	auto selectedItem = ui->listWidget->currentItem();
 	if(selectedItem)
 	{
-		auto device = devicesMgr->getDevice(selectedItem->text());
-		if(device == nullptr)
-		{
-			qDebug() << "Can't find specified device";
-			return;
-		}
+		QString deviceID = selectedItem->text();
 
-		auto profilesTokens = device->GetProfilesTokens();
-		std::string current_profile_token = profilesTokens.at(static_cast<size_t>(new_index)).c_str();
-		auto profileConf = device->GetProfile(current_profile_token);
-
-		formVideoConf->fillInfo(&profilesTokens, profileConf, new_index);
+		devicesMgr->asyncGetProfile(selectedItem->text(),
+																newProfileToken);
+		dwaiting->open();
 	}
 }
 
-/////////////////////////////
-// free/helpers functions //
-///////////////////////////
+void MainWindow::slotLoadMediaProfileReady()
+{
+		formVideoConf->fillInfo(devicesMgr->getAsyncGetProfileResult());
+		dwaiting->close();
+}
+
+void MainWindow::slotVideoEncoderApplyClicked()
+{
+	qDebug() << "Sending video encoder params is started";
+
+	devicesMgr->setVideoEncoderSettings(ui->listWidget->currentItem()->text(),
+																			formVideoConf->getNewSettings());
+	qDebug() << "Sending video encoder params is finished";
+}
+
+void MainWindow::slotAddVideoEncoderConfig(const QString& profileToken, const QString& newEncToken)
+{
+	qDebug() << "New encoding value to apply for profile:" << profileToken << newEncToken;
+
+
+	bool isCorrectDeviceID = devicesMgr->addVideoEncoderToProfile(ui->listWidget->currentItem()->text(),
+																			 profileToken, newEncToken);
+
+	if(isCorrectDeviceID)
+	{
+		//the dialog windows should be closed only after sending settings
+		//and acquiring new encoding parameters
+		//device manager should emit signal that config added to a profile
+		//and in this class call acquiring new settings
+		dwaiting->open();
+	} //else open dialog with error text
+}
+
+	////////////////////////////
+ // free/helpers functions //
+////////////////////////////
 
 void deleteItems(QLayout* layout)
 {

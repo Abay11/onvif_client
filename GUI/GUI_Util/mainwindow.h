@@ -13,6 +13,7 @@ QT_END_NAMESPACE
 
 class DevicesManager;
 class AddDeviceDialog;
+class DialogWaiting;
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +27,7 @@ private:
     Ui::MainWindow *ui;
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
+		DialogWaiting* dwaiting = nullptr;
 
 		//DevicesManager instance works in separate thread
 		QThread* dmngr_thread_;
@@ -35,11 +37,15 @@ private:
 		FormDeviceMaintenance* formMaintenance = nullptr;
 
 signals:
+		//connected to the DevicesManager to try add a device
 		void sigAddDevice(QString ip, short port, QString uri);
 
 private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
+
+		//process filter events
+		void slotFilterTextChanged(const QString&);
 
     //emitted by the button AddDevice
     void slotAddDeviceClicked();
@@ -53,9 +59,18 @@ private slots:
     //slots to handle a device functionality
     void slotMaintenanceClicked();
     void slotVideoSettingsClicked();
+		void slotVideoSettingsReady();
+		void slotVideoEncoderConfigAdded();
 
 		//the slot to load info for specified profile
 		//uses when a user switches media profiles on the video configuration form
-		void slotMediaProfileSwitched(int new_index);
+		void slotLoadMediaProfile(const QString& /*newProfileToken*/);
+		void slotLoadMediaProfileReady();
+
+		//apply buttons handlers
+		void slotVideoEncoderApplyClicked();
+
+		//need to process separately when user apply new encoder config to a media profile
+		void slotAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncToken*/);
 };
 #endif // MAINWINDOW_H

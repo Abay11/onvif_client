@@ -2,9 +2,13 @@
 #include "ui_dialogwaiting.h"
 
 #include <QMovie>
+#include <QCommonStyle>
+#include <QDebug>
 
 const static int HEIGHT = 50;
 const static int WIDTH = 50;
+
+const static char* DEFAULT_TEXT = "Please wait...";
 
 DialogWaiting::DialogWaiting(QWidget *parent) :
 	QDialog(parent),
@@ -12,13 +16,16 @@ DialogWaiting::DialogWaiting(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	movie = new QMovie("://resources/loader.gif");
-	movie->setScaledSize(QSize(WIDTH, HEIGHT));
-	ui->lblLoading->setMovie(movie);
+	movie_ = new QMovie(this);
+	movie_->setFileName("://resources/loader.gif");
+	movie_->setScaledSize(QSize(WIDTH, HEIGHT));
+
+	ui->lblLoading->setMovie(movie_);
 	// remove a shape which was set for convinience on the UI editor
 	ui->lblLoading->setFrameShape(QFrame::Shape::NoFrame);
 	setWindowFlag(Qt::WindowType::FramelessWindowHint);
-	adjustSize();
+
+	setStyleSheet("QWidget#DialogWaiting {border: 1px solid gray}");
 }
 
 DialogWaiting::~DialogWaiting()
@@ -28,18 +35,27 @@ DialogWaiting::~DialogWaiting()
 
 void DialogWaiting::setDialogText(const QString &text)
 {
-	ui->label->setText(text);
+	ui->lblText->setText(text);
 }
 
 void DialogWaiting::open()
 {
-	movie->start();
+	//need to call each time
+	//because may be passed
+	//text with diff length
+	adjustSize();
+
+	movie_->start();
 
 	QDialog::open();
 }
 
-void DialogWaiting::closeEvent(QCloseEvent *event)
+void DialogWaiting::close()
 {
-	movie->stop();
-	QDialog::closeEvent(event);
+	movie_->stop();
+
+	//if default text were changed restore it
+	ui->lblText->setText(DEFAULT_TEXT);
+
+	QWidget::close();
 }
