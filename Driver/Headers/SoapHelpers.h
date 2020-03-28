@@ -36,9 +36,12 @@ namespace _onvif
 			login_(login),
 			password_(password),
 			auth_scheme_(NO_AUTH)
-		{}
+		{
+		}
 
-		~ConnectionInfo(){}
+		~ConnectionInfo()
+		{
+		}
 
 		void setCreds(const std::string& login, const std::string& pass)
 		{
@@ -46,14 +49,38 @@ namespace _onvif
 			password_ = pass;
 		}
 
-		soap* getSoap() { return soap_context_; }
-		std::string getAddress() { return ip_; }
-		int getPort() { return port_; }
-		std::string getLogin() { return login_; }
-		std::string getPass() { return password_; }
-		http_da_info* get_http_da_info() { return &info; }
-		AUTH_SCHEME auth_scheme() const { return auth_scheme_; }
-		void set_auth_scheme(AUTH_SCHEME new_scheme) { auth_scheme_ = new_scheme; }
+		soap* getSoap()
+		{
+			return soap_context_;
+		}
+		std::string getAddress()
+		{
+			return ip_;
+		}
+		int getPort()
+		{
+			return port_;
+		}
+		std::string getLogin()
+		{
+			return login_;
+		}
+		std::string getPass()
+		{
+			return password_;
+		}
+		http_da_info* get_http_da_info()
+		{
+			return &info;
+		}
+		AUTH_SCHEME auth_scheme() const
+		{
+			return auth_scheme_;
+		}
+		void set_auth_scheme(AUTH_SCHEME new_scheme)
+		{
+			auth_scheme_ = new_scheme;
+		}
 
 	private:
 		soap* soap_context_;
@@ -62,7 +89,7 @@ namespace _onvif
 		std::string login_;
 		std::string password_;
 		AUTH_SCHEME auth_scheme_;
-		
+
 		//soap struct
 		http_da_info info;
 	};
@@ -74,7 +101,7 @@ namespace _onvif
 		for convinience may be at first define lyamba and then pass it to the function.
 		If returned result on client side is 401, it means that credentials are wrong.
 		In this case a client should changed the credentials.
-		
+
 		Example:
 		auto wrapper = [this](_tds__GetCapabilities* r1, _tds__GetCapabilitiesResponse& r2) {return deviceProxy->GetCapabilities(r1, r2); };
 		GSoapRequestWrapper<_tds__GetCapabilities, _tds__GetCapabilitiesResponse>(wrapper, &request, response);
@@ -107,14 +134,14 @@ namespace _onvif
 			break;
 		}
 
-			/*
-			http_da_save(connInfo->getSoap(),
-				connInfo->get_http_da_info(),
-				connInfo->getSoap()->authrealm,
-				"aaaaa",
-				connInfo->getPass().c_str());
-				*/
-			
+		/*
+		http_da_save(connInfo->getSoap(),
+			connInfo->get_http_da_info(),
+			connInfo->getSoap()->authrealm,
+			"aaaaa",
+			connInfo->getPass().c_str());
+			*/
+
 			/*
 			http_da_restore(connInfo->getSoap(), connInfo->get_http_da_info());
 			http_da_release(connInfo->getSoap(), connInfo->get_http_da_info()); // release if auth is no longer needed
