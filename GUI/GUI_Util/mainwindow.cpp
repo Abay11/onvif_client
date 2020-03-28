@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
 
 	//Buttons for devices functionality management
+	connect(ui->btnLive, &QPushButton::clicked, this, &MainWindow::slotVideoLiveClicked);
 	connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
 	connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 
@@ -117,6 +118,32 @@ void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
     ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
 
 		dwaiting->close();
+}
+
+#include "formvideolive.h"
+void MainWindow::slotVideoLiveClicked()
+{
+	if(formVideoLive)
+	{
+		formVideoLive->setVisible(true);
+	}
+	else
+	{
+		formVideoLive = new FormVideoLive(this);
+	}
+
+	//switch on the maintaince widget
+	auto frameLayout = ui->frameWidgetsHolder->layout();
+	if(!frameLayout)
+	{
+			ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
+			frameLayout = ui->frameWidgetsHolder->layout();
+	}
+	else
+	{
+		deleteItems(frameLayout);
+	}
+	frameLayout->addWidget(formVideoLive);
 }
 
 //if Maintenance buttons of clicked, we should to set and show a proper widget

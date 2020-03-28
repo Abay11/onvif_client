@@ -6,6 +6,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 
+class FormVideoLive;
 class FormVideoConfiguration;
 class FormDeviceMaintenance;
 
@@ -33,6 +34,7 @@ private:
 		QThread* dmngr_thread_;
 
 		//forms
+		FormVideoLive* formVideoLive = nullptr;
 		FormVideoConfiguration* formVideoConf = nullptr;
 		FormDeviceMaintenance* formMaintenance = nullptr;
 
@@ -55,6 +57,8 @@ private slots:
 
     //emitted by DevicesManager when a new device configured
     void slotNewDeviceAdded(QString deviceAddresses);
+
+		void slotVideoLiveClicked();
 
     //slots to handle a device functionality
     void slotMaintenanceClicked();
