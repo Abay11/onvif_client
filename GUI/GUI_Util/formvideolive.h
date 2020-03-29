@@ -4,10 +4,10 @@
 #include <QWidget>
 
 class StreamHandler;
-			//StreamHandler
 
-namespace Ui {
-    class FormVideoLive;
+namespace Ui
+{
+class FormVideoLive;
 }
 
 class FormVideoLive : public QWidget
@@ -17,6 +17,9 @@ class FormVideoLive : public QWidget
 public:
     explicit FormVideoLive(QWidget *parent = nullptr);
     ~FormVideoLive();
+
+signals:
+		void sigStartLiveStream(const QString& url);
 
 private slots:
 		void slotStartLive();
