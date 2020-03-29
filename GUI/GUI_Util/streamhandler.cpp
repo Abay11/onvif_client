@@ -21,12 +21,10 @@ void StreamHandler::startStream(const QString &url, uint64_t wID)
 
 void StreamHandler::slotStartStream()
 {
-		qDebug() << "SlotStartStream is invoked";
-
-		gst_init (NULL, NULL);
+		gst_init (nullptr, nullptr);
 
 		GstElement* playbin = gst_element_factory_make ("playbin", "playbin");
-		GstElement* videosink = gst_element_factory_make ("xvimagesink", NULL);
+		GstElement* videosink = gst_element_factory_make ("xvimagesink", nullptr);
 
 		g_object_set(playbin, "uri", streamURL_.toStdString().c_str(), NULL);
 
@@ -41,14 +39,14 @@ void StreamHandler::slotStartStream()
 
 		gint flags;
 		g_object_get(playbin, "flags", &flags, NULL);
-		flags |= GST_PLAY_FLAG_VIDEO;
+		flags |= GstPlayFlags::GST_PLAY_FLAG_VIDEO;
 		flags &= ~GST_PLAY_FLAG_AUDIO;
 		g_object_set (playbin, "flags", flags, NULL);
 		g_object_set (playbin, "video-sink", videosink, NULL);
 
 		/* Pass it to playbin, which implements VideoOverlay and will forward it to the video sink */
 		guintptr winID = static_cast<guintptr>(windowID_);
-		gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (playbin), winID);
+		gst_video_overlay_set_window_handle(reinterpret_cast<GstVideoOverlay*>(playbin), winID);
 
 		/* Start playing */
 		GstStateChangeReturn ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
