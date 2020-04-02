@@ -12,22 +12,50 @@ FormVideoLive::FormVideoLive(QWidget *parent) :
 {
     ui->setupUi(this);
 
-		connect(ui->pushButton, &QPushButton::clicked,
+		connect(ui->btnPlay, &QPushButton::clicked,
 						this, &FormVideoLive::slotStartLive);
+		connect(ui->btnStop, &QPushButton::clicked,
+						this, &FormVideoLive::slotStopLive);
 }
 
 FormVideoLive::~FormVideoLive()
 {
 		delete ui;
+
+		delete stream_handler_;
 }
 
 void FormVideoLive::slotStartLive()
 {
-		worker_thread_ = new QThread();
-		stream_handler_ = new StreamHandler();
-		stream_handler_->moveToThread(worker_thread_);
-		worker_thread_->start();
+		if(isStarted_)
+				{
+						qWarning() << "Stream is already playing";
+						return;
+				}
 
-		QString url = "rtsp://26.130.233.157/test.mp4&t=unicast&p=rtsp&ve=H264&w=1280&h=720&ae=PCMU&sr=8000";
-		stream_handler_->startStream(url, ui->widget->winId());
+		if(stream_handler_ == nullptr)
+				{
+						stream_handler_ = new StreamHandler(this);
+				}
+
+		QString url = "rtsp://192.168.43.196/test.mp4&t=unicast&p=rtsp&ve=H264&w=1280&h=720&ae=PCMU&sr=8000";
+		stream_handler_->startStream(url, ui->widget);
+
+		isStarted_ = true;
+}
+
+void FormVideoLive::slotStopLive()
+{
+		if(!isStarted_)
+				{
+						qWarning() << "Stream is not playing";
+						return;
+				}
+
+		stream_handler_->stopStream();
+
+		isStarted_ = false;
+
+		//to remove the last video frame
+		ui->widget->update();
 }

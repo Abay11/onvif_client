@@ -23,11 +23,14 @@ signals:
 
 private slots:
 		void slotStartLive();
+		void slotStopLive();
 
 private:
     Ui::FormVideoLive *ui;
-		QThread* worker_thread_;
-		StreamHandler* stream_handler_;
+
+		StreamHandler* stream_handler_ = nullptr;
+
+		bool isStarted_ = false;
 };
 
 #endif // FORMVIDEOLIVE_H

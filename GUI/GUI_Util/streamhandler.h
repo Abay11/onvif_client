@@ -3,18 +3,23 @@
 
 #include <QObject>
 
+#include <gst/gst.h>
+
 class StreamHandler : public QObject
 {
 		Q_OBJECT
 public:
 		explicit StreamHandler(QObject *parent = nullptr);
+		~StreamHandler();
 
-		/*async method*/
-		void startStream(const QString& uri, uint64_t wID);
+		/*async methods*/
+		void startStream(const QString& uri, QWidget* player);
+		void stopStream();
 
 signals:
 		//signals for internal needs
 		void sigStartStream();
+		void sigStopStream();
 
 public slots:
 		void slotStartStream();
@@ -22,7 +27,10 @@ public slots:
 
 private:
 		QString streamURL_;
-		uint64_t windowID_;
+		QWidget* playerWidget_ = nullptr;
+
+		GstElement* playbin_ = nullptr;
+		GstElement* videosink_ = nullptr;
 };
 
 #endif // STREAMHANDLER_H
