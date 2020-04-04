@@ -31,6 +31,8 @@ private:
 
 		GstElement* playbin_ = nullptr;
 		GstElement* videosink_ = nullptr;
+		GMainLoop* main_loop = nullptr;
+		QThread* gstream_context_thread = nullptr;
 };
 
 #endif // STREAMHANDLER_H
