@@ -149,6 +149,11 @@ namespace _onvif
 		return media_service_->get_compatible_videoencoders(profile);
 	}
 
+	std::string Device::GetStreamUri(const std::string& profileToken, StreamType type, TransportProtocol transport) const
+	{
+		return media_service_->get_stream_uri(profileToken, type, transport);
+	}
+
 	void Device::fillONVIFGeneralInfo()
 	{
 		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();

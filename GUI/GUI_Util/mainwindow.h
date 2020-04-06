@@ -4,7 +4,10 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+class MainWindow;
+}
 
 class FormVideoLive;
 class FormVideoConfiguration;
@@ -58,7 +61,9 @@ private slots:
     //emitted by DevicesManager when a new device configured
     void slotNewDeviceAdded(QString deviceAddresses);
 
+		//live slots
 		void slotVideoLiveClicked();
+		void slotProfileSwitched(const QString&);
 
     //slots to handle a device functionality
     void slotMaintenanceClicked();

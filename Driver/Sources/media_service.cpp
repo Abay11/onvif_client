@@ -435,7 +435,7 @@ namespace _onvif
 		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
 
 		VideoSources video_sources;
-		if (!res)
+		if (res == SOAP_OK)
 		{
 			video_sources = std::make_shared <std::vector<VSrcConfigSP>>();
 			for (const auto* vs : response.Configurations)
@@ -460,16 +460,26 @@ namespace _onvif
 	
 	std::string MediaService::get_stream_uri(const std::string& profileToken, StreamType type, TransportProtocol transport)
 	{
+		using T1 = _trt__GetStreamUri;
+		using T2 = _trt__GetStreamUriResponse;
+
 		std::string result_uri;
 
-		_trt__GetStreamUri request;
+		T1 request;
 		request.ProfileToken = profileToken;
 		request.StreamSetup = soap_new_tt__StreamSetup(conn_info_->getSoap());
 		request.StreamSetup->Stream = static_cast<tt__StreamType>(type);
 		request.StreamSetup->Transport = soap_new_tt__Transport(conn_info_->getSoap());
 		request.StreamSetup->Transport->Protocol = static_cast<tt__TransportProtocol>(transport);
-		_trt__GetStreamUriResponse response;
-		if (!mediaProxy->GetStreamUri(&request, response) && response.MediaUri)
+		
+		T2 response;
+
+		auto wrapper = [this](T1* r1, T2& r2)
+		{
+			return mediaProxy->GetStreamUri(r1, r2);
+		};
+		int res = GSoapRequestWrapper<T1, T2>(wrapper, &request, response, conn_info_);
+		if (res == SOAP_OK && response.MediaUri)
 		{
 			result_uri = response.MediaUri->Uri;
 		}
