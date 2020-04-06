@@ -18,10 +18,7 @@ public:
 		explicit FormVideoLive(QStringList profiles, QWidget *parent = nullptr);
     ~FormVideoLive();
 
-		void SetStreamUri(const QString& uri)
-		{
-				streamUri_ = uri;
-		}
+		void SetStreamUri(const QString& uri);
 
 signals:
 		//internal signals

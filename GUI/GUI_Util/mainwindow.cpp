@@ -7,6 +7,7 @@
 #include "formdevicemaintenance.h"
 #include "formvideoconfiguration.h"
 #include "dialogwaiting.h"
+#include "formvideolive.h"
 
 #include <QDebug>
 #include <QThread>
@@ -120,8 +121,6 @@ void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
 		dwaiting->close();
 }
 
-#include "formvideolive.h"
-#include <QVector>
 void MainWindow::slotVideoLiveClicked()
 {
 		auto selectedItem = ui->listWidget->currentItem();
@@ -151,10 +150,8 @@ void MainWindow::slotVideoLiveClicked()
 		const std::string uri = requestedDevice->GetStreamUri(profilesTokens.first().toStdString(),
 														_onvif::StreamType::Unicast,
 														_onvif::TransportProtocol::UDP);
-		qDebug() << "Received URI:" << uri.c_str();
 		formVideoLive->SetStreamUri(uri.c_str());
 
-		//switch on the maintaince widget
 		auto frameLayout = ui->frameWidgetsHolder->layout();
 		if(!frameLayout)
 				{

@@ -47,6 +47,13 @@ FormVideoLive::~FormVideoLive()
 		delete stream_handler_;
 }
 
+void FormVideoLive::SetStreamUri(const QString &uri)
+{
+		streamUri_ = uri;
+
+		ui->leLiveStreamUri->setText(uri);
+}
+
 void FormVideoLive::slotStartLive()
 {
 		if(isStarted_)
@@ -92,7 +99,7 @@ void FormVideoLive::slotProfileSwitched(const QString &profile)
 		if(isStarted_) slotStopLive();
 
 		//it is expected that Client should update stream URI
-		streamUri_.clear();
+		SetStreamUri("");
 
 		emit sigProfileSwitched(profile);
 }
