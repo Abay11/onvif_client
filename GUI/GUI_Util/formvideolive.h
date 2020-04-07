@@ -15,9 +15,10 @@ class FormVideoLive : public QWidget
     Q_OBJECT
 
 public:
-		explicit FormVideoLive(QStringList profiles, QWidget *parent = nullptr);
+		explicit FormVideoLive(QWidget *parent = nullptr);
     ~FormVideoLive();
 
+		void SetProfileTokens(const QStringList& profiles);
 		void SetStreamUri(const QString& uri);
 
 signals:

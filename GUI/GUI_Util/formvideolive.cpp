@@ -19,17 +19,12 @@
  * User should start stream again manually(click Play button again).
 */
 
-FormVideoLive::FormVideoLive(QStringList profiles, QWidget *parent) :
+FormVideoLive::FormVideoLive(QWidget* parent) :
     QWidget(parent),
-		ui(new Ui::FormVideoLive),
-		profiles_(profiles)
+		ui(new Ui::FormVideoLive)
 {
-		if(profiles.empty())
-				throw std::exception("Media profiles couldn't be empty!");
 
     ui->setupUi(this);
-
-		ui->cmbTokens->addItems(profiles);
 
 		connect(ui->btnPlay, &QPushButton::clicked,
 						this, &FormVideoLive::slotStartLive);
@@ -45,6 +40,16 @@ FormVideoLive::~FormVideoLive()
 		delete ui;
 
 		delete stream_handler_;
+}
+
+void FormVideoLive::SetProfileTokens(const QStringList &profiles)
+{
+		if(profiles.empty())
+				qWarning() << ("Media profiles couldn't be empty!");
+
+		//profiles_ = profiles_;
+
+		ui->cmbTokens->addItems(profiles);
 }
 
 void FormVideoLive::SetStreamUri(const QString &uri)

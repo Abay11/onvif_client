@@ -45,11 +45,12 @@ signals:
 		//connected to the DevicesManager to try add a device
 		void sigAddDevice(QString ip, short port, QString uri);
 
+		void sigAsyncGetLiveInfo(const QString& deviceID);
+
 private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
 
-		//process filter events
 		void slotFilterTextChanged(const QString&);
 
     //emitted by the button AddDevice
@@ -62,8 +63,10 @@ private slots:
     void slotNewDeviceAdded(QString deviceAddresses);
 
 		//live slots
-		void slotVideoLiveClicked();
+		void slotLiveClicked();
+		void slotLiveInfoReady();
 		void slotProfileSwitched(const QString&);
+		void slotLiveUriReady();
 
     //slots to handle a device functionality
     void slotMaintenanceClicked();

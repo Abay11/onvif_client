@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 		connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
 
 		//Buttons for devices functionality management
-		connect(ui->btnLive, &QPushButton::clicked, this, &MainWindow::slotVideoLiveClicked);
+		connect(ui->btnLive, &QPushButton::clicked, this, &MainWindow::slotLiveClicked);
 		connect(ui->btnVideo, &QPushButton::clicked, this, &MainWindow::slotVideoSettingsClicked);
 		connect(ui->btnMaintenance, &QPushButton::clicked, this, &MainWindow::slotMaintenanceClicked);
 
@@ -51,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
 						this, &MainWindow::slotVideoSettingsReady);
 		connect(devicesMgr, &DevicesManager::sigVideoEncoderConfigAdded,
 						this, &MainWindow::slotVideoEncoderConfigAdded);
+		connect(devicesMgr, &DevicesManager::sigLiveInfoReady,
+						this, &MainWindow::slotLiveInfoReady);
+		connect(devicesMgr, &DevicesManager::sigLiveUriReady,
+						this, &MainWindow::slotLiveUriReady);
 
 		dmngr_thread_->start();
 }
@@ -121,36 +125,24 @@ void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
 		dwaiting->close();
 }
 
-void MainWindow::slotVideoLiveClicked()
+void MainWindow::slotLiveClicked()
 {
-		auto selectedItem = ui->listWidget->currentItem();
-		auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-
-		QStringList profilesTokens;
-		auto stdStrTokens = requestedDevice->GetProfilesTokens();
-		std::for_each(stdStrTokens.begin(), stdStrTokens.end(),
-									[&profilesTokens](const std::string& str)
-		{
-				profilesTokens.append(str.c_str());
-		});
-
+		/*
+		 * 1. request asyncly info and animation is start
+		 * 2. DeviceManager do asyncly getting needed info and emit result ready signal
+		 * 3. result slot process info, close animation and set the live widget
+		*/
 		if(formVideoLive)
 				{
 						formVideoLive->setVisible(true);
 				}
 		else
 				{
-
-						formVideoLive = new FormVideoLive(profilesTokens, this);
+						formVideoLive = new FormVideoLive(this);
 
 						connect(formVideoLive, &FormVideoLive::sigProfileSwitched,
 										this, &MainWindow::slotProfileSwitched);
 				}
-
-		const std::string uri = requestedDevice->GetStreamUri(profilesTokens.first().toStdString(),
-														_onvif::StreamType::Unicast,
-														_onvif::TransportProtocol::UDP);
-		formVideoLive->SetStreamUri(uri.c_str());
 
 		auto frameLayout = ui->frameWidgetsHolder->layout();
 		if(!frameLayout)
@@ -163,18 +155,45 @@ void MainWindow::slotVideoLiveClicked()
 						deleteItems(frameLayout);
 				}
 		frameLayout->addWidget(formVideoLive);
+
+		auto* selectedItem = ui->listWidget->currentItem();
+		auto* requestedDevice = devicesMgr->getDevice(selectedItem->text());
+		if(requestedDevice)
+				devicesMgr->asyncGetLiveInfo(selectedItem->text());
+
+		dwaiting->open();
+}
+
+void MainWindow::slotLiveInfoReady()
+{
+		QStringList profilesTokens;
+		QString uri;
+		devicesMgr->getLiveInfoResults(profilesTokens, uri);
+
+		formVideoLive->SetProfileTokens(profilesTokens);
+		formVideoLive->SetStreamUri(uri);
+
+		dwaiting->close();
 }
 
 void MainWindow::slotProfileSwitched(const QString& profile)
 {
-		//request new stream
-		//set to the device
 		auto selectedItem = ui->listWidget->currentItem();
 		auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
-		const auto& uri = requestedDevice->GetStreamUri(profile.toStdString(),
-											_onvif::StreamType::Unicast,
-											_onvif::TransportProtocol::UDP);
-		formVideoLive->SetStreamUri(uri.c_str());
+		if(requestedDevice == nullptr) return;
+
+		devicesMgr->asyncGetLiveUri(selectedItem->text(), profile);
+
+		dwaiting->open();
+}
+
+void MainWindow::slotLiveUriReady()
+{
+		QString uri;
+		devicesMgr->getLiveUriResult(uri);
+		formVideoLive->SetStreamUri(uri);
+
+		dwaiting->close();
 }
 
 //if Maintenance buttons of clicked, we should to set and show a proper widget
@@ -182,7 +201,7 @@ void MainWindow::slotProfileSwitched(const QString& profile)
 void MainWindow::slotMaintenanceClicked()
 {
 		//do switch on the maintaince widget
-    auto selectedItem = ui->listWidget->currentItem();
+		auto selectedItem = ui->listWidget->currentItem();
     if(selectedItem)
         {
 						//setting the maintanance widget to the frame

@@ -43,7 +43,9 @@ namespace _onvif
 		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) const = 0;
 		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const = 0;
 		virtual VEncoders GetVideoEncoders(const std::string& profile) const = 0;
-		virtual std::string GetStreamUri(const std::string& profileToken, StreamType type, TransportProtocol transport) const = 0;
+		virtual std::string GetStreamUri(const std::string& profileToken,
+			StreamType type = StreamType::Unicast,
+			TransportProtocol transport = TransportProtocol::UDP) const = 0;
 
 		//APPLYING NEW SETTINGS
 		//Following methods return true if settings applied successfully, otherwise false

@@ -34,7 +34,9 @@ namespace _onvif
 		virtual VideoSources GetCompatibleVideoSources(const std::string& profile) const override;
 		virtual VideoEncoderOptionsSP GetVideoEncoderOptions(const std::string& profile, const std::string& encToken) const override;
 		virtual VEncoders GetVideoEncoders(const std::string& profile) const override;
-		virtual std::string GetStreamUri(const std::string& profileToken, StreamType type, TransportProtocol transport) const override;
+		virtual std::string GetStreamUri(const std::string& profileToken,
+			StreamType type,
+			TransportProtocol transport) const override;
 
 		//Media applying settings
 		virtual bool SetVideoEncoderSettings(const VideoEncoderConfiguration&) const override;
