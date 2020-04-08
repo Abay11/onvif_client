@@ -16,11 +16,13 @@
 void deleteItems(QLayout* layout);
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-		, ui(new Ui::MainWindow)
-		, dwaiting(new DialogWaiting(this))
+		: QMainWindow(parent),
+			ui(new Ui::MainWindow),
+			dwaiting(new DialogWaiting(this))
 {
 		ui->setupUi(this);
+
+		ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
 
 		//hide controls holder frame until not the device be selected
 		ui->frameControlsHolder->setVisible(false);
@@ -64,6 +66,26 @@ MainWindow::~MainWindow()
 		dmngr_thread_->quit();
 		dmngr_thread_->wait();
 		delete ui;
+}
+
+void MainWindow::setCurrentWidget(QWidget* widget)
+{
+		if(widget == nullptr)
+				{
+						qWarning() << "Invalid QWidget pointer could not be shown!";
+						return;
+				}
+
+		auto frameLayout = ui->frameWidgetsHolder->layout();
+		if(frameLayout == nullptr)
+				{
+						qWarning() << "FrameWidgetsHolder is not initialized!";
+						return;
+				}
+
+		deleteItems(frameLayout);
+		widget->setVisible(true);
+		frameLayout->addWidget(widget);
 }
 
 void MainWindow::slotListWidgetClicked()
@@ -144,17 +166,7 @@ void MainWindow::slotLiveClicked()
 										this, &MainWindow::slotProfileSwitched);
 				}
 
-		auto frameLayout = ui->frameWidgetsHolder->layout();
-		if(!frameLayout)
-				{
-						ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
-						frameLayout = ui->frameWidgetsHolder->layout();
-				}
-		else
-				{
-						deleteItems(frameLayout);
-				}
-		frameLayout->addWidget(formVideoLive);
+		setCurrentWidget(formVideoLive);
 
 		auto* selectedItem = ui->listWidget->currentItem();
 		auto* requestedDevice = devicesMgr->getDevice(selectedItem->text());
@@ -196,15 +208,11 @@ void MainWindow::slotLiveUriReady()
 		dwaiting->close();
 }
 
-//if Maintenance buttons of clicked, we should to set and show a proper widget
-//contains corresponded info
 void MainWindow::slotMaintenanceClicked()
 {
-		//do switch on the maintaince widget
 		auto selectedItem = ui->listWidget->currentItem();
     if(selectedItem)
         {
-						//setting the maintanance widget to the frame
 						if(formMaintenance)
 								{
 										formMaintenance->setVisible(true);
@@ -214,18 +222,7 @@ void MainWindow::slotMaintenanceClicked()
 										formMaintenance = new FormDeviceMaintenance(this);
 								}
 
-						//switch on the maintaince widget
-						auto frameLayout = ui->frameWidgetsHolder->layout();
-						if(!frameLayout)
-								{
-										ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
-										frameLayout = ui->frameWidgetsHolder->layout();
-								}
-						else
-								{
-										deleteItems(frameLayout);
-								}
-						frameLayout->addWidget(formMaintenance);
+						setCurrentWidget(formMaintenance);
 
 						auto requestedDevice = devicesMgr->getDevice(selectedItem->text());
 						if(requestedDevice)
@@ -242,16 +239,6 @@ void MainWindow::slotVideoSettingsClicked()
 		auto selectedItem = ui->listWidget->currentItem();
 		if(selectedItem)
 				{
-						auto* frameLayout = ui->frameWidgetsHolder->layout();
-						if(!frameLayout)
-								{
-										qDebug() << "Init a new layout";
-										ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
-										frameLayout = ui->frameWidgetsHolder->layout();
-								}
-						else
-								deleteItems(frameLayout);
-
 						if(formVideoConf)
 								{
 										formVideoConf->setVisible(true);
@@ -267,8 +254,7 @@ void MainWindow::slotVideoSettingsClicked()
 														this, &MainWindow::slotAddVideoEncoderConfig);
 								}
 
-						frameLayout->addWidget(formVideoConf);
-
+						setCurrentWidget(formVideoConf);
 						dwaiting->open();
 						devicesMgr->asyncGetVideoSettings(selectedItem->text());
 				}

@@ -28,6 +28,9 @@ public:
     ~MainWindow();
 
 private:
+		void setCurrentWidget(QWidget*);
+
+private:
     Ui::MainWindow *ui;
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
