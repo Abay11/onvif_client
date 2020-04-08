@@ -154,9 +154,9 @@ void MainWindow::slotLiveClicked()
 		 * 2. DeviceManager do asyncly getting needed info and emit result ready signal
 		 * 3. result slot process info, close animation and set the live widget
 		*/
-		if(formVideoLive)
+		if(formVideoLive && formVideoLive->isVisible())
 				{
-						formVideoLive->setVisible(true);
+						return;
 				}
 		else
 				{
@@ -213,9 +213,9 @@ void MainWindow::slotMaintenanceClicked()
 		auto selectedItem = ui->listWidget->currentItem();
     if(selectedItem)
         {
-						if(formMaintenance)
+						if(formMaintenance && formMaintenance->isVisible())
 								{
-										formMaintenance->setVisible(true);
+										return;
 								}
 						else
 								{
@@ -239,9 +239,9 @@ void MainWindow::slotVideoSettingsClicked()
 		auto selectedItem = ui->listWidget->currentItem();
 		if(selectedItem)
 				{
-						if(formVideoConf)
+						if(formVideoConf && formVideoConf->isVisible())
 								{
-										formVideoConf->setVisible(true);
+										return;
 								}
 						else
 								{
