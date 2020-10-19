@@ -43,6 +43,9 @@ add_executable(GUI_Util
   FormVideoLive.ui
   streamhandler.cpp
   streamhandler.h
+  playerwidget.ui
+  playerwidget.cpp
+  playerwidget.h
 )
 
 include_directories(

@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include <streamhandler.h>
+#include <playerwidget.h>
 
 
 /*
