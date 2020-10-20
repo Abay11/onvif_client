@@ -24,7 +24,14 @@ wsrfr  = "http://docs.oasis-open.org/wsrf/r-2"
 wsrfrw = "http://docs.oasis-open.org/wsrf/rw-2"
 wstop  = "http://docs.oasis-open.org/wsn/t-1"
 wstop  = "http://docs.oasis-open.org/wsn/t-1"
-wsdd   = "http://www.w3.org/2005/08/addressing"
+
+wsa     = <http://schemas.xmlsoap.org/ws/2004/08/addressing>
+wsa3    = <http://schemas.xmlsoap.org/ws/2003/03/addressing>
+wsa4    = <http://schemas.xmlsoap.org/ws/2004/03/addressing>
+wsa5    = <http://www.w3.org/2005/08/addressing>
+
+wsdd5  = <http://schemas.xmlsoap.org/ws/2005/04/discovery>
+
 
 #   WS-Discovery 1.0 remapping
 wsdd5__HelloType          = | wsdd__HelloType

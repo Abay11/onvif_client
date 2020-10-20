@@ -4,3 +4,4 @@ GUI/build*
 GUI/GUIEmulator*
 GUI/*/*.user
 Driver/Builds/
+Driver/ONVIF_WSDLs/sources/
