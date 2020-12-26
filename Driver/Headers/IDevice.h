@@ -9,6 +9,8 @@ namespace _onvif
 	class IDevice
 	{
 	public:
+		virtual ~IDevice() {}
+
 		//should be implemented by child
 		virtual void Init(const std::string& login, const std::string& pass) = 0;
 
@@ -55,6 +57,10 @@ namespace _onvif
 		virtual bool AddVideoEncoderConfig(const std::string& /*profile*/, const std::string& /*vetoken*/) const = 0;
 		///////////////////////Media/////////////////////////
 
+
+		//Event service
+		virtual void SubcribeEvents() const = 0;
+		virtual void UnsubcribeEvents() const = 0;
 		
 	protected:		
 		Services services_;

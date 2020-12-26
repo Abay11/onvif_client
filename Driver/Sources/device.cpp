@@ -3,6 +3,7 @@
 #include "SoapHelpers.h"
 #include "device_service.h"
 #include "media_service.h"
+#include "event_service.h"
 
 #include "soapStub.h"
 
@@ -21,6 +22,7 @@ namespace _onvif
 	{
 		delete device_service_;
 		delete media_service_;
+		delete event_service_;
 
 		soap_destroy(soap_context_);
 		soap_end(soap_context_);
@@ -51,6 +53,9 @@ namespace _onvif
 
 		std::string addr = get_service_address(&services_, SERVICES::MEDIA_SERVICE);
 		media_service_ = new MediaService(conn_info_, addr);
+
+		//TODO: fix
+		event_service_ = new EventService(conn_info_, get_service_address(&services_, SERVICES::EVENTS_SERVICE));
 
 		fillONVIFGeneralInfo();
 	}
@@ -163,6 +168,16 @@ namespace _onvif
 		
 		onvif_general_info_->isMedia2Supported = isMedia2Supported(&services_);
 		onvif_general_info_->deviceServiceURI = device_service_uri_;
+	}
+
+	void Device::SubcribeEvents() const
+	{
+		event_service_->start();
+	}
+
+	void Device::UnsubcribeEvents() const
+	{
+		event_service_->stop();
 	}
 
 	bool Device::SetVideoEncoderSettings(const VideoEncoderConfiguration& veConfigs) const

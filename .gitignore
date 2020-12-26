@@ -5,3 +5,9 @@ GUI/GUIEmulator*
 GUI/*/*.user
 Driver/Builds/
 Driver/ONVIF_WSDLs/sources/
+
+Libs/Boost/include/boost/
+
+Libs/Boost/lib/
+
+Libs/Boost/bin/

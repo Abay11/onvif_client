@@ -12,12 +12,13 @@ namespace _onvif
 	class ConnectionInfo;
 	class DeviceService;
 	class MediaService;
+	class EventService;
 
 	class Device : public IDevice
 	{
 	public:
 		Device(const std::string& endpoint, short port);
-		~Device();
+		virtual ~Device() override;
 
 		///IDevice
 		virtual void Init(const std::string& login, const std::string& pass);
@@ -42,6 +43,10 @@ namespace _onvif
 		virtual bool SetVideoEncoderSettings(const VideoEncoderConfiguration&) const override;
 		virtual bool AddVideoEncoderConfig(const std::string& /*profile*/, const std::string& /*vetoken*/) const override;
 
+		// Inherited via IDevice
+		virtual void SubcribeEvents() const override;
+		virtual void UnsubcribeEvents() const override;
+
 		///IDevice
 
 	public:
@@ -51,9 +56,11 @@ namespace _onvif
 
 	private:
 		soap* soap_context_;
-		ConnectionInfo* conn_info_;
-		DeviceService* device_service_;
-		MediaService* media_service_;
+		ConnectionInfo* conn_info_ = nullptr;
+		DeviceService* device_service_ = nullptr;
+		MediaService* media_service_ = nullptr;
+		EventService* event_service_ = nullptr;
+
 	};
 
 	//helpers
