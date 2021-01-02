@@ -25,9 +25,16 @@ FILE(GLOB HDRS "${HDRS_DIR}/*.h")
 FILE(GLOB SRCS "${SRCS_DIR}/*.cpp")
 
 get_filename_component(PARENT_DIR "../" ABSOLUTE)
-set(Boost_INCLUDE_DIR "${PARENT_DIR}/Libs/Boost/include")
 
 find_package(Boost REQUIRED system date_time regex)
+
+IF(NOT Boost_FOUND)
+	message(FATAL_ERROR "Not found Boost")
+ELSE()
+	message("+++ Boost INCLUDE_DIR is ${Boost_INCLUDE_DIRS}")
+	include_directories(${Boost_INCLUDE_DIRS})
+ENDIF()	
+
 
 add_library(
 	libonvif SHARED

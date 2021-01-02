@@ -58,11 +58,11 @@ target_link_directories(GUI_Util PUBLIC "C:/dev_libs/gstreamer/1.0/x86_64/lib")
 
 target_link_libraries(GUI_Util PRIVATE
     Qt5::Widgets
-    "${ROOT_DIR}/Driver/Builds/Debug/libonvif.lib"
+    "${ROOT_DIR}/Driver/Builds/build_x64/Debug/libonvif.lib"
     "${GST_LIBRARIES}")
 
 file(COPY
-        "${ROOT_DIR}/Driver/Builds/Debug/libonvif.dll"
+        "${ROOT_DIR}/Driver/Builds/build_x64/Debug/libonvif.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/libeay32.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/ssleay32.dll"
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
