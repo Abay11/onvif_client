@@ -6,6 +6,7 @@
 
 #include <streamhandler.h>
 #include <playerwidget.h>
+#include "audioinputgrabber.h"
 
 
 /*
@@ -19,6 +20,11 @@
  * Processing 'PROFILE SWITCHED' signal, a client should update a stream URI;
  * User should start stream again manually(click Play button again).
 */
+
+void handler(void* /*data*/, size_t /*size*/)
+{
+
+}
 
 FormVideoLive::FormVideoLive(QWidget* parent) :
     QWidget(parent),
@@ -34,6 +40,10 @@ FormVideoLive::FormVideoLive(QWidget* parent) :
 
 		connect(ui->cmbTokens, QOverload<const QString&>::of(&QComboBox::activated),
 						this, &FormVideoLive::slotProfileSwitched);
+
+		audio_grabber_ = new AudioInputGrabber(&handler);
+		connect(ui->btnAdStart, &QPushButton::clicked, audio_grabber_, &AudioInputGrabber::Start);
+		connect(ui->btnAdStop, &QPushButton::clicked, audio_grabber_, &AudioInputGrabber::Stop);
 }
 
 FormVideoLive::~FormVideoLive()

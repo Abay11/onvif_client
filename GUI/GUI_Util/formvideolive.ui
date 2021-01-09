@@ -40,7 +40,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
      <property name="topMargin">
       <number>0</number>
      </property>
@@ -68,6 +68,20 @@
        </property>
        <property name="text">
         <string>STOP</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAdStart">
+       <property name="text">
+        <string>AudioD start</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAdStop">
+       <property name="text">
+        <string>AudioD stop</string>
        </property>
       </widget>
      </item>

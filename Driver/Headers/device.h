@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDevice.h"
+#include "IAudioOutput.h"
 #include "types.h"
 
 #include <string>
@@ -14,7 +15,7 @@ namespace _onvif
 	class MediaService;
 	class EventService;
 
-	class Device : public IDevice
+	class Device : public IDevice, public IAudioOutput
 	{
 	public:
 		Device(const std::string& endpoint, short port);
@@ -48,6 +49,15 @@ namespace _onvif
 		virtual void UnsubcribeEvents() const override;
 
 		///IDevice
+
+		/// Inherited via IAudioOutput
+		virtual void Start() override;
+
+		virtual void Stop() override;
+
+		virtual void Send(void*, size_t) override;
+
+		/// IAudioOutput end
 
 	public:
 		//some helpers

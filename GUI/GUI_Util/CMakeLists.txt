@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Multimedia REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
@@ -46,6 +46,8 @@ add_executable(GUI_Util
   playerwidget.ui
   playerwidget.cpp
   playerwidget.h
+  audioinputgrabber.cpp
+  audioinputgrabber.h
 )
 
 include_directories(
@@ -58,6 +60,7 @@ target_link_directories(GUI_Util PUBLIC "C:/dev_libs/gstreamer/1.0/x86_64/lib")
 
 target_link_libraries(GUI_Util PRIVATE
     Qt5::Widgets
+    Qt5::Multimedia
     "${ROOT_DIR}/Driver/Builds/build_x64/Debug/libonvif.lib"
     "${GST_LIBRARIES}")
 

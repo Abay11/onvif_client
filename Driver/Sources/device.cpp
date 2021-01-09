@@ -170,6 +170,18 @@ namespace _onvif
 		onvif_general_info_->deviceServiceURI = device_service_uri_;
 	}
 
+	void Device::Start()
+	{
+	}
+
+	void Device::Stop()
+	{
+	}
+
+	void Device::Send(void*, size_t)
+	{
+	}
+
 	void Device::SubcribeEvents() const
 	{
 		event_service_->start();

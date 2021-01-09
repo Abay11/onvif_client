@@ -13,6 +13,8 @@ class FormVideoLive;
 class FormVideoConfiguration;
 class FormDeviceMaintenance;
 
+class QSettings;
+
 QT_END_NAMESPACE
 
 class DevicesManager;
@@ -32,6 +34,7 @@ private:
 
 private:
     Ui::MainWindow *ui;
+		QSettings* settings = nullptr;
     DevicesManager* devicesMgr;
     AddDeviceDialog* addDeviceDialog = nullptr;
 		DialogWaiting* dwaiting = nullptr;

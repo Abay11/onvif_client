@@ -11,6 +11,30 @@
 
 #include <QDebug>
 #include <QThread>
+#include <QSettings>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+
+namespace utility
+{
+void AddCreds(const QJsonObject& obj, QSettings* settings)
+{
+		QJsonDocument jdoc(obj);
+		// TODO: key value should be unique, i.e. it's need using not only ip
+		settings->setValue(obj["ip"].toString(), jdoc.toBinaryData());
+
+}
+
+QJsonArray ReadCreds(QSettings* settings)
+{
+		//TODO
+//		auto jdoc = QJsonDocument::fromBinaryData(settings->value("test").toByteArray());
+//		auto json = jdoc.object();
+		return {};
+}
+
+}// utility
 
 //free/helpers functions
 void deleteItems(QLayout* layout);
@@ -23,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->setupUi(this);
 
 		ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
+
+		settings = new QSettings("OnvifClient", QSettings::Format::IniFormat);
 
 		//hide controls holder frame until not the device be selected
 		ui->frameControlsHolder->setVisible(false);
@@ -66,6 +92,7 @@ MainWindow::~MainWindow()
 		dmngr_thread_->quit();
 		dmngr_thread_->wait();
 		delete ui;
+		delete settings;
 }
 
 void MainWindow::setCurrentWidget(QWidget* widget)
@@ -127,6 +154,13 @@ void MainWindow::slotAddDeviceDialogFinished()
 						if(!ip.isEmpty() && port && !uri.isEmpty())
 								{
 										dwaiting->open();
+
+										//TODO: it's required to save device creds
+//										QJsonObject new_creds;
+//										new_creds["ip"] = ip;
+//										new_creds["port"] = port;
+//										new_creds["uri"] = uri;
+//										utility::AddCreds(new_creds, settings);
 
 										emit sigAddDevice(ip, port, uri);
 								}

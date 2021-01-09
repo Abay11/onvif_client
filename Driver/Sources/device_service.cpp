@@ -290,8 +290,10 @@ namespace _onvif
 		{
 		case SERVICES::MEDIA_SERVICE:
 			requested_service_ns = MEDIA_SERVICE_NS;
+			break;
 		case SERVICES::EVENTS_SERVICE:
 			requested_service_ns = EVENTS_SERVICE_NS;
+			break;
 		//case SERVICES::others...
 		}
 

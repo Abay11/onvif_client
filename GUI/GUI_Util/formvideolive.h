@@ -10,6 +10,8 @@ namespace Ui
 class FormVideoLive;
 }
 
+class AudioInputGrabber;
+
 class FormVideoLive : public QWidget
 {
     Q_OBJECT
@@ -44,6 +46,8 @@ private:
 		bool isStarted_ = false;
 
 		QStringList profiles_;
+
+		AudioInputGrabber* audio_grabber_;
 };
 
 #endif // FORMVIDEOLIVE_H
