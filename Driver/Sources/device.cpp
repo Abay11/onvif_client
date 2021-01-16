@@ -163,7 +163,7 @@ namespace _onvif
 	{
 		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();
 
-		if(capabilities_->device_info_filled)
+		if(capabilities_ && capabilities_->device_info_filled)
 			onvif_general_info_->onvif_version = capabilities_->device_supported_versions.back(); // take the last one
 		
 		onvif_general_info_->isMedia2Supported = isMedia2Supported(&services_);

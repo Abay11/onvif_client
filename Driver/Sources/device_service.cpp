@@ -35,8 +35,12 @@ namespace _onvif
 		request.Category.push_back(tt__CapabilityCategory__All);
 		_tds__GetCapabilitiesResponse response;
 
-		if (!deviceProxy->GetCapabilities(&request, response)
-			&& response.Capabilities)
+		auto res = deviceProxy->GetCapabilities(&request, response);
+
+		if (res != SOAP_OK)
+			throw std::runtime_error("GetCapabilities failed");
+
+		if (response.Capabilities)
 		{
 			caps = std::make_shared<Capabilities>();
 
