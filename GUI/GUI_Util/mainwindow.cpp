@@ -18,13 +18,13 @@
 
 namespace utility
 {
+
 class SavedDevices
 {
 		const QString GROUP_NAME = "devices";
 public:
 		SavedDevices(QSettings* settings)
-				: m_settings(settings),
-					m_counter(0)
+				: m_settings(settings)
 		{
 		}
 
@@ -51,7 +51,7 @@ public:
 		}
 
 		void add(const QString& ip,
-						 const ushort& port,
+						 const QString& port,
 						 const QString& uri,
 						 const QString& user,
 						 const QString& pass)
@@ -65,10 +65,19 @@ public:
 				obj["pass"] = pass;
 
 				QJsonDocument jdoc(obj);
-				QString key = ip + ":" + QString::number(port);
+				QString key = ip + ":" + port;
 				m_settings->beginGroup(GROUP_NAME);
 				m_settings->setValue(key, jdoc.toBinaryData());
 				m_settings->endGroup();
+		}
+
+		DeviceCredentials fromJson(const QJsonObject& obj)
+		{
+				return DeviceCredentials(obj["ip"].toString(),
+																 obj["port"].toString(),
+																 obj["uri"].toString(),
+																 obj["user"].toString(),
+																 obj["pass"].toString());
 		}
 
 		void remove(const QString& key)
@@ -80,7 +89,6 @@ public:
 
 private:
 		QSettings* m_settings;
-		uint m_counter;
 };
 
 }// utility
@@ -139,7 +147,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 		for(const auto& d : restored_devices)
 				{
-						ui->listWidget->addItem(d["ip"].toString() + ":" + QString::number(d["port"].toInt()));
+						ui->listWidget->addItem(d["ip"].toString() + ":" + d["port"].toString());
+						devicesMgr->Add(savedDevices->fromJson(d));
 				}
 
 		ui->listWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -186,12 +195,34 @@ void MainWindow::slotListWidgetContextMenu(const QPoint &pos)
 {
 		// Handle global position
 		QPoint globalPos = ui->listWidget->mapToGlobal(pos);
+
 		// Create menu and insert some actions
 		QMenu myMenu;
+		myMenu.addAction("Connect", this, SLOT(slotConnect()));
+		myMenu.addAction("Disconnect", this, SLOT(slotDisconnect()));
 		myMenu.addAction("Delete", this, SLOT(slotDeleteDevice()));
 
 		// Show context menu at handling position
 		myMenu.exec(globalPos);
+}
+
+#include <qprogressbar.h>
+void MainWindow::slotConnect()
+{
+		const auto* item = ui->listWidget->currentItem();
+		dwaiting->open();
+		//QMetaObject::invokeMethod()
+		devicesMgr->Connect(item->text(), [this]()
+		{
+				QMetaObject::invokeMethod(this, &MainWindow::slotCloseDialog, Qt::QueuedConnection);
+				//dwaiting->close();
+		});
+
+}
+
+void MainWindow::slotDisconnect()
+{
+
 }
 
 void MainWindow::slotDeleteDevice()
@@ -203,6 +234,12 @@ void MainWindow::slotDeleteDevice()
 		//item->
 		savedDevices->remove(item->text());
 		delete item;
+}
+
+void MainWindow::slotCloseDialog()
+{
+		if(dwaiting)
+				dwaiting->close();
 }
 
 void MainWindow::slotFilterTextChanged(const QString& filter)
@@ -240,9 +277,10 @@ void MainWindow::slotAddDeviceDialogFinished()
 		auto user = addDeviceDialog->getUser();
 		auto pass = addDeviceDialog->getPass();
 
+		DeviceCredentials creds(ip, port, uri, user, pass);
 		savedDevices->add(ip, port, uri, user, pass);
-
-		new QListWidgetItem(ip + ":" + QString::number(port), ui->listWidget);
+		new QListWidgetItem(ip + ":" + port, ui->listWidget);
+		devicesMgr->Add(creds);
 }
 
 

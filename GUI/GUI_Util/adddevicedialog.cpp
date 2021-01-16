@@ -23,12 +23,12 @@ QString AddDeviceDialog::getIP()
 		return QString("");
 }
 
-ushort AddDeviceDialog::getPort()
+QString AddDeviceDialog::getPort()
 {
     if(ui)
-				return ui->lePort->text().toUShort();
+				return ui->lePort->text();
 
-    return 0;
+		return {};
 }
 
 QString AddDeviceDialog::getURI()

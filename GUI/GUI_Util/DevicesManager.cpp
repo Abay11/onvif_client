@@ -2,9 +2,12 @@
 
 #include <QDebug>
 #include <QString>
+#include <QVector>
 #include <QTextStream>
+#include <QtConcurrent/QtConcurrent>
 
 #include "device.h"
+
 
 DevicesManager::DevicesManager(QObject *parent)
 		: QObject(parent)
@@ -24,35 +27,89 @@ DevicesManager::DevicesManager(QObject *parent)
 						this, &DevicesManager::slotAddVideoEncoderConfig);
 }
 
+void DevicesManager::Add(const DeviceCredentials& creds)
+{
+		if(devices_.contains(creds.id()))
+				return;
+
+		devices_.insert(creds.id(), std::make_pair(creds, nullptr));
+}
+
+void DevicesManager::Connect(const QString &id, std::function<void()> handler)
+{
+		QtConcurrent::run([id, handler, this]()
+		{
+				auto it = devices_.find(id);
+				if(it == devices_.end())
+						{
+								qDebug() << __FUNCTION__ << " not found device id: " << id;
+								return;
+						}
+
+				auto& [creds, device] = (*it);
+
+				using namespace _onvif;
+				if(!device)
+						{
+								device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()));
+								device->SetDeviceServiceURI(creds.uri.toStdString());
+						}
+
+				try
+						{
+								device->Init("admin", "admin");
+						}
+				catch (const std::exception& e)
+						{
+								qDebug() << "__FUCNTION__" << " issues with connection to device: " << e.what();
+						}
+
+				handler();
+		});
+
+}
+
+void DevicesManager::Disconnect(const QString &/*id*/)
+{
+
+}
+
+void DevicesManager::Remove(const QString &/*id*/)
+{
+
+}
+
 void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
 {
-		qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip).arg(port).arg(deviceServiceURI);
+		/*
+			qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip).arg(port).arg(deviceServiceURI);
 
-    using namespace _onvif;
-		IDevice* device = new Device(ip.toStdString(), port);
-		device->SetDeviceServiceURI(deviceServiceURI.toStdString());
-    device->Init("admin", "admin");
+		using namespace _onvif;
+			IDevice* device = new Device(ip.toStdString(), port);
+			device->SetDeviceServiceURI(deviceServiceURI.toStdString());
+		device->Init("admin", "admin");
 
-    devices.push_back(device);
+		devices.push_back(device);
 
-    QString deviceInfo;
-    QTextStream stream(&deviceInfo);
-		stream << ip << ":" << port;
-    sigNewDeviceAdded(deviceInfo);
+		QString deviceInfo;
+		QTextStream stream(&deviceInfo);
+			stream << ip << ":" << port;
+		sigNewDeviceAdded(deviceInfo);
+			*/
 }
 
 _onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
 {
-    auto parsedInfo = addressInfo.split(":");
-    if(parsedInfo.size() != 2) return nullptr;
+		auto parsedInfo = addressInfo.split(":");
+		if(parsedInfo.size() != 2) return nullptr;
 
-    std::string ip = parsedInfo.first().toStdString();
-    short port = parsedInfo.back().toShort();
+		std::string ip = parsedInfo.first().toStdString();
+		short port = parsedInfo.back().toShort();
 
-    foreach (auto* device, devices)
+		foreach (auto* device, devices)
 				if(device->getIP() == ip && device->getPort() == port) return device;
 
-    return nullptr;
+		return nullptr;
 }
 
 _onvif::IDevice *DevicesManager::getDevice(int index)
@@ -75,8 +132,6 @@ void DevicesManager::slotAsyncGetProfile(const QString& deviceID, const QString&
 
 		emit sigAsyncGetProfileReady();
 }
-
-#include <QVector>
 
 void DevicesManager::slotAsyncGetVideoSettings(const QString& deviceID)
 {

@@ -12,11 +12,61 @@ using ProfileSP = std::shared_ptr<Profile>;
 class VideoEncoderConfiguration;
 }
 
-class DevicesManager : public QObject
+
+struct DeviceCredentials
+{
+		bool isOnline;
+		QString name;
+		QString ip;
+		QString port;
+		QString uri;
+		QString user;
+		QString password;
+
+		DeviceCredentials(const QString& ip,
+											const QString& port,
+											const QString& uri,
+											const QString& user,
+											const QString& pass)
+				: ip(ip)
+				,port(port)
+				,uri(uri)
+				,user(user)
+				,password(pass)
+		{
+		}
+
+		QString id()  const
+		{
+				if(ip.isEmpty())
+						return {};
+
+				return ip + (port.isEmpty() ? "" : ":" + port);
+		}
+};
+class IDeviceManager
+{
+public:
+		virtual ~IDeviceManager() {}
+		virtual void Add(const DeviceCredentials&) = 0;
+		// Start to connect asynch. Handler should be called
+		virtual void Connect(const QString& id, std::function<void()> handler) = 0;
+		virtual void Disconnect(const QString& id) = 0;
+		virtual void Remove(const QString& id) = 0;
+};
+
+
+class DevicesManager : public QObject, public IDeviceManager
 {
 		Q_OBJECT
 public:
 		DevicesManager(QObject* parent = nullptr);
+
+		// IDeviceManager interface
+		void Add(const DeviceCredentials&) override;
+		void Connect(const QString &id, std::function<void()> handler) override;
+		void Disconnect(const QString &id) override;
+		void Remove(const QString &id) override;
 
 signals:
 		void sigNewDeviceAdded(QString address);
@@ -98,5 +148,7 @@ private:
 		//holders to save settings should be send to a device
 		_onvif::VideoEncoderConfiguration* videoEncoderConfigHolder_ = nullptr;
 
+		QMap<QString, std::pair<DeviceCredentials, _onvif::IDevice*>> devices_;
 		QVector<_onvif::IDevice*> devices;
+
 };

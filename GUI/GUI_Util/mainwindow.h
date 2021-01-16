@@ -19,6 +19,7 @@ class FormVideoConfiguration;
 class FormDeviceMaintenance;
 
 class QSettings;
+class QListWidgetItem;
 
 QT_END_NAMESPACE
 
@@ -63,7 +64,12 @@ private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
 		void slotListWidgetContextMenu(const QPoint&);
+		// the list widget's context menu slots
+		void slotConnect();
+		void slotDisconnect();
 		void slotDeleteDevice();
+
+		void slotCloseDialog();
 
 		void slotFilterTextChanged(const QString&);
 

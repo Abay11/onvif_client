@@ -19,7 +19,7 @@ public:
     ~AddDeviceDialog();
 
 		QString getIP();
-		ushort getPort();
+		QString getPort();
 		QString getURI();
 		QString getUser();
 		QString getPass();
