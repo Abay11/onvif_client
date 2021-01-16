@@ -9,6 +9,11 @@ namespace Ui
 class MainWindow;
 }
 
+namespace utility
+{
+class SavedDevices;
+}
+
 class FormVideoLive;
 class FormVideoConfiguration;
 class FormDeviceMaintenance;
@@ -46,6 +51,7 @@ private:
 		FormVideoLive* formVideoLive = nullptr;
 		FormVideoConfiguration* formVideoConf = nullptr;
 		FormDeviceMaintenance* formMaintenance = nullptr;
+		std::unique_ptr<utility::SavedDevices> savedDevices;
 
 signals:
 		//connected to the DevicesManager to try add a device
@@ -56,6 +62,8 @@ signals:
 private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
+		void slotListWidgetContextMenu(const QPoint&);
+		void slotDeleteDevice();
 
 		void slotFilterTextChanged(const QString&);
 

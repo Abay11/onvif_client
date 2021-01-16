@@ -18,21 +18,70 @@
 
 namespace utility
 {
-void AddCreds(const QJsonObject& obj, QSettings* settings)
+class SavedDevices
 {
-		QJsonDocument jdoc(obj);
-		// TODO: key value should be unique, i.e. it's need using not only ip
-		settings->setValue(obj["ip"].toString(), jdoc.toBinaryData());
+		const QString GROUP_NAME = "devices";
+public:
+		SavedDevices(QSettings* settings)
+				: m_settings(settings),
+					m_counter(0)
+		{
+		}
 
-}
+		SavedDevices(const SavedDevices&&) = delete;
+		SavedDevices& operator= (const SavedDevices&) = delete;
 
-QJsonArray ReadCreds(QSettings* settings)
-{
-		//TODO
-//		auto jdoc = QJsonDocument::fromBinaryData(settings->value("test").toByteArray());
-//		auto json = jdoc.object();
-		return {};
-}
+		QVector<QJsonObject> devices()
+		{
+
+				QVector<QJsonObject> array;
+				m_settings->beginGroup(GROUP_NAME);
+				auto keys = m_settings->childKeys();
+
+				for(const auto& key : keys)
+						{
+								array.push_back(QJsonDocument::fromBinaryData(m_settings->value(key)
+																.toByteArray())
+																.object());
+						}
+
+				m_settings->endGroup();
+
+				return array;
+		}
+
+		void add(const QString& ip,
+						 const ushort& port,
+						 const QString& uri,
+						 const QString& user,
+						 const QString& pass)
+		{
+				qDebug() << "Saving a new device";
+				QJsonObject obj;
+				obj["ip"] = ip;
+				obj["port"] = port;
+				obj["uri"] = uri;
+				obj["user"] = user;
+				obj["pass"] = pass;
+
+				QJsonDocument jdoc(obj);
+				QString key = ip + ":" + QString::number(port);
+				m_settings->beginGroup(GROUP_NAME);
+				m_settings->setValue(key, jdoc.toBinaryData());
+				m_settings->endGroup();
+		}
+
+		void remove(const QString& key)
+		{
+				m_settings->beginGroup(GROUP_NAME);
+				m_settings->remove(key);
+				m_settings->endGroup();
+		}
+
+private:
+		QSettings* m_settings;
+		uint m_counter;
+};
 
 }// utility
 
@@ -49,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->frameWidgetsHolder->setLayout(new QHBoxLayout);
 
 		settings = new QSettings("OnvifClient", QSettings::Format::IniFormat);
+
+		savedDevices = std::make_unique<utility::SavedDevices>(settings);
 
 		//hide controls holder frame until not the device be selected
 		ui->frameControlsHolder->setVisible(false);
@@ -83,6 +134,17 @@ MainWindow::MainWindow(QWidget *parent)
 						this, &MainWindow::slotLiveInfoReady);
 		connect(devicesMgr, &DevicesManager::sigLiveUriReady,
 						this, &MainWindow::slotLiveUriReady);
+
+		auto restored_devices = savedDevices->devices();
+
+		for(const auto& d : restored_devices)
+				{
+						ui->listWidget->addItem(d["ip"].toString() + ":" + QString::number(d["port"].toInt()));
+				}
+
+		ui->listWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+		connect(ui->listWidget, &QListView::customContextMenuRequested,
+						this, &MainWindow::slotListWidgetContextMenu);
 
 		dmngr_thread_->start();
 }
@@ -120,6 +182,29 @@ void MainWindow::slotListWidgetClicked()
 		ui->frameControlsHolder->setVisible(true);
 }
 
+void MainWindow::slotListWidgetContextMenu(const QPoint &pos)
+{
+		// Handle global position
+		QPoint globalPos = ui->listWidget->mapToGlobal(pos);
+		// Create menu and insert some actions
+		QMenu myMenu;
+		myMenu.addAction("Delete", this, SLOT(slotDeleteDevice()));
+
+		// Show context menu at handling position
+		myMenu.exec(globalPos);
+}
+
+void MainWindow::slotDeleteDevice()
+{
+		int current_row = ui->listWidget->currentRow();
+		QListWidgetItem *item = ui->listWidget->takeItem(current_row);
+
+		qDebug() << "Deleting item with text: " << item->text();
+		//item->
+		savedDevices->remove(item->text());
+		delete item;
+}
+
 void MainWindow::slotFilterTextChanged(const QString& filter)
 {
 		for(int i = 0; i < ui->listWidget->count(); ++i)
@@ -146,30 +231,20 @@ void MainWindow::slotAddDeviceClicked()
 
 void MainWindow::slotAddDeviceDialogFinished()
 {
-		if(addDeviceDialog && QDialog::Accepted == addDeviceDialog->result())
-				{
-						auto ip = addDeviceDialog->getIP();
-						auto port = addDeviceDialog->getPort();
-						auto uri = addDeviceDialog->getURI();
-						if(!ip.isEmpty() && port && !uri.isEmpty())
-								{
-										dwaiting->open();
+		if(!addDeviceDialog || QDialog::Accepted != addDeviceDialog->result())
+				return;
 
-										//TODO: it's required to save device creds
-//										QJsonObject new_creds;
-//										new_creds["ip"] = ip;
-//										new_creds["port"] = port;
-//										new_creds["uri"] = uri;
-//										utility::AddCreds(new_creds, settings);
+		auto ip = addDeviceDialog->getIP();
+		auto port = addDeviceDialog->getPort();
+		auto uri = addDeviceDialog->getURI();
+		auto user = addDeviceDialog->getUser();
+		auto pass = addDeviceDialog->getPass();
 
-										emit sigAddDevice(ip, port, uri);
-								}
-						else
-								{
-										//do log about incorrect address or something
-								}
-				}
+		savedDevices->add(ip, port, uri, user, pass);
+
+		new QListWidgetItem(ip + ":" + QString::number(port), ui->listWidget);
 }
+
 
 //received signal from DevicesManager
 void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
@@ -368,3 +443,4 @@ void deleteItems(QLayout* layout)
 						delete child;
 				}
 }
+

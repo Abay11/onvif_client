@@ -5,7 +5,8 @@
 
 class MainWindow;
 
-namespace Ui {
+namespace Ui
+{
 class AddDeviceDialog;
 }
 
@@ -18,8 +19,10 @@ public:
     ~AddDeviceDialog();
 
 		QString getIP();
-    short getPort();
+		ushort getPort();
 		QString getURI();
+		QString getUser();
+		QString getPass();
 
 private:
     Ui::AddDeviceDialog *ui;
