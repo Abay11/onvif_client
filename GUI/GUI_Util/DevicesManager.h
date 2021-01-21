@@ -28,7 +28,8 @@ struct DeviceCredentials
 											const QString& uri,
 											const QString& user,
 											const QString& pass)
-				: ip(ip)
+				: isOnline(false)
+				,ip(ip)
 				,port(port)
 				,uri(uri)
 				,user(user)
@@ -69,7 +70,6 @@ public:
 		void Remove(const QString &id) override;
 
 signals:
-		void sigNewDeviceAdded(QString address);
 
 		//SIGNALS emited to run async requests
 		void sigAsyncGetProfile(const QString& /*deviceID*/,
@@ -95,11 +95,13 @@ signals:
 		void sigVideoEncoderConfigAdded();
 
 public slots:
-		void slotAddDevice(QString ip, short port, QString deviceServiceURI);
+
 
 public:
 		_onvif::IDevice* getDevice(const QString& addressInfo);
 		_onvif::IDevice* getDevice(int index);
+
+		bool connected(const QString& id);
 
 		//ASYNC REQUEST RUNNERS
 		//NOTE: if it is possible, this methods should check

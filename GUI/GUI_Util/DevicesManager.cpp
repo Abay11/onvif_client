@@ -58,6 +58,7 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 				try
 						{
 								device->Init("admin", "admin");
+								creds.isOnline = true;
 						}
 				catch (const std::exception& e)
 						{
@@ -71,31 +72,11 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 
 void DevicesManager::Disconnect(const QString &/*id*/)
 {
-
 }
 
 void DevicesManager::Remove(const QString &/*id*/)
 {
 
-}
-
-void DevicesManager::slotAddDevice(QString ip, short port, QString deviceServiceURI)
-{
-		/*
-			qDebug() << QString("Adding a new device ip: %1 port: %2 URI: %3").arg(ip).arg(port).arg(deviceServiceURI);
-
-		using namespace _onvif;
-			IDevice* device = new Device(ip.toStdString(), port);
-			device->SetDeviceServiceURI(deviceServiceURI.toStdString());
-		device->Init("admin", "admin");
-
-		devices.push_back(device);
-
-		QString deviceInfo;
-		QTextStream stream(&deviceInfo);
-			stream << ip << ":" << port;
-		sigNewDeviceAdded(deviceInfo);
-			*/
 }
 
 _onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
@@ -118,6 +99,16 @@ _onvif::IDevice *DevicesManager::getDevice(int index)
 				return devices.at(index);
 
 		return nullptr;
+}
+
+bool DevicesManager::connected(const QString &id)
+{
+		if(auto it = devices_.find(id); it != devices_.end())
+				{
+						return (*it).first.isOnline;
+				}
+
+		return false;
 }
 
 void DevicesManager::slotAsyncGetProfile(const QString& deviceID, const QString& profileToken)

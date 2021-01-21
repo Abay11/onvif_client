@@ -55,17 +55,16 @@ private:
 		std::unique_ptr<utility::SavedDevices> savedDevices;
 
 signals:
-		//connected to the DevicesManager to try add a device
-		void sigAddDevice(QString ip, short port, QString uri);
-
 		void sigAsyncGetLiveInfo(const QString& deviceID);
 
 private slots:
 		//to make the list widget visible
 		void slotListWidgetClicked();
+		void slotUpdateControlsState();
+
 		void slotListWidgetContextMenu(const QPoint&);
 		// the list widget's context menu slots
-		void slotConnect();
+		void slotConnect(QListWidgetItem* new_item, QListWidgetItem* prev = nullptr);
 		void slotDisconnect();
 		void slotDeleteDevice();
 
@@ -80,7 +79,7 @@ private slots:
     void slotAddDeviceDialogFinished();
 
     //emitted by DevicesManager when a new device configured
-    void slotNewDeviceAdded(QString deviceAddresses);
+		//void slotNewDeviceAdded(QString deviceAddresses);
 
 		//live slots
 		void slotLiveClicked();

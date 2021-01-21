@@ -111,8 +111,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 		//hide controls holder frame until not the device be selected
 		ui->frameControlsHolder->setVisible(false);
-		connect(ui->listWidget, &QListWidget::itemClicked,
-						this, &MainWindow::slotListWidgetClicked);
+		connect(ui->listWidget, &QListWidget::currentItemChanged,
+						this, &MainWindow::slotConnect);
 
 		connect(ui->leFilter, QOverload<const QString&>::of(&QLineEdit::textEdited),
 						this, &MainWindow::slotFilterTextChanged);
@@ -123,8 +123,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 		//handling of adding new devices
 		connect(ui->btnAddDevice, &QPushButton::clicked, this, &MainWindow::slotAddDeviceClicked);
-		connect(this, &MainWindow::sigAddDevice, devicesMgr, &DevicesManager::slotAddDevice);
-		connect(devicesMgr, &DevicesManager::sigNewDeviceAdded, this, &MainWindow::slotNewDeviceAdded);
 
 		//Buttons for devices functionality management
 		connect(ui->btnLive, &QPushButton::clicked, this, &MainWindow::slotLiveClicked);
@@ -188,7 +186,11 @@ void MainWindow::setCurrentWidget(QWidget* widget)
 
 void MainWindow::slotListWidgetClicked()
 {
-		ui->frameControlsHolder->setVisible(true);
+}
+
+void MainWindow::slotUpdateControlsState()
+{
+		ui->frameControlsHolder->setVisible(devicesMgr->connected(ui->listWidget->currentItem()->text()));
 }
 
 void MainWindow::slotListWidgetContextMenu(const QPoint &pos)
@@ -206,23 +208,29 @@ void MainWindow::slotListWidgetContextMenu(const QPoint &pos)
 		myMenu.exec(globalPos);
 }
 
-#include <qprogressbar.h>
-void MainWindow::slotConnect()
+void MainWindow::slotConnect(QListWidgetItem* new_item, QListWidgetItem* prev)
 {
-		const auto* item = ui->listWidget->currentItem();
+		if(new_item == prev)
+				return;
+
+		if(prev)
+				{
+						devicesMgr->Disconnect(prev->text());
+				}
+
+//		if(devicesMgr->connected(new_item->text()))
+//				return;
+
 		dwaiting->open();
-		//QMetaObject::invokeMethod()
-		devicesMgr->Connect(item->text(), [this]()
+		devicesMgr->Connect(new_item->text(), [this]()
 		{
 				QMetaObject::invokeMethod(this, &MainWindow::slotCloseDialog, Qt::QueuedConnection);
-				//dwaiting->close();
+				QMetaObject::invokeMethod(this, &MainWindow::slotUpdateControlsState, Qt::QueuedConnection);
 		});
-
 }
 
 void MainWindow::slotDisconnect()
 {
-
 }
 
 void MainWindow::slotDeleteDevice()
@@ -285,14 +293,14 @@ void MainWindow::slotAddDeviceDialogFinished()
 
 
 //received signal from DevicesManager
-void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
-{
-    QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);
-    newDevice->setText(deviceAddresses);
-    ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
+//void MainWindow::slotNewDeviceAdded(QString deviceAddresses)
+//{
+//    QListWidgetItem* newDevice = new QListWidgetItem(ui->listWidget);
+//    newDevice->setText(deviceAddresses);
+//    ui->listWidget->insertItem(ui->listWidget->count(), newDevice);
 
-		dwaiting->close();
-}
+//		dwaiting->close();
+//}
 
 void MainWindow::slotLiveClicked()
 {
