@@ -136,8 +136,6 @@ MainWindow::MainWindow(QWidget *parent)
 						this, &MainWindow::slotVideoSettingsReady);
 		connect(devicesMgr, &DevicesManager::sigVideoEncoderConfigAdded,
 						this, &MainWindow::slotVideoEncoderConfigAdded);
-		connect(devicesMgr, &DevicesManager::sigLiveInfoReady,
-						this, &MainWindow::slotLiveInfoReady);
 		connect(devicesMgr, &DevicesManager::sigLiveUriReady,
 						this, &MainWindow::slotLiveUriReady);
 
@@ -217,9 +215,6 @@ void MainWindow::slotConnect(QListWidgetItem* new_item, QListWidgetItem* prev)
 				{
 						devicesMgr->Disconnect(prev->text());
 				}
-
-//		if(devicesMgr->connected(new_item->text()))
-//				return;
 
 		dwaiting->open();
 		devicesMgr->Connect(new_item->text(), [this]()
@@ -326,21 +321,31 @@ void MainWindow::slotLiveClicked()
 		auto* selectedItem = ui->listWidget->currentItem();
 		auto* requestedDevice = devicesMgr->getDevice(selectedItem->text());
 		if(requestedDevice)
-				devicesMgr->asyncGetLiveInfo(selectedItem->text());
+				{
+						//devicesMgr->asyncGetLiveInfo(selectedItem->text());
+						devicesMgr->LiveInfo(selectedItem->text(),
+																 [this](const QStringList& tokens, const QString& liveUri)
+						{
+								QMetaObject::invokeMethod(this, [tokens, liveUri, this]()
+								{
+										slotLiveInfoReady(tokens, liveUri);
+								}, Qt::QueuedConnection);
+
+								QMetaObject::invokeMethod(this, &MainWindow::slotCloseDialog, Qt::QueuedConnection);
+						});
+				}
 
 		dwaiting->open();
 }
 
-void MainWindow::slotLiveInfoReady()
+void MainWindow::slotLiveInfoReady(const QStringList& tokens, const QString& liveUri)
 {
-		QStringList profilesTokens;
-		QString uri;
-		devicesMgr->getLiveInfoResults(profilesTokens, uri);
+		//devicesMgr->getLiveInfoResults(profilesTokens, uri);
 
-		formVideoLive->SetProfileTokens(profilesTokens);
-		formVideoLive->SetStreamUri(uri);
+		formVideoLive->SetProfileTokens(tokens);
+		formVideoLive->SetStreamUri(liveUri);
 
-		dwaiting->close();
+		//dwaiting->close();
 }
 
 void MainWindow::slotProfileSwitched(const QString& profile)

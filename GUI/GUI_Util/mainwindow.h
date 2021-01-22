@@ -83,7 +83,7 @@ private slots:
 
 		//live slots
 		void slotLiveClicked();
-		void slotLiveInfoReady();
+		void slotLiveInfoReady(const QStringList& tokens, const QString& liveUri);
 		void slotProfileSwitched(const QString&);
 		void slotLiveUriReady();
 

@@ -18,37 +18,54 @@ pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
 
 get_filename_component(ROOT_DIR "../../" ABSOLUTE)
 
-add_executable(GUI_Util
-  main.cpp
-  mainwindow.cpp
-  mainwindow.h
-  mainwindow.ui
-  adddevicedialog.cpp
-  adddevicedialog.h
-  adddevicedialog.ui
-  DevicesManager.cpp
-  DevicesManager.h
-  FormDeviceMaintenance.cpp
-  FormDeviceMaintenance.h
-  FormDeviceMaintenance.ui
-  FormVideoConfiguration.cpp
-  FormVideoConfiguration.h
-  FormVideoConfiguration.ui
-  DialogWaiting.cpp
-  DialogWaiting.h
-  DialogWaiting.ui
-  Resources.qrc
-  FormVideoLive.cpp
-  FormVideoLive.h
-  FormVideoLive.ui
-  streamhandler.cpp
-  streamhandler.h
-  playerwidget.ui
-  playerwidget.cpp
-  playerwidget.h
-  audioinputgrabber.cpp
-  audioinputgrabber.h
+set(GUI_FILES
+mainwindow.ui
+adddevicedialog.ui
+FormDeviceMaintenance.ui
+FormVideoConfiguration.ui
+DialogWaiting.ui
+FormVideoLive.ui
+playerwidget.ui
 )
+
+set(SRC_FILES
+main.cpp
+  mainwindow.cpp
+  adddevicedialog.cpp
+  DevicesManager.cpp
+  FormDeviceMaintenance.cpp
+  FormVideoConfiguration.cpp
+  DialogWaiting.cpp
+  FormVideoLive.cpp
+  streamhandler.cpp
+  playerwidget.cpp
+  audioinputgrabber.cpp
+)
+
+set(HDR_FILES
+mainwindow.h    
+adddevicedialog.h    
+DevicesManager.h  
+FormDeviceMaintenance.h    
+FormVideoConfiguration.h    
+DialogWaiting.h  
+Resources.qrc  
+FormVideoLive.h    
+streamhandler.h    
+playerwidget.h  
+audioinputgrabber.h
+)
+
+source_group(UI FILES ${GUI_FILES})
+source_group(HDRS FILES ${HDR_FILES})
+source_group(SRS FILES ${SRS_FILES})
+
+add_executable(GUI_Util 
+    ${GUI_FILES}
+    ${SRC_FILES}
+    ${HDR_FILES}
+)
+
 
 include_directories(
     "${ROOT_DIR}/Driver/Headers"

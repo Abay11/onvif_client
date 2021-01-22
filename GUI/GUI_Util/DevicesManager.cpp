@@ -79,18 +79,14 @@ void DevicesManager::Remove(const QString &/*id*/)
 
 }
 
-_onvif::IDevice* DevicesManager::getDevice(const QString& addressInfo)
+_onvif::IDevice* DevicesManager::getDevice(const QString& id)
 {
-		auto parsedInfo = addressInfo.split(":");
-		if(parsedInfo.size() != 2) return nullptr;
+		auto it = devices_.find(id);
 
-		std::string ip = parsedInfo.first().toStdString();
-		short port = parsedInfo.back().toShort();
+		if(it == devices_.end())
+				return nullptr;
 
-		foreach (auto* device, devices)
-				if(device->getIP() == ip && device->getPort() == port) return device;
-
-		return nullptr;
+		return it->second;
 }
 
 _onvif::IDevice *DevicesManager::getDevice(int index)
@@ -257,6 +253,33 @@ bool DevicesManager::asyncGetLiveUri(const QString &deviceID, const QString &pro
 
 		emit sigAsyncGetLiveUri(deviceID, profile);
 		return true;
+}
+
+void DevicesManager::LiveInfo(const QString &deviceID,
+															std::function<void(const QStringList& tokens, const QString& liveUri)> handler)
+{
+		auto device = getDevice(deviceID);
+		if(device == nullptr)
+				throw std::runtime_error("DeviceID not found!");
+
+		QtConcurrent::run([device, handler, this]()
+		{
+				auto stdstrtokens = device->GetProfilesTokens();
+				QStringList tokens;
+				std::transform(stdstrtokens.begin(), stdstrtokens.end(), std::back_inserter(tokens),
+											 [](const std::string t)
+				{
+						return QString::fromStdString(t);
+				});
+
+				//take the first profile as default and get live stream
+				if(!stdstrtokens.empty())
+						{
+								liveUrlHolder_ = device->GetStreamUri(stdstrtokens.front()).c_str();
+						}
+
+				handler(tokens, liveUrlHolder_);
+		});
 }
 
 _onvif::ProfileSP DevicesManager::getAsyncGetProfileResult()

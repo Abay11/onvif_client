@@ -114,6 +114,8 @@ public:
 		/*Live stream slots*/
 		bool asyncGetLiveInfo(const QString& deviceID);
 		bool asyncGetLiveUri(const QString& deviceID, const QString& profile);
+		void LiveInfo(const QString& deviceID,
+									std::function<void(const QStringList& tokens, const QString& liveUri)> handler);
 
 		//ASYNC REQUEST RESULT GETTERS
 		_onvif::ProfileSP getAsyncGetProfileResult();
