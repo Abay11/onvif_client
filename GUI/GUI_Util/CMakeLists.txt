@@ -43,6 +43,7 @@ main.cpp
 )
 
 set(HDR_FILES
+logging.h
 mainwindow.h    
 adddevicedialog.h    
 DevicesManager.h  
