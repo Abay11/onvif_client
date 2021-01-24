@@ -3,20 +3,25 @@
 
 #include <QWidget>
 
-namespace Ui {
-	class PlayerWidget;
+namespace Ui
+{
+class PlayerWidget;
 }
 
 class PlayerWidget : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
 
 public:
-	explicit PlayerWidget(QWidget *parent = nullptr);
-	~PlayerWidget();
+		explicit PlayerWidget(QWidget *parent = nullptr);
+		~PlayerWidget();
 
 private:
-	Ui::PlayerWidget *ui;
+		Ui::PlayerWidget *ui;
+
+		// QWidget interface
+protected:
+		void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // PLAYERWIDGET_H

@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QDebug>
+#include <QResizeEvent>
 
 #include <streamhandler.h>
 #include <playerwidget.h>
@@ -70,6 +71,11 @@ void FormVideoLive::SetStreamUri(const QString &uri)
 		ui->leLiveStreamUri->setText(uri);
 }
 
+QRect FormVideoLive::PlayerRegion()
+{
+		return ui->playerLayout->geometry();
+}
+
 void FormVideoLive::slotStartLive()
 {
 		if(isStarted_)
@@ -89,7 +95,7 @@ void FormVideoLive::slotStartLive()
 						stream_handler_ = new StreamHandler(this);
 				}
 
-		stream_handler_->startStream(streamUri_, ui->widget);
+		stream_handler_->startStream(streamUri_, ui->playerWidget);
 
 		isStarted_ = true;
 }
@@ -107,7 +113,7 @@ void FormVideoLive::slotStopLive()
 		isStarted_ = false;
 
 		//to remove the last video frame
-		ui->widget->update();
+		ui->playerWidget->update();
 }
 
 void FormVideoLive::slotProfileSwitched(const QString &profile)

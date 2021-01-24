@@ -39,31 +39,35 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 {
 		QtConcurrent::run([id, handler, this]()
 		{
-				auto it = devices_.find(id);
-				if(it == devices_.end())
+				do
 						{
-								qDebug() << __FUNCTION__ << " not found device id: " << id;
-								return;
-						}
+								auto it = devices_.find(id);
+								if(it == devices_.end())
+										{
+												qDebug() << __FUNCTION__ << " not found device id: " << id;
+												break;
+										}
 
-				auto& [creds, device] = (*it);
+								auto& [creds, device] = (*it);
 
-				using namespace _onvif;
-				if(!device)
-						{
-								device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()));
-								device->SetDeviceServiceURI(creds.uri.toStdString());
-						}
+								using namespace _onvif;
+								if(!device)
+										{
+												device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()));
+												device->SetDeviceServiceURI(creds.uri.toStdString());
+										}
 
-				try
-						{
-								device->Init("admin", "admin");
-								creds.isOnline = true;
+								try
+										{
+												device->Init("admin", "admin");
+												creds.isOnline = true;
+										}
+								catch (const std::exception& e)
+										{
+												qDebug() << "__FUCNTION__" << " issues with connection to device: " << e.what();
+										}
 						}
-				catch (const std::exception& e)
-						{
-								qDebug() << "__FUCNTION__" << " issues with connection to device: " << e.what();
-						}
+				while(false);
 
 				handler();
 		});

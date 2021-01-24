@@ -18,10 +18,12 @@ class FormVideoLive : public QWidget
 
 public:
 		explicit FormVideoLive(QWidget *parent = nullptr);
-    ~FormVideoLive();
+		~FormVideoLive() override;
 
 		void SetProfileTokens(const QStringList& profiles);
 		void SetStreamUri(const QString& uri);
+
+		QRect PlayerRegion();
 
 signals:
 		//internal signals
