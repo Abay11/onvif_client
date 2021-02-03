@@ -133,10 +133,16 @@
             <item>
              <widget class="QPushButton" name="btnPlayback">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Playback</string>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -218,6 +224,9 @@
       </item>
       <item>
        <widget class="QFrame" name="frameWidgetsHolder">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>

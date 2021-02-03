@@ -8,6 +8,7 @@
 #include "formvideoconfiguration.h"
 #include "dialogwaiting.h"
 #include "formvideolive.h"
+#include "recordingsform.h"
 
 #include <QDebug>
 #include <QThread>
@@ -304,9 +305,12 @@ void MainWindow::slotLiveClicked()
 		 * 2. DeviceManager do asyncly getting needed info and emit result ready signal
 		 * 3. result slot process info, close animation and set the live widget
 		*/
-		if(formVideoLive && formVideoLive->isVisible())
+		if(formVideoLive)
 				{
-						return;
+						if(formVideoLive->isVisible())
+								return;
+
+						formVideoLive->setVisible(true);
 				}
 		else
 				{
@@ -495,3 +499,20 @@ void deleteItems(QLayout* layout)
 				}
 }
 
+
+void MainWindow::on_btnPlayback_clicked()
+{
+		if(recordingsForm)
+				{
+						if(recordingsForm->isVisible())
+								return;
+
+						recordingsForm->setVisible(true);
+				}
+		else
+				{
+						recordingsForm = new RecordingsForm(this);
+				}
+
+		setCurrentWidget(recordingsForm);
+}

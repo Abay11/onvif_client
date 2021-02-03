@@ -17,6 +17,7 @@ class SavedDevices;
 class FormVideoLive;
 class FormVideoConfiguration;
 class FormDeviceMaintenance;
+class RecordingsForm;
 
 class QSettings;
 class QListWidgetItem;
@@ -53,6 +54,8 @@ private:
 		FormVideoConfiguration* formVideoConf = nullptr;
 		FormDeviceMaintenance* formMaintenance = nullptr;
 		std::unique_ptr<utility::SavedDevices> savedDevices;
+
+		RecordingsForm* recordingsForm = nullptr;
 
 signals:
 		void sigAsyncGetLiveInfo(const QString& deviceID);
@@ -103,5 +106,6 @@ private slots:
 
 		//need to process separately when user apply new encoder config to a media profile
 		void slotAddVideoEncoderConfig(const QString& /*profileToken*/, const QString& /*newEncToken*/);
+		void on_btnPlayback_clicked();
 };
 #endif // MAINWINDOW_H

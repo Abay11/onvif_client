@@ -26,6 +26,7 @@ FormVideoConfiguration.ui
 DialogWaiting.ui
 FormVideoLive.ui
 playerwidget.ui
+recordingsform.ui
 )
 
 set(SRC_FILES
@@ -40,6 +41,7 @@ main.cpp
   streamhandler.cpp
   playerwidget.cpp
   audioinputgrabber.cpp
+  recordingsform.cpp
 )
 
 set(HDR_FILES
@@ -55,6 +57,7 @@ FormVideoLive.h
 streamhandler.h    
 playerwidget.h  
 audioinputgrabber.h
+recordingsform.h
 )
 
 source_group(UI FILES ${GUI_FILES})
