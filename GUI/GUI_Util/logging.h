@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <QTime>
 
-QDebug operator<<(QDebug dbg, const QTime& time)
+
+inline QDebug operator<<(QDebug dbg, const QTime& time)
 {
 		return dbg << QString("%1:%2:%3.%4")
 					 .arg(time.hour())
@@ -11,6 +12,7 @@ QDebug operator<<(QDebug dbg, const QTime& time)
 					 .arg(time.second())
 					 .arg(time.msec());
 }
+
 
 #define LOG_DEBUG(arg) qDebug() << "[DEBUG]" << QTime::currentTime() << __FUNCTION__ << ":" << arg
 #define LOG_INFO(arg) qInfo() << "[INFO]" << QTime::currentTime() << __FUNCTION__ << ": " << arg

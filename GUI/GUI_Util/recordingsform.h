@@ -3,20 +3,25 @@
 
 #include <QWidget>
 
-namespace Ui {
-	class RecordingsForm;
+namespace Ui
+{
+class RecordingsForm;
 }
+
+class Timeline;
 
 class RecordingsForm : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
 
 public:
-	explicit RecordingsForm(QWidget *parent = nullptr);
-	~RecordingsForm();
+		explicit RecordingsForm(QWidget *parent = nullptr);
+		~RecordingsForm();
 
 private:
-	Ui::RecordingsForm *ui;
+		Ui::RecordingsForm *ui;
+
+		Timeline* timeline_ = nullptr;
 };
 
 #endif // RECORDINGSFORM_H
