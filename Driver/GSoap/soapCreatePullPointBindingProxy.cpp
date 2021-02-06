@@ -109,7 +109,11 @@ void CreatePullPointBindingProxy::CreatePullPointBindingProxy_init(soap_mode imo
         { "wsnt", "http://docs.oasis-open.org/wsn/b-2", NULL, NULL },
         { "tds", "http://www.onvif.org/ver10/device/wsdl", NULL, NULL },
         { "tmd", "http://www.onvif.org/ver10/deviceIO/wsdl", NULL, NULL },
+        { "trc", "http://www.onvif.org/ver10/recording/wsdl", NULL, NULL },
+        { "trp", "http://www.onvif.org/ver10/replay/wsdl", NULL, NULL },
         { "trt", "http://www.onvif.org/ver10/media/wsdl", NULL, NULL },
+        { "trv", "http://www.onvif.org/ver10/receiver/wsdl", NULL, NULL },
+        { "tse", "http://www.onvif.org/ver10/search/wsdl", NULL, NULL },
         { NULL, NULL, NULL, NULL}
     };
 	soap_set_namespaces(this->soap, namespaces);
