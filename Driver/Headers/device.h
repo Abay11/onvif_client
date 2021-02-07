@@ -2,6 +2,7 @@
 
 #include "IDevice.h"
 #include "IAudioOutput.h"
+//#include "IReplayControl.h"
 #include "types.h"
 
 #include <string>

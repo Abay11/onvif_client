@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS YES)
 
+FILE(GLOB INTERFACES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Interfaces")
 FILE(GLOB HDRS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
 FILE(GLOB SRCS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Sources")
 
@@ -21,6 +22,7 @@ FILE(GLOB SOAP_HDRS
 	"${GSoap_DIR}/*.nsmap"	
 )
 
+FILE(GLOB INTERFACES "${INTERFACES_DIR}/*.h")
 FILE(GLOB HDRS "${HDRS_DIR}/*.h")
 FILE(GLOB SRCS "${SRCS_DIR}/*.cpp")
 
@@ -35,9 +37,9 @@ ELSE()
 	include_directories(${Boost_INCLUDE_DIRS})
 ENDIF()	
 
-
 add_library(
 	libonvif SHARED
+	"${INTERFACES}"
 	"${SRCS}"
 	"${HDRS}"	
 	"${SOAP_SRCS}"
@@ -45,7 +47,7 @@ add_library(
 )
 
 source_group("GSoap" FILES ${SOAP_HDRS} ${SOAP_SRCS})
-#source_group("Headers" FILES ${Headers})
+source_group("Interfaces" FILES ${INTERFACES})
 
 target_compile_options(libonvif PUBLIC "-DWITH_OPENSSL" "-DWITH_DOM")
 
@@ -57,6 +59,7 @@ target_link_libraries(libonvif Boost::date_time Boost::regex
 
 include_directories(
 	"${Boost_INCLUDE_DIR}"
+	"${INTERFACES_DIR}"
 	"${HDRS_DIR}"
 	"${GSoap_DIR}"	
 	"${OpenSSL_DIR}/include"	
