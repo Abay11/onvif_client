@@ -9,6 +9,7 @@
 
 struct soap;
 
+class IReplayControl;
 namespace _onvif
 {
 	class ConnectionInfo;

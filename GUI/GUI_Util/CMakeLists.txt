@@ -72,6 +72,7 @@ add_executable(GUI_Util
 
 
 include_directories(
+    "${ROOT_DIR}/Driver/Interfaces"
     "${ROOT_DIR}/Driver/Headers"
     "${GST_INCLUDE_DIRS}")
 
