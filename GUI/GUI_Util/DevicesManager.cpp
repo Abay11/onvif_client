@@ -7,6 +7,7 @@
 #include <QtConcurrent/QtConcurrent>
 
 #include "device.h"
+#include "replay_factory.h"
 
 
 DevicesManager::DevicesManager(QObject *parent)
@@ -53,7 +54,8 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 								using namespace _onvif;
 								if(!device)
 										{
-												device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()));
+												device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()),
+																						_onvif::ReplayFactory());
 												device->SetDeviceServiceURI(creds.uri.toStdString());
 										}
 

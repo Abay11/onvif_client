@@ -2,14 +2,17 @@
 
 #include "IDevice.h"
 #include "IAudioOutput.h"
-//#include "IReplayControl.h"
+
+#include "replay_factory.h"
+#include "IReplayControl.h"
+
 #include "types.h"
 
 #include <string>
 
 struct soap;
 
-class IReplayControl;
+
 namespace _onvif
 {
 	class ConnectionInfo;
@@ -20,7 +23,7 @@ namespace _onvif
 	class Device : public IDevice, public IAudioOutput
 	{
 	public:
-		Device(const std::string& endpoint, short port);
+		Device(const std::string& endpoint, short port, ReplayFactory replayFactory);
 		virtual ~Device() override;
 
 		///IDevice
@@ -61,6 +64,9 @@ namespace _onvif
 
 		/// IAudioOutput end
 
+
+		IReplayControlSP ReplayControl();
+
 	public:
 		//some helpers
 		void fillONVIFGeneralInfo(); //should be used in the Init(), to fill IDevice member params
@@ -72,6 +78,9 @@ namespace _onvif
 		DeviceService* device_service_ = nullptr;
 		MediaService* media_service_ = nullptr;
 		EventService* event_service_ = nullptr;
+
+		ReplayFactory replayFactory_;
+		IReplayControlSP replayControl_;
 
 	};
 

@@ -74,6 +74,7 @@ add_executable(GUI_Util
 include_directories(
     "${ROOT_DIR}/Driver/Interfaces"
     "${ROOT_DIR}/Driver/Headers"
+    "${ROOT_DIR}/Driver/Replay"
     "${GST_INCLUDE_DIRS}")
 
 target_compile_options(GUI_Util PUBLIC "${GST_CFLAGS}")
@@ -83,11 +84,11 @@ target_link_directories(GUI_Util PUBLIC "C:/dev_libs/gstreamer/1.0/x86_64/lib")
 target_link_libraries(GUI_Util PRIVATE
     Qt5::Widgets
     Qt5::Multimedia
-    "${ROOT_DIR}/Driver/Builds/build_x64/Debug/libonvif.lib"
+    "${ROOT_DIR}/Driver/Builds/build_x64/Release/libonvif.lib"
     "${GST_LIBRARIES}")
 
 file(COPY
-        "${ROOT_DIR}/Driver/Builds/build_x64/Debug/libonvif.dll"
+        "${ROOT_DIR}/Driver/Builds/build_x64/Release/libonvif.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/libeay32.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/ssleay32.dll"
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
