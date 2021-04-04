@@ -3,9 +3,6 @@
 #include "IDevice.h"
 #include "IAudioOutput.h"
 
-#include "replay_factory.h"
-#include "IReplayControl.h"
-
 #include "types.h"
 
 #include <string>
@@ -20,10 +17,13 @@ namespace _onvif
 	class MediaService;
 	class EventService;
 
+	class ReplayFactory;
+	class IReplayControl;
+
 	class Device : public IDevice, public IAudioOutput
 	{
 	public:
-		Device(const std::string& endpoint, short port, ReplayFactory replayFactory);
+		Device(const std::string& endpoint, short port, std::shared_ptr<ReplayFactory> replayFactory);
 		virtual ~Device() override;
 
 		///IDevice
@@ -65,7 +65,7 @@ namespace _onvif
 		/// IAudioOutput end
 
 
-		IReplayControlSP ReplayControl();
+		//std::shared_ptr<IReplayControl> ReplayControl();
 
 	public:
 		//some helpers
@@ -79,9 +79,8 @@ namespace _onvif
 		MediaService* media_service_ = nullptr;
 		EventService* event_service_ = nullptr;
 
-		ReplayFactory replayFactory_;
-		IReplayControlSP replayControl_;
-
+		std::shared_ptr<ReplayFactory> replayFactory_;
+		std::shared_ptr<IReplayControl> replayControl_;
 	};
 
 	//helpers

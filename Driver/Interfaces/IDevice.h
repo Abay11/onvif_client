@@ -9,11 +9,6 @@ namespace _onvif
 	class IDevice
 	{
 	public:
-		IDevice(const std::string& endpoint, short port)
-			: ip_(endpoint)
-			, port_(port)
-		{}
-
 		virtual ~IDevice() {}
 
 		//should be implemented by child

@@ -15,6 +15,6 @@ inline QDebug operator<<(QDebug dbg, const QTime& time)
 
 
 #define LOG_DEBUG(arg) qDebug() << "[DEBUG]" << QTime::currentTime() << __FUNCTION__ << ":" << arg
-#define LOG_INFO(arg) qInfo() << "[INFO]" << QTime::currentTime() << __FUNCTION__ << ": " << arg
-#define LOG_WARN(arg) qWarning() << "[WARN]" << QTime::currentTime() << __FUNCTION__ << ": " << arg
-#define LOG_ERROR(arg) qError() << "[ERROR]" << QTime::currentTime() << __FUNCTION__ << ": " << arg
+#define LOG_INFO(arg) qDebug() << "[INFO]" << QTime::currentTime() << __FUNCTION__ << ": " << arg
+#define LOG_WARN(arg) qDebug() << "[WARN]" << QTime::currentTime() << __FUNCTION__ << ": " << arg
+#define LOG_ERROR(arg) qDebug() << "[ERROR]" << QTime::currentTime() << __FUNCTION__ << ": " << arg

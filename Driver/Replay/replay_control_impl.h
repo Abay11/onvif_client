@@ -13,8 +13,6 @@ namespace _onvif
 		{
 		}
 
-	private:
-
 		// Inherited via IReplayControl
 		virtual void Connect() override;
 		virtual void Disconnect() override;

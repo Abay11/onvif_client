@@ -52,21 +52,23 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 								auto& [creds, device] = (*it);
 
 								using namespace _onvif;
-								if(!device)
-										{
-												device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()),
-																						_onvif::ReplayFactory());
-												device->SetDeviceServiceURI(creds.uri.toStdString());
-										}
 
 								try
 										{
+												if(!device)
+														{
+																auto replayFactory = std::make_shared<ReplayFactory>();
+																device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()), replayFactory);
+																device->SetDeviceServiceURI(creds.uri.toStdString());
+														}
+
+
 												device->Init("admin", "admin");
 												creds.isOnline = true;
 										}
 								catch (const std::exception& e)
 										{
-												qDebug() << "__FUCNTION__" << " issues with connection to device: " << e.what();
+												qDebug() << __FUNCTION__ << " issues with connection to device: " << e.what();
 										}
 						}
 				while(false);

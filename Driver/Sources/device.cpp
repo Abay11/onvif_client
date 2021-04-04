@@ -4,21 +4,22 @@
 #include "device_service.h"
 #include "media_service.h"
 #include "event_service.h"
+
+#include "replay_factory.h"
 #include "replay_control_impl.h"
 
 #include "soapStub.h"
 
-#include <iostream>
+#include <string>
 #include <sstream>
 
 namespace _onvif
 {
-	Device::Device(const std::string& endpoint, short port,
-		ReplayFactory replayFactory
-	)
-		: IDevice(endpoint, port)
-		, replayFactory_(replayFactory)
+	Device::Device(const std::string& endpoint, short port, std::shared_ptr<ReplayFactory> replayFactory)
 	{
+		ip_ = endpoint;
+		port_ = port;
+		replayFactory_ = std::make_shared<ReplayFactory>();
 	}
 
 	Device::~Device()
@@ -162,16 +163,16 @@ namespace _onvif
 		return media_service_->get_stream_uri(profileToken, type, transport);
 	}
 
-	IReplayControlSP Device::ReplayControl()
-	{
-		if (!replayControl_)
-		{
-			std::string replay_uri;
-			replayControl_ = replayFactory_.ReplayControl(replay_uri, conn_info_);
-		}
+	//IReplayControlSP Device::ReplayControl()
+	//{
+	//	if (!replayControl_)
+	//	{
+	//		std::string replay_uri;
+	//		replayControl_ = replayFactory_->ReplayControl(replay_uri, conn_info_);
+	//	}
 
-		return replayControl_;
-	}
+	//	return replayControl_;
+	//}
 
 	void Device::fillONVIFGeneralInfo()
 	{

@@ -1,5 +1,6 @@
 #include "replay_factory.h"
 
+#include "SoapHelpers.h"
 #include "replay_control_impl.h"
 
 namespace _onvif
