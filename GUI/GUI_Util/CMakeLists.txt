@@ -11,7 +11,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets Multimedia REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-video-1.0)
@@ -24,8 +25,8 @@ adddevicedialog.ui
 FormDeviceMaintenance.ui
 FormVideoConfiguration.ui
 DialogWaiting.ui
-FormVideoLive.ui
-playerwidget.ui
+ FormVideoLive.ui
+ playerwidget.ui
 recordingsform.ui
 )
 
@@ -37,9 +38,9 @@ main.cpp
   FormDeviceMaintenance.cpp
   FormVideoConfiguration.cpp
   DialogWaiting.cpp
-  FormVideoLive.cpp
-  streamhandler.cpp
-  playerwidget.cpp
+   FormVideoLive.cpp
+   streamhandler.cpp
+   playerwidget.cpp
   audioinputgrabber.cpp
   recordingsform.cpp
 )
@@ -53,9 +54,9 @@ FormDeviceMaintenance.h
 FormVideoConfiguration.h    
 DialogWaiting.h  
 Resources.qrc  
-FormVideoLive.h    
-streamhandler.h    
-playerwidget.h  
+ FormVideoLive.h
+ streamhandler.h
+ playerwidget.h
 audioinputgrabber.h
 recordingsform.h
 )
@@ -64,31 +65,44 @@ source_group(UI FILES ${GUI_FILES})
 source_group(HDRS FILES ${HDR_FILES})
 source_group(SRS FILES ${SRS_FILES})
 
-add_executable(GUI_Util 
-    ${GUI_FILES}
-    ${SRC_FILES}
-    ${HDR_FILES}
-)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(GUI_Util
+        ${GUI_FILES}
+        ${SRC_FILES}
+        ${HDR_FILES}
+    )
+else()
+   add_executable(GUI_Util
+           ${GUI_FILES}
+           ${SRC_FILES}
+           ${HDR_FILES}
+        )
 
+endif()
+
+
+set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
 
 include_directories(
     "${ROOT_DIR}/Driver/Interfaces"
     "${ROOT_DIR}/Driver/Headers"
     "${ROOT_DIR}/Driver/Replay"
-    "${GST_INCLUDE_DIRS}")
+     "${GST_INCLUDE_DIRS}"
+    )
 
 target_compile_options(GUI_Util PUBLIC "${GST_CFLAGS}")
 
-target_link_directories(GUI_Util PUBLIC "C:/dev_libs/gstreamer/1.0/x86_64/lib")
+ target_link_directories(GUI_Util PUBLIC "C:/dev_libs/gstreamer/1.0/x86_64/lib")
 
 target_link_libraries(GUI_Util PRIVATE
-    Qt5::Widgets
-    Qt5::Multimedia
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Multimedia
     "${ROOT_DIR}/Driver/Builds/build_x64/Release/libonvif.lib"
-    "${GST_LIBRARIES}")
+     "${GST_LIBRARIES}"
+)
 
 file(COPY
         "${ROOT_DIR}/Driver/Builds/build_x64/Release/libonvif.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/libeay32.dll"
         "${ROOT_DIR}/Libs/OpenSSL/bin/ssleay32.dll"
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+    DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build)
