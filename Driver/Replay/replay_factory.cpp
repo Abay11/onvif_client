@@ -5,8 +5,13 @@
 
 namespace _onvif
 {
-	std::shared_ptr<IReplayControl> ReplayFactory::ReplayControl(const std::string& replay_service_uri, ConnectionInfo* conn_info)
+	ReplayFactory::ReplayFactory(const std::shared_ptr<ConnectionInfo> connInfo)
+		: connInfo_(connInfo)
 	{
-		return std::make_shared<ReplayControlImpl>(replay_service_uri, conn_info);
+	}
+
+	std::shared_ptr<IReplayControl> ReplayFactory::ReplayControl(const std::string& serviceUrl)
+	{
+		return std::make_shared<ReplayControlImpl>(serviceUrl, connInfo_);
 	}
 }

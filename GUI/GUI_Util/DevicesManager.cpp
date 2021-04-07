@@ -62,7 +62,6 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 																device->SetDeviceServiceURI(creds.uri.toStdString());
 														}
 
-
 												device->Init("admin", "admin");
 												creds.isOnline = true;
 										}

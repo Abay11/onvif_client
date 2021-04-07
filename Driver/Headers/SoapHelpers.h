@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <string>
+#include <memory>
 
 namespace _onvif
 {
@@ -112,7 +113,7 @@ namespace _onvif
 		(&DeviceBindingProxy::GetCapabilities), *deviceProxy, _1, _2);
 	***/
 	template <typename R1, typename R2>
-	int GSoapRequestWrapper(std::function<int(R1*, R2&)> f, R1* r1, R2& r2, ConnectionInfo* connInfo)
+	int GSoapRequestWrapper(std::function<int(R1*, R2&)> f, R1* r1, R2& r2, std::shared_ptr<ConnectionInfo> connInfo)
 	{
 		int res;
 		switch (connInfo->auth_scheme())

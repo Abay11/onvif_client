@@ -6,9 +6,20 @@
 
 namespace _onvif
 {
+	class ReplayFactory;
+	class IReplayControl;
+	class IReplaySearch;
+
 	class IDevice
 	{
 	public:
+		IDevice(const std::string& endpoint, short port, std::shared_ptr<ReplayFactory> replayFactory)
+			: ip_(endpoint)
+			, port_(port)
+			, replayFactory_(replayFactory)
+		{
+		}
+
 		virtual ~IDevice() {}
 
 		//should be implemented by child
@@ -62,17 +73,25 @@ namespace _onvif
 		virtual void SubcribeEvents() const = 0;
 		virtual void UnsubcribeEvents() const = 0;
 		
+		virtual std::shared_ptr<IReplayControl> ReplayControl() = 0;
+		virtual std::shared_ptr<IReplaySearch> ReplaySearch() = 0;
+		
 	protected:		
-		Services services_;
-		DeviceInformationSP device_info_;
-		CapabilitiesSP capabilities_;
-		ONVIFGeneralInfoSP onvif_general_info_;
-
 		std::string ip_;
 		short port_;
 		std::string device_service_uri_ = "/onvif/device_service";
 
 		std::string login_;
 		std::string pass_;
+
+		Services services_;
+		DeviceInformationSP device_info_;
+		CapabilitiesSP capabilities_;
+		ONVIFGeneralInfoSP onvif_general_info_;
+		
+		std::shared_ptr<ReplayFactory> replayFactory_;
+		std::shared_ptr<IReplayControl> replayControl_;
+		std::shared_ptr<IReplaySearch> replaySearch_;
+
 	};
 }

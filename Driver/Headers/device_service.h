@@ -4,6 +4,7 @@
 
 #include <string>
 #include <list>
+#include <memory>
 
 class DeviceBindingProxy;
 
@@ -22,7 +23,7 @@ namespace _onvif
 		Param device_serivce_uri should to point to the full device service address
 		including protocol, ip and port
 		**/
-		DeviceService(ConnectionInfo* connInfo, const std::string& device_service_uri);
+		DeviceService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& device_service_uri);
 		~DeviceService();
 
 		//PRE_AUTH methods
@@ -35,7 +36,7 @@ namespace _onvif
 		std::list<std::string> get_scopes();
 	
 	private:
-		ConnectionInfo* conn_info_;
+		std::shared_ptr<ConnectionInfo> conn_info_;
 		DeviceBindingProxy* deviceProxy;
 
 		std::string device_service_uri_;

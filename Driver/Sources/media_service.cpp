@@ -192,7 +192,7 @@ tt__VideoEncoderConfiguration* get_video_encoder_instance(soap* context)
 
 namespace _onvif
 {
-	MediaService::MediaService(ConnectionInfo* connInfo, const std::string& media_service_uri)
+	MediaService::MediaService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& media_service_uri)
 		:conn_info_(connInfo),
 		mediaProxy(new MediaBindingProxy(connInfo->getSoap())),
 		media_service_uri_(media_service_uri)

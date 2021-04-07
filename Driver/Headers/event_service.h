@@ -1,8 +1,10 @@
+#pragma once
+
+#include <boost\asio\io_context.hpp>
 
 #include <string>
 #include <thread>
-
-#include <boost\asio\io_context.hpp>
+#include <memory>
 
 struct soap;
 class EventBindingProxy;
@@ -16,7 +18,7 @@ namespace _onvif
 	class EventService
 	{
 	public:
-		EventService(ConnectionInfo* /*connInfo*/, const std::string& /*event_service_uri*/);
+		EventService(std::shared_ptr<ConnectionInfo> /*connInfo*/, const std::string& /*event_service_uri*/);
 		~EventService();
 
 		//Subcribe to events
@@ -25,7 +27,7 @@ namespace _onvif
 		void stop();
 
 	private:
-		ConnectionInfo* conn_info_;
+		std::shared_ptr<ConnectionInfo> conn_info_;
 		soap* soap_;
 		EventBindingProxy* service_proxy_;
 		PullPointSubscriptionBindingProxy* pullpoint_proxy_;

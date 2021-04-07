@@ -14,7 +14,7 @@ extern SOAP_NMAC struct Namespace namespaces[];
 
 namespace _onvif
 {
-	DeviceService::DeviceService(ConnectionInfo* connInfo, const std::string& device_service_uri)
+	DeviceService::DeviceService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& device_service_uri)
 		:conn_info_(connInfo),
 		deviceProxy(new DeviceBindingProxy(conn_info_->getSoap())),
 		device_service_uri_(device_service_uri)

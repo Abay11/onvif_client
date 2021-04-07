@@ -1,9 +1,10 @@
 #pragma once
 
+#include "types.h"
+
 #include <list>
 #include <string>
-
-#include "types.h"
+#include <memory>
 
 struct soap;
 class MediaBindingProxy;
@@ -19,7 +20,7 @@ namespace _onvif
 		A ConnectionInfo instance should be valid until a class object will be destroyed
 		and should be destroyed by client.
 		**/
-		MediaService(ConnectionInfo* connInfo, const std::string& media_service_uri);
+		MediaService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& media_service_uri);
 		~MediaService();
 
 	public:
@@ -35,7 +36,7 @@ namespace _onvif
 		bool add_videoencoder_config(const std::string& /*profiletoken*/, const std::string& /*vetoken*/);
 
 	private:
-		ConnectionInfo* conn_info_;
+		std::shared_ptr<ConnectionInfo> conn_info_;
 		MediaBindingProxy* mediaProxy;
 
 		std::string media_service_uri_;

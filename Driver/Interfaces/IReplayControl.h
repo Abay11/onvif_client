@@ -10,10 +10,11 @@ namespace _onvif
 	class IReplayControl
 	{
 	public:
-		IReplayControl(const std::string& replay_service_uri, ConnectionInfo* conn_info)
-			: replay_service_uri_(replay_service_uri)
+		IReplayControl(const std::string& serviceUrl,
+			const std::shared_ptr<ConnectionInfo> connInfo)
+			: replay_service_uri_(serviceUrl)
 			, isConnected_(false)
-			, conn_info_(conn_info)
+			, connInfo_(connInfo)
 		{}
 
 		virtual ~IReplayControl() {}
@@ -28,7 +29,7 @@ namespace _onvif
 	protected:
 		const std::string replay_service_uri_;
 		bool isConnected_;
-		ConnectionInfo* conn_info_ = nullptr;
+		const std::shared_ptr<ConnectionInfo> connInfo_;
 	};
 
 	using IReplayControlSP = std::shared_ptr<IReplayControl>;

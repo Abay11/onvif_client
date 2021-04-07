@@ -14,7 +14,7 @@
 
 namespace _onvif
 {
-	EventService::EventService(ConnectionInfo* connInfo, const std::string& service_uri)
+	EventService::EventService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& service_uri)
 		:
 		conn_info_(connInfo),
 		soap_(soap_new()),

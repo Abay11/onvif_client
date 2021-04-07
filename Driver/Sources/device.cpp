@@ -15,11 +15,9 @@
 
 namespace _onvif
 {
-	Device::Device(const std::string& endpoint, short port, std::shared_ptr<ReplayFactory> replayFactory)
+	Device::Device(std::shared_ptr<ConnectionInfo> connInfo, std::shared_ptr<ReplayFactory> replayFactory)
+		: IDevice(connInfo->getAddress(), connInfo->getPort(), replayFactory)
 	{
-		ip_ = endpoint;
-		port_ = port;
-		replayFactory_ = std::make_shared<ReplayFactory>();
 	}
 
 	Device::~Device()
@@ -31,7 +29,7 @@ namespace _onvif
 		soap_destroy(soap_context_);
 		soap_end(soap_context_);
 		soap_free(soap_context_);
-	}
+	}		
 
 	void Device::Init(const std::string& login, const std::string& pass)
 	{
@@ -39,10 +37,11 @@ namespace _onvif
 		soap_register_plugin(soap_context_, soap_wsse);
 		soap_register_plugin(soap_context_, http_da);
 
+
 		login_ = login;
 		pass_ = pass;
 
-		conn_info_ = new ConnectionInfo(soap_context_, ip_, port_, login_, pass_);
+		conn_info_ = std::make_shared<ConnectionInfo>(soap_context_, ip_, port_, login_, pass_);
 
 		std::stringstream device_address;
 		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
@@ -163,17 +162,6 @@ namespace _onvif
 		return media_service_->get_stream_uri(profileToken, type, transport);
 	}
 
-	//IReplayControlSP Device::ReplayControl()
-	//{
-	//	if (!replayControl_)
-	//	{
-	//		std::string replay_uri;
-	//		replayControl_ = replayFactory_->ReplayControl(replay_uri, conn_info_);
-	//	}
-
-	//	return replayControl_;
-	//}
-
 	void Device::fillONVIFGeneralInfo()
 	{
 		if (!onvif_general_info_) onvif_general_info_ = std::make_shared<ONVIFGeneralInfo>();
@@ -183,6 +171,22 @@ namespace _onvif
 		
 		onvif_general_info_->isMedia2Supported = isMedia2Supported(&services_);
 		onvif_general_info_->deviceServiceURI = device_service_uri_;
+	}
+
+	std::shared_ptr<IReplayControl> Device::ReplayControl()
+	{
+		if (!replayControl_)
+		{
+			std::string replay_uri;
+			replayControl_ = replayFactory_->ReplayControl(replay_uri);
+		}
+
+		return replayControl_;
+	}
+
+	std::shared_ptr<IReplaySearch> Device::ReplaySearch()
+	{
+		return std::shared_ptr<IReplaySearch>();
 	}
 
 	void Device::Start()

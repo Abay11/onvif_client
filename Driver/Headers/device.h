@@ -17,13 +17,10 @@ namespace _onvif
 	class MediaService;
 	class EventService;
 
-	class ReplayFactory;
-	class IReplayControl;
-
 	class Device : public IDevice, public IAudioOutput
 	{
 	public:
-		Device(const std::string& endpoint, short port, std::shared_ptr<ReplayFactory> replayFactory);
+		Device(std::shared_ptr<ConnectionInfo> connInfo, std::shared_ptr<ReplayFactory> replayFactory);
 		virtual ~Device() override;
 
 		///IDevice
@@ -53,6 +50,10 @@ namespace _onvif
 		virtual void SubcribeEvents() const override;
 		virtual void UnsubcribeEvents() const override;
 
+		// Inherited via IDevice
+		virtual std::shared_ptr<IReplayControl> ReplayControl() override;
+		virtual std::shared_ptr<IReplaySearch> ReplaySearch() override;
+
 		///IDevice
 
 		/// Inherited via IAudioOutput
@@ -64,23 +65,16 @@ namespace _onvif
 
 		/// IAudioOutput end
 
-
-		//std::shared_ptr<IReplayControl> ReplayControl();
-
 	public:
 		//some helpers
 		void fillONVIFGeneralInfo(); //should be used in the Init(), to fill IDevice member params
 
-
 	private:
 		soap* soap_context_;
-		ConnectionInfo* conn_info_ = nullptr;
+		std::shared_ptr<ConnectionInfo> conn_info_;
 		DeviceService* device_service_ = nullptr;
 		MediaService* media_service_ = nullptr;
 		EventService* event_service_ = nullptr;
-
-		std::shared_ptr<ReplayFactory> replayFactory_;
-		std::shared_ptr<IReplayControl> replayControl_;
 	};
 
 	//helpers

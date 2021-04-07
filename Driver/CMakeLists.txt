@@ -19,6 +19,8 @@ FILE(GLOB ReplayFiles
 	"${CMAKE_CURRENT_SOURCE_DIR}/Replay/replay_control_impl.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Replay/replay_factory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Replay/replay_factory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Replay/replay_search_impl.cpp"	
+	"${CMAKE_CURRENT_SOURCE_DIR}/Replay/replay_search_impl.h"	
 )
 
 get_filename_component(PARENT_DIR "../" ABSOLUTE)
