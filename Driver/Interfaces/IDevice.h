@@ -23,7 +23,7 @@ namespace _onvif
 		virtual ~IDevice() {}
 
 		//should be implemented by child
-		virtual void Init(const std::string& login, const std::string& pass) = 0;
+		virtual void Init() = 0;
 
 		virtual void SetAddressInfo(const std::string& ip, short port) { ip_ = ip; port_ = port; };
 		

@@ -1,4 +1,6 @@
 #include "media_service.h"
+
+#include "ConnectionInfo.h"
 #include "SoapHelpers.h"
 #include "types.h"
 
@@ -194,7 +196,7 @@ namespace _onvif
 {
 	MediaService::MediaService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& media_service_uri)
 		:conn_info_(connInfo),
-		mediaProxy(new MediaBindingProxy(connInfo->getSoap())),
+		mediaProxy(new MediaBindingProxy(connInfo->getSoapRaw())),
 		media_service_uri_(media_service_uri)
 	{
 		mediaProxy->soap_endpoint = media_service_uri_.c_str();
@@ -262,9 +264,9 @@ namespace _onvif
 		using T2 = _trt__GetVideoEncoderConfigurationOptionsResponse;
 
 		T1 request;
-		request.ProfileToken = soap_new_std__string(conn_info_->getSoap());
+		request.ProfileToken = soap_new_std__string(conn_info_->getSoapRaw());
 		*request.ProfileToken = profile_token;
-		request.ConfigurationToken = soap_new_std__string(conn_info_->getSoap());
+		request.ConfigurationToken = soap_new_std__string(conn_info_->getSoapRaw());
 		*request.ConfigurationToken = enc_token;
 		T2 response;
 		auto wrapper = [this](T1* r1, T2& r2) {return mediaProxy->GetVideoEncoderConfigurationOptions(r1, r2); };
@@ -467,9 +469,9 @@ namespace _onvif
 
 		T1 request;
 		request.ProfileToken = profileToken;
-		request.StreamSetup = soap_new_tt__StreamSetup(conn_info_->getSoap());
+		request.StreamSetup = soap_new_tt__StreamSetup(conn_info_->getSoapRaw());
 		request.StreamSetup->Stream = static_cast<tt__StreamType>(type);
-		request.StreamSetup->Transport = soap_new_tt__Transport(conn_info_->getSoap());
+		request.StreamSetup->Transport = soap_new_tt__Transport(conn_info_->getSoapRaw());
 		request.StreamSetup->Transport->Protocol = static_cast<tt__TransportProtocol>(transport);
 		
 		T2 response;
@@ -494,7 +496,7 @@ namespace _onvif
 		
 		//TODO: fill received values
 		T1 request;
-		request.Configuration = get_video_encoder_instance(conn_info_->getSoap());
+		request.Configuration = get_video_encoder_instance(conn_info_->getSoapRaw());
 		request.Configuration->UseCount = 1;
 		request.Configuration->Name = "V_ENC_000";
 		request.Configuration->token = "V_ENC_000";

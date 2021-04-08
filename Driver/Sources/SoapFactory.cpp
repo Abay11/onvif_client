@@ -4,10 +4,10 @@
 #include "wsseapi.h"
 #include "httpda.h"
 
-std::shared_ptr<soap> SoapFactory::instance()
+namespace _onvif
 {
-	return std::shared_ptr<soap>();
-		{
+	std::shared_ptr<soap> SoapFactory::instance()
+	{
 			soap* soapCtx = soap_new();
 			soap_register_plugin(soapCtx, soap_wsse);
 			soap_register_plugin(soapCtx, http_da);
@@ -19,5 +19,5 @@ std::shared_ptr<soap> SoapFactory::instance()
 					soap_end(s);
 					soap_free(s);
 				});
-		}
+	}
 }

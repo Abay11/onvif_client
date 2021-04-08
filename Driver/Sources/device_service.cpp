@@ -1,6 +1,8 @@
 #include "..\Headers\device_service.h"
-#include "util.h"
+
+#include "ConnectionInfo.h"
 #include "SoapHelpers.h"
+#include "util.h"
 
 #include "DeviceBinding.nsmap"
 #include "soapStub.h"
@@ -16,9 +18,10 @@ namespace _onvif
 {
 	DeviceService::DeviceService(std::shared_ptr<ConnectionInfo> connInfo, const std::string& device_service_uri)
 		:conn_info_(connInfo),
-		deviceProxy(new DeviceBindingProxy(conn_info_->getSoap())),
+		deviceProxy(new DeviceBindingProxy(conn_info_->getSoapRaw())),
 		device_service_uri_(device_service_uri)
 	{
+		
 		deviceProxy->soap_endpoint = device_service_uri_.c_str();
 	}
 

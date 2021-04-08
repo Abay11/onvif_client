@@ -4,9 +4,12 @@
 
 struct soap;
 
-class SoapFactory
+namespace _onvif
 {
-public:
-	std::shared_ptr<soap> instance();
-};
+	class SoapFactory
+	{
+	public:
+		std::shared_ptr<soap> instance();
+	};
+}
 

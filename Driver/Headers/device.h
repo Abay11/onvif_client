@@ -24,7 +24,7 @@ namespace _onvif
 		virtual ~Device() override;
 
 		///IDevice
-		virtual void Init(const std::string& login, const std::string& pass);
+		virtual void Init();
 		virtual void SetCreds(const std::string& login, const std::string& pass);
 		virtual void StartLive();
 		virtual void StopLive();

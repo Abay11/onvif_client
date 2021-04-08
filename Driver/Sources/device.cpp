@@ -1,6 +1,8 @@
 #include "..\Headers\device.h"
 
+#include "ConnectionInfo.h"
 #include "SoapHelpers.h"
+
 #include "device_service.h"
 #include "media_service.h"
 #include "event_service.h"
@@ -17,6 +19,7 @@ namespace _onvif
 {
 	Device::Device(std::shared_ptr<ConnectionInfo> connInfo, std::shared_ptr<ReplayFactory> replayFactory)
 		: IDevice(connInfo->getAddress(), connInfo->getPort(), replayFactory)
+		, conn_info_(connInfo)
 	{
 	}
 
@@ -25,24 +28,10 @@ namespace _onvif
 		delete device_service_;
 		delete media_service_;
 		delete event_service_;
-
-		soap_destroy(soap_context_);
-		soap_end(soap_context_);
-		soap_free(soap_context_);
 	}		
 
-	void Device::Init(const std::string& login, const std::string& pass)
+	void Device::Init()
 	{
-		soap_context_ = soap_new();
-		soap_register_plugin(soap_context_, soap_wsse);
-		soap_register_plugin(soap_context_, http_da);
-
-
-		login_ = login;
-		pass_ = pass;
-
-		conn_info_ = std::make_shared<ConnectionInfo>(soap_context_, ip_, port_, login_, pass_);
-
 		std::stringstream device_address;
 		device_address << "http://" << ip_ << ":" << port_ << device_service_uri_;
 

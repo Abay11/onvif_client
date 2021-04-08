@@ -1,4 +1,6 @@
 #include "event_service.h"
+
+#include "ConnectionInfo.h"
 #include "SoapHelpers.h"
 
 #include "soapStub.h"

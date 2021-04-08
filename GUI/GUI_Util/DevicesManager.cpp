@@ -1,14 +1,15 @@
 #include "DevicesManager.h"
 
+#include "device.h"
+#include "replay_factory.h"
+#include "SoapFactory.h"
+#include "ConnectionInfo.h"
+
 #include <QDebug>
 #include <QString>
 #include <QVector>
 #include <QTextStream>
 #include <QtConcurrent/QtConcurrent>
-
-#include "device.h"
-#include "replay_factory.h"
-
 
 DevicesManager::DevicesManager(QObject *parent)
 		: QObject(parent)
@@ -57,12 +58,14 @@ void DevicesManager::Connect(const QString &id, std::function<void()> handler)
 										{
 												if(!device)
 														{
-																auto replayFactory = std::make_shared<ReplayFactory>();
-																device = new Device(creds.ip.toStdString(), static_cast<short>(creds.port.toInt()), replayFactory);
+																auto soapCtx = SoapFactory().instance();
+																auto connInfo = std::make_shared<ConnectionInfo>(soapCtx, creds.ip.toStdString(), creds.port.toInt(), "admin", "admin");
+																auto replayFactory = std::make_shared<ReplayFactory>(connInfo);
+																device = new Device(connInfo, replayFactory);
 																device->SetDeviceServiceURI(creds.uri.toStdString());
 														}
 
-												device->Init("admin", "admin");
+												device->Init();
 												creds.isOnline = true;
 										}
 								catch (const std::exception& e)

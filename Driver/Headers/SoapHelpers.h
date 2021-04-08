@@ -11,91 +11,6 @@
 namespace _onvif
 {
 	/***
-	This class should be passed to the Services
-	and contains GSoap context, credentials and device addresses
-	Expected that will be used one instance for one device
-	Cause if some data changed it could be easy applied to all services
-	For example, if credential data were changed, there will no be problems
-	***/
-	enum AUTH_SCHEME
-	{
-		NO_AUTH = 0,
-		WSSE_AUTH
-	};
-
-	class ConnectionInfo
-	{
-	public:
-		ConnectionInfo(soap* soap,
-			const std::string& address,
-			int port,
-			const std::string& login,
-			const std::string& password)
-			:soap_context_(soap),
-			ip_(address),
-			port_(port),
-			login_(login),
-			password_(password),
-			auth_scheme_(NO_AUTH)
-		{
-		}
-
-		~ConnectionInfo()
-		{
-		}
-
-		void setCreds(const std::string& login, const std::string& pass)
-		{
-			login_ = login;
-			password_ = pass;
-		}
-
-		soap* getSoap()
-		{
-			return soap_context_;
-		}
-		std::string getAddress()
-		{
-			return ip_;
-		}
-		int getPort()
-		{
-			return port_;
-		}
-		std::string getLogin()
-		{
-			return login_;
-		}
-		std::string getPass()
-		{
-			return password_;
-		}
-		http_da_info* get_http_da_info()
-		{
-			return &info;
-		}
-		AUTH_SCHEME auth_scheme() const
-		{
-			return auth_scheme_;
-		}
-		void set_auth_scheme(AUTH_SCHEME new_scheme)
-		{
-			auth_scheme_ = new_scheme;
-		}
-
-	private:
-		soap* soap_context_;
-		std::string ip_;
-		short port_;
-		std::string login_;
-		std::string password_;
-		AUTH_SCHEME auth_scheme_;
-
-		//soap struct
-		http_da_info info;
-	};
-
-	/***
 		This method is intended to implement the logic of invocation
 		GSoap classes' methods with authorization
 		To use it pass to this function some GSoap method
@@ -129,7 +44,7 @@ namespace _onvif
 			else
 				break; //requst result not is 401, skip
 		case WSSE_AUTH:
-			soap_wsse_add_UsernameTokenDigest(connInfo->getSoap(), "Auth",
+			soap_wsse_add_UsernameTokenDigest(connInfo->getSoapRaw(), "Auth",
 				connInfo->getLogin().c_str(), connInfo->getPass().c_str());
 			res = f(r1, r2); //TODO: if res also 401 client should change credentials
 			break;
