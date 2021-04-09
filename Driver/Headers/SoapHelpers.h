@@ -10,6 +10,25 @@
 
 namespace _onvif
 {
+	class ConnectionInfo;
+
+	class SoapContextHolder
+	{
+	public:
+		SoapContextHolder();
+
+		virtual ~SoapContextHolder()
+		{
+			delete soap_;
+		}
+
+	protected:
+		void freeSoapUsedMemory() const;
+
+	protected:
+		soap* soap_;
+	};
+
 	/***
 		This method is intended to implement the logic of invocation
 		GSoap classes' methods with authorization

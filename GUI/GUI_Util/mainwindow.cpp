@@ -504,14 +504,12 @@ void MainWindow::on_btnPlayback_clicked()
 {
 		if(recordingsForm)
 				{
-						if(recordingsForm->isVisible())
-								return;
-
 						recordingsForm->setVisible(true);
 				}
 		else
 				{
-						recordingsForm = new RecordingsForm(this);
+						auto selectedItem = ui->listWidget->currentItem();
+						recordingsForm = new RecordingsForm(devicesMgr->getDevice(selectedItem->text()), this);
 				}
 
 		setCurrentWidget(recordingsForm);

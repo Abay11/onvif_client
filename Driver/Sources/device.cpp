@@ -47,7 +47,8 @@ namespace _onvif
 		media_service_ = new MediaService(conn_info_, addr);
 
 		//TODO: fix
-		event_service_ = new EventService(conn_info_, get_service_address(&services_, SERVICES::EVENTS_SERVICE));
+		//
+		//event_service_ = new EventService(conn_info_, get_service_address(&services_, SERVICES::EVENTS_SERVICE));
 
 		fillONVIFGeneralInfo();
 	}
@@ -175,7 +176,13 @@ namespace _onvif
 
 	std::shared_ptr<IReplaySearch> Device::ReplaySearch()
 	{
-		return std::shared_ptr<IReplaySearch>();
+		if (!replaySearch_)
+		{
+			std::string replay_uri = "http://192.168.42.200:8000/onvif/search_service";
+			replaySearch_ = replayFactory_->ReplaySearch(replay_uri);
+		}
+
+		return replaySearch_;
 	}
 
 	void Device::Start()
